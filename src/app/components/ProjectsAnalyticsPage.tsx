@@ -114,7 +114,7 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
   const pageSize = 10;
 
   // Flatten all projects for filtering/sorting
-  let allProjects: Project[] = [];
+  const allProjects: Project[] = [];
   companies.forEach(company => {
     company.projects.forEach(project => {
       allProjects.push({ ...project, company: company.name });

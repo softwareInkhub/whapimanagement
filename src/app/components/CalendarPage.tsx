@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Bell,
-  AlertCircle,
   CheckCircle,
   Clock,
   MapPin,
@@ -105,11 +104,9 @@ interface Event {
 export default function CalendarPage({ onOpenTab }: { onOpenTab?: (type: string, title?: string) => void }) {
   const [events, setEvents] = useState<Event[]>(initialEvents);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState("week");
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   const getDaysInWeek = (date: Date) => {
     const start = new Date(date);
@@ -368,7 +365,7 @@ Attendees: ${event.attendees.join(', ')}
                       className={`p-2 rounded-lg text-xs cursor-pointer transition-all ${
                         event.completed ? 'opacity-60' : ''
                       } ${eventTypes[event.type as keyof typeof eventTypes] || 'bg-neutral-100'}`}
-                      onClick={() => setSelectedEvent(event)}
+                      onClick={() => {}}
                     >
                       <div className="font-medium truncate">{event.title}</div>
                       <div className="text-xs opacity-75">{event.time}</div>

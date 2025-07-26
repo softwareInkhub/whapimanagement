@@ -24,15 +24,10 @@ import {
   Eye,
   Download,
   BookOpen,
-  CheckSquare,
-  Trash2,
-  Archive,
-  Copy,
-  Share2,
-  Filter
+  CheckSquare
 } from "lucide-react";
 
-export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string, title?: string) => void }) {
+export default function CompaniesPage() {
   const [selectedCompany, setSelectedCompany] = useState(1);
   const [view, setView] = useState("overview");
   const [expandedDepartments, setExpandedDepartments] = useState<number[]>([]);
@@ -42,9 +37,6 @@ export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string
   const [expandedProjects, setExpandedProjects] = useState<number[]>([]);
   const [expandedSubprojects, setExpandedSubprojects] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
-  const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
-  const [showProjectMenu, setShowProjectMenu] = useState<number | null>(null);
 
   const [companies, setCompanies] = useState([
     {
@@ -358,17 +350,15 @@ export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string
   // Company actions
   const deleteCompany = (companyId: number) => {
     setCompanies(prev => prev.filter(company => company.id !== companyId));
-    setShowMoreMenu(null);
   };
 
   const archiveCompany = (companyId: number) => {
     setCompanies(prev => prev.map(company => 
       company.id === companyId ? { ...company, archived: true } : company
     ));
-    setShowMoreMenu(null);
   };
 
-  const duplicateCompany = (company: any) => {
+  const duplicateCompany = (company: typeof companies[0]) => {
     const newCompany = {
       ...company,
       id: Math.max(...companies.map(c => c.id)) + 1,
@@ -376,10 +366,9 @@ export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string
       status: "Planning"
     };
     setCompanies(prev => [...prev, newCompany]);
-    setShowMoreMenu(null);
   };
 
-  const exportCompany = (company: any) => {
+  const exportCompany = (company: typeof companies[0]) => {
     const dataStr = JSON.stringify(company, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
@@ -397,7 +386,6 @@ export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string
         ? { ...company, projects: company.projects.filter(p => p.id !== projectId) }
         : company
     ));
-    setShowProjectMenu(null);
   };
 
   const archiveProject = (companyId: number, projectId: number) => {
@@ -411,7 +399,6 @@ export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string
           }
         : company
     ));
-    setShowProjectMenu(null);
   };
 
   // Toggle expansion functions
@@ -456,7 +443,7 @@ export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string
   };
 
   // Contact actions
-  const contactCompany = (company: any, method: 'email' | 'phone' | 'website') => {
+  const contactCompany = (company: typeof companies[0], method: 'email' | 'phone' | 'website') => {
     switch (method) {
       case 'email':
         window.open(`mailto:${company.email}`);
@@ -473,7 +460,6 @@ export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string
   // Clear filters
   const clearFilters = () => {
     setSearchTerm("");
-    setShowFilters(false);
   };
 
   const hasActiveFilters = searchTerm;

@@ -17,10 +17,14 @@ interface Project {
 }
 
 
+
+
 import ProjectsPage from "./ProjectsPage";
 import DepartmentsPage from "./DepartmentsPage";
 import TeamsPageSheet from "./TeamsPageSheet";
 import SprintsPage from "./SprintsPage";
+import StoriesPage from "./StoriesPage";
+import TasksPageSheet from "./TasksPageSheet";
 import TasksPage from "./TasksPage";
 import TeamsPage from "./TeamsPage";
 import CalendarPage from "./CalendarPage";
@@ -29,7 +33,7 @@ import SettingsPage from "./SettingsPage";
 import NotificationsPage from "./NotificationsPage";
 import CompaniesPage from "./CompaniesPage";
 import DashboardPage from "./DashboardPage";
-import { X, Pin, Plus, MoreHorizontal } from "lucide-react";
+import { X, Pin, Plus } from "lucide-react";
 import ProjectsAnalyticsPage from "./ProjectsAnalyticsPage";
 import NewTabPage from "./NewTabPage";
 import CreateProjectPage from "./CreateProjectPage";
@@ -55,15 +59,28 @@ const SHEET_COMPONENTS: Record<string, any> = {
   departments: DepartmentsPage,
   teams: TeamsPageSheet,
   sprints: SprintsPage,
+  stories: StoriesPage,
+  tasks: TasksPageSheet,
   "create-project": CreateProjectPage,
   "create-task": CreateTaskPage,
   "create-team": CreateTeamPage,
   "create-sprint": CreateSprintPage,
+  "edit-project": CreateProjectPage,
+  "edit-task": CreateTaskPage,
+  "edit-team": CreateTeamPage,
+  "edit-sprint": CreateSprintPage,
+  "view-project": ProjectsPage,
+  "view-task": TasksPageSheet,
+  "view-team": TeamsPageSheet,
+  "view-sprint": SprintsPage,
+  "view-department": DepartmentsPage,
+  "view-story": StoriesPage,
 };
 
-export default function ClientLayout({ children }: { children?: React.ReactNode }) {
+export default function ClientLayout() {
   // Set Dashboard as the default open tab
-  const [openTabs, setOpenTabs] = useState<{ type: string; key: string; title: string; component: any; project?: Project }[]>([
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [openTabs, setOpenTabs] = useState<{ type: string; key: string; title: string; component: React.ComponentType<any>; project?: Project }[]>([
     { type: "dashboard", key: `dashboard-${Date.now()}`, title: "Dashboard", component: DashboardPage }
   ]);
   const [activeTabIdx, setActiveTabIdx] = useState(0);
@@ -112,23 +129,34 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
         return prev;
       }
       
-      return [...prev, { type, key: `${type}-${Date.now()}`, title: tabTitle, component, project: undefined }];
+      // Add new tab at the end and set as active
+      const newTabs = [...prev, { type, key: `${type}-${Date.now()}`, title: tabTitle, component }];
+      setActiveTabIdx(newTabs.length - 1);
+      return newTabs;
     });
-    setActiveTabIdx(openTabs.length); // Will be the new tab
   };
 
   const closeTab = (idx: number) => {
     setOpenTabs((prev) => {
       const newTabs = prev.filter((_, i) => i !== idx);
-      // Adjust active tab if needed
-      if (activeTabIdx >= newTabs.length) setActiveTabIdx(newTabs.length - 1);
+      // If we're closing the active tab, switch to the previous tab or the first tab
+      if (idx === activeTabIdx) {
+        if (newTabs.length === 0) {
+          // If no tabs left, open dashboard
+          setActiveTabIdx(0);
+          return [{ type: "dashboard", key: `dashboard-${Date.now()}`, title: "Dashboard", component: DashboardPage }];
+        } else {
+          setActiveTabIdx(Math.max(0, idx - 1));
+        }
+      } else if (idx < activeTabIdx) {
+        // If we're closing a tab before the active tab, adjust the active index
+        setActiveTabIdx(activeTabIdx - 1);
+      }
       return newTabs;
     });
   };
 
   const togglePinTab = (tabKey: string) => {
-    const isCurrentlyPinned = pinnedTabs.has(tabKey);
-    
     setPinnedTabs((prev) => {
       const newPinned = new Set(prev);
       if (newPinned.has(tabKey)) {
@@ -138,41 +166,11 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
       }
       return newPinned;
     });
-    
-    // Reorder tabs: pinned tabs first, then unpinned tabs
-    setOpenTabs((prev) => {
-      const pinnedTab = prev.find(tab => tab.key === tabKey);
-      if (pinnedTab) {
-        const newTabs = [...prev];
-        const tabIndex = newTabs.findIndex(tab => tab.key === tabKey);
-        
-        if (isCurrentlyPinned) {
-          // Moving from pinned to unpinned - move to end
-          newTabs.splice(tabIndex, 1);
-          newTabs.push(pinnedTab);
-          setActiveTabIdx(newTabs.length - 1); // Set the newly unpinned tab as active
-        } else {
-          // Moving from unpinned to pinned - move to beginning
-          newTabs.splice(tabIndex, 1);
-          newTabs.unshift(pinnedTab);
-          setActiveTabIdx(0); // Set the newly pinned tab as active
-        }
-        return newTabs;
-      }
-      return prev;
-    });
   };
 
   const openNewTab = () => {
     setOpenTabs((prev) => {
-      const newTab = {
-        type: "new-tab",
-        key: `new-tab-${Date.now()}`,
-        title: "Create New",
-        component: NewTabPage,
-      };
-      // Add new tab at the end (after pinned tabs)
-      const newTabs = [...prev, newTab];
+      const newTabs = [...prev, { type: "new-tab", key: `new-tab-${Date.now()}`, title: "New Tab", component: NewTabPage }];
       setActiveTabIdx(newTabs.length - 1);
       return newTabs;
     });
@@ -243,10 +241,12 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
       {sidebarActiveTab === 4 && !(openTabs[activeTabIdx]?.type === 'project-details') && (
         <ContextSidebar
           activeTab={sidebarActiveTab}
-          onAddProject={() => openTab("project", "Whapi Project Management")}
+          onAddProject={() => openTab("project", "Projects")}
           onAddDepartments={() => openTab("departments", "Departments")}
           onAddTeams={() => openTab("teams", "Teams")}
           onAddSprints={() => openTab("sprints", "Sprints")}
+          onAddStories={() => openTab("stories", "Stories")}
+          onAddTasks={() => openTab("tasks", "Tasks")}
         />
       )}
       <main className="flex-1 min-w-0 bg-background flex flex-col">
@@ -278,10 +278,10 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
                   >
                     <Pin size={14} className={pinnedTabs.has(tab.key) ? "fill-current" : ""} />
                   </button>
-                  {/* Close Button - always visible */}
+                  {/* Close Button */}
                   <button
                     onClick={e => { e.stopPropagation(); closeTab(globalIdx); }}
-                    className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors"
+                    className="ml-1 p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
                     aria-label="Close tab"
                   >
                     <X size={14} />
@@ -290,74 +290,72 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
               );
             })}
           </div>
-          {/* Unpinned Tabs (scrollable) */}
-          <div className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-neutral-100 hover:scrollbar-thumb-neutral-400">
-            <div className="flex items-center gap-0 min-w-max">
-              {openTabs.filter(tab => !pinnedTabs.has(tab.key)).map((tab) => {
-                const globalIdx = openTabs.findIndex(t => t.key === tab.key);
-                const isActive = activeTabIdx === globalIdx;
-                return (
-                  <div
-                    key={tab.key}
-                    className={`group flex items-center h-10 px-4 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max select-none
-                      ${isActive ? "font-bold text-neutral-900 bg-white" : "font-normal text-neutral-700 bg-white hover:bg-neutral-100"}
-                    `}
-                    onClick={() => setActiveTabIdx(globalIdx)}
-                    style={{ 
-                      borderRadius: 0,
-                      borderBottom: isActive ? '4px solid #2563eb' : '2px solid transparent'
-                    }}
+
+          {/* Scrollable Tabs (non-pinned) */}
+          <div className="flex items-center gap-0 flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-transparent">
+            {openTabs.filter(tab => !pinnedTabs.has(tab.key)).map((tab) => {
+              const globalIdx = openTabs.findIndex(t => t.key === tab.key);
+              const isActive = activeTabIdx === globalIdx;
+              return (
+                <div
+                  key={tab.key}
+                  className={`group flex items-center h-10 px-4 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max select-none
+                    ${isActive ? "font-bold text-neutral-900 bg-white" : "font-normal text-neutral-700 bg-white hover:bg-neutral-100"}
+                  `}
+                  onClick={() => setActiveTabIdx(globalIdx)}
+                  style={{ 
+                    borderRadius: 0,
+                    borderBottom: isActive ? '4px solid #2563eb' : '2px solid transparent'
+                  }}
+                >
+                  <span className="truncate max-w-[120px]">{tab.title}</span>
+                  {/* Pin Button - Show on hover */}
+                  <button
+                    onClick={e => { e.stopPropagation(); togglePinTab(tab.key); }}
+                    className="ml-1 p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 opacity-0 group-hover:opacity-100"
+                    aria-label="Pin tab"
                   >
-                    <span className="truncate max-w-[120px]">{tab.title}</span>
-                    {/* Pin Button - only on hover for unpinned */}
-                    <button
-                      onClick={e => { e.stopPropagation(); togglePinTab(tab.key); }}
-                      className="ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500 opacity-0 group-hover:opacity-100"
-                      aria-label="Pin tab"
-                    >
-                      <Pin size={14} />
-                    </button>
-                    {/* Close Button - always visible */}
-                    <button
-                      onClick={e => { e.stopPropagation(); closeTab(globalIdx); }}
-                      className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors"
-                      aria-label="Close tab"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+                    <Pin size={14} />
+                  </button>
+                  {/* Close Button */}
+                  <button
+                    onClick={e => { e.stopPropagation(); closeTab(globalIdx); }}
+                    className="ml-1 p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
+                    aria-label="Close tab"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              );
+            })}
           </div>
-          {/* Fixed Action Buttons */}
-          <div className="flex items-center gap-2 px-2 bg-white border-l border-neutral-200 h-10">
-            {/* Add New Tab Button */}
+
+          {/* New Tab Button */}
+          <div className="flex items-center px-2 border-l border-neutral-200">
             <button
               onClick={openNewTab}
-              className="p-2 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
-              aria-label="Add new tab"
+              className="p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
+              aria-label="New tab"
             >
-              <Plus size={18} />
-            </button>
-            {/* More Options Button */}
-            <button className="p-2 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" aria-label="More options">
-              <MoreHorizontal size={18} />
+              <Plus size={16} />
             </button>
           </div>
         </div>
-        {/* Active Tab Content */}
-        <div className="flex-1 overflow-y-auto">
+
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-hidden">
           {openTabs[activeTabIdx] && (() => {
             const TabComponent = openTabs[activeTabIdx].component;
-            const props = {
-              open: true,
-              onClose: () => closeTab(activeTabIdx),
-              project: openTabs[activeTabIdx].project,
-              onViewProject: openTabs[activeTabIdx].type === "projects" ? onViewProject : undefined,
-              onOpenTab: (openTabs[activeTabIdx].type === "dashboard" || openTabs[activeTabIdx].type === "projects" || openTabs[activeTabIdx].type === "teams" || openTabs[activeTabIdx].type === "companies" || openTabs[activeTabIdx].type === "calendar" || openTabs[activeTabIdx].type === "reports") ? openTab : undefined
-            };
-            return <TabComponent {...props} />;
+            return (
+              <div className="h-full">
+                <TabComponent
+                  open={true}
+                  onClose={() => closeTab(activeTabIdx)}
+                  onOpenTab={openTab}
+                  project={openTabs[activeTabIdx].project}
+                />
+              </div>
+            );
           })()}
         </div>
       </main>

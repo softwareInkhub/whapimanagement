@@ -145,7 +145,7 @@ export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, ti
   };
 
   // Member actions
-  const contactMember = (member: any, method: 'email' | 'phone' | 'message') => {
+  const contactMember = (member: Team['members'][0], method: 'email' | 'phone' | 'message') => {
     switch (method) {
       case 'email':
         window.open(`mailto:${member.email}`);

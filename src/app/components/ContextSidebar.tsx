@@ -62,12 +62,22 @@ const namespaces = [
 // Companies tab index (after Teams, before Calendar)
 const COMPANIES_TAB_INDEX = 4;
 
-export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepartments, onAddTeams, onAddSprints }: {
+export default function ContextSidebar({ 
+  activeTab = 0, 
+  onAddProject, 
+  onAddDepartments, 
+  onAddTeams, 
+  onAddSprints,
+  onAddStories,
+  onAddTasks 
+}: {
   activeTab?: number,
   onAddProject?: () => void,
   onAddDepartments?: () => void,
   onAddTeams?: () => void,
   onAddSprints?: () => void,
+  onAddStories?: () => void,
+  onAddTasks?: () => void,
 }) {
   const [companiesList, setCompaniesList] = useState(companies);
 
@@ -244,6 +254,12 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
                             {company.sections.sprints.stories.expanded ? <ChevronDown size={14} className="text-neutral-400" /> : <ChevronRight size={14} className="text-neutral-300" />}
                             <BookOpen size={14} className="text-green-400" />
                             <span className="text-xs">Stories</span>
+                            <button
+                              className="ml-auto w-5 h-5 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
+                              onClick={e => { e.stopPropagation(); if (onAddStories) onAddStories(); }}
+                            >
+                              <Plus size={10} className="text-white" />
+                            </button>
                           </div>
                           {(() => {
                             console.log('Stories state:', company.sections.sprints.stories);
@@ -252,6 +268,12 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
                                 <ChevronRight size={12} className="text-neutral-300" />
                                 <CheckSquare size={12} className="text-green-400" />
                                 <span className="text-xs">{task}</span>
+                                <button
+                                  className="ml-auto w-4 h-4 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
+                                  onClick={e => { e.stopPropagation(); if (onAddTasks) onAddTasks(); }}
+                                >
+                                  <Plus size={8} className="text-white" />
+                                </button>
                               </div>
                             ));
                           })()}
