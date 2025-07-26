@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { 
-  BarChart3, 
   TrendingUp, 
   TrendingDown,
   Calendar,
@@ -8,7 +7,6 @@ import {
   Target,
   Clock,
   CheckCircle,
-  AlertCircle,
   Download,
   Filter,
   RefreshCw,

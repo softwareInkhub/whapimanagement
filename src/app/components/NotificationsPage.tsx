@@ -4,8 +4,6 @@ import {
   CheckCircle,
   AlertCircle,
   Info,
-  X,
-  Filter,
   Search,
   MoreHorizontal,
   Clock,

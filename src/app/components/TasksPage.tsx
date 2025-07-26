@@ -9,7 +9,6 @@ import {
   Calendar,
   User,
   Tag,
-  BarChart3,
   TrendingUp,
   Activity,
   Target

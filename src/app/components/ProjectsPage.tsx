@@ -111,7 +111,7 @@ export default function ProjectsPage({ project, onClose }: { project: Project, o
             <section className="bg-neutral-50 rounded-xl p-6 border border-neutral-100">
               <h3 className="flex items-center gap-2 text-lg font-semibold mb-2"><Paperclip size={18} /> Attachments</h3>
               <ul className="space-y-1">
-                {project.attachments.map((att: any, i: number) => (
+                {project.attachments.map((att, i: number) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
                     <span className="text-blue-500"><Paperclip size={14} /></span>
                     <span>{att.name}</span>

@@ -84,7 +84,7 @@ interface Project {
   company?: string;
 }
 
-export default function ProjectsAnalyticsPage({ open, onClose, onViewProject }: { open: boolean, onClose: () => void, onViewProject: (project: Project) => void }) {
+export default function ProjectsAnalyticsPage({ onViewProject }: { open: boolean, onClose: () => void, onViewProject: (project: Project) => void }) {
   return (
     <div className="p-6">
       {/* Header */}

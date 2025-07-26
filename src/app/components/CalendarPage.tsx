@@ -7,7 +7,10 @@ import {
   Bell,
   AlertCircle,
   CheckCircle,
-  Clock
+  Clock,
+  MapPin,
+  Users,
+  MoreHorizontal
 } from "lucide-react";
 
 // Sample calendar events
