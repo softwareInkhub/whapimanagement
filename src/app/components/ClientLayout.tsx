@@ -78,6 +78,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   };
 
   const togglePinTab = (tabKey: string) => {
+    const isCurrentlyPinned = pinnedTabs.has(tabKey);
+    
     setPinnedTabs((prev) => {
       const newPinned = new Set(prev);
       if (newPinned.has(tabKey)) {
@@ -86,6 +88,29 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         newPinned.add(tabKey);
       }
       return newPinned;
+    });
+    
+    // Reorder tabs: pinned tabs first, then unpinned tabs
+    setOpenTabs((prev) => {
+      const pinnedTab = prev.find(tab => tab.key === tabKey);
+      if (pinnedTab) {
+        const newTabs = [...prev];
+        const tabIndex = newTabs.findIndex(tab => tab.key === tabKey);
+        
+        if (isCurrentlyPinned) {
+          // Moving from pinned to unpinned - move to end
+          newTabs.splice(tabIndex, 1);
+          newTabs.push(pinnedTab);
+          setActiveTabIdx(newTabs.length - 1); // Set the newly unpinned tab as active
+        } else {
+          // Moving from unpinned to pinned - move to beginning
+          newTabs.splice(tabIndex, 1);
+          newTabs.unshift(pinnedTab);
+          setActiveTabIdx(0); // Set the newly pinned tab as active
+        }
+        return newTabs;
+      }
+      return prev;
     });
   };
 
@@ -97,6 +122,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         title: "Create New",
         component: NewTabPage,
       };
+      // Add new tab at the end (after pinned tabs)
       const newTabs = [...prev, newTab];
       setActiveTabIdx(newTabs.length - 1);
       return newTabs;
@@ -125,7 +151,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         setActiveTabIdx(existingIdx);
         return prev;
       }
-      // If tab doesn't exist, add it and set as active
+      // If tab doesn't exist, add it at the end and set as active
       const newTabs = [...prev, { ...tab, key: `${tab.type}-${Date.now()}` }];
       setActiveTabIdx(newTabs.length - 1); // Set to the new tab
       return newTabs;
@@ -140,7 +166,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         setActiveTabIdx(existingIdx);
         return prev;
       }
-      return [
+      // Add project tab at the end
+      const newTabs = [
         ...prev,
         {
           type: "project-details",
@@ -150,8 +177,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           project,
         },
       ];
+      setActiveTabIdx(newTabs.length - 1);
+      return newTabs;
     });
-    setActiveTabIdx(openTabs.length);
   };
 
   // Map tab type to sidebar index
@@ -192,18 +220,21 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <main className="flex-1 min-w-0 bg-background overflow-y-auto">
         {/* Tab Bar Container */}
         <div className="flex items-center bg-white border-b border-neutral-200">
-          {/* Scrollable Tab Area */}
-          <div className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-neutral-100 hover:scrollbar-thumb-neutral-400">
-            <div className="flex items-center gap-2 px-6 pt-4 pb-2 min-w-max">
-              {openTabs.map((tab, idx) => (
+          {/* Pinned Tabs (fixed, always visible) */}
+          <div className="flex items-center gap-0 pl-4 pt-0 pb-0">
+            {openTabs.filter(tab => pinnedTabs.has(tab.key)).map((tab, idx) => {
+              const globalIdx = openTabs.findIndex(t => t.key === tab.key);
+              const isActive = activeTabIdx === globalIdx;
+              return (
                 <div
                   key={tab.key}
-                  className={`group flex items-center gap-2 px-4 py-2 rounded-t-lg font-semibold cursor-pointer transition-all whitespace-nowrap ${
-                    activeTabIdx === idx 
-                      ? "bg-blue-50 text-blue-700 border-b-2 border-blue-600" 
-                      : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
-                  } ${pinnedTabs.has(tab.key) ? "border-l-4 border-l-orange-400" : ""}`}
-                  onClick={() => setActiveTabIdx(idx)}
+                  className={`group flex items-center px-4 py-0 h-12 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max ${
+                    isActive
+                      ? "font-bold text-neutral-900 border-b-2 border-blue-600 bg-white"
+                      : "font-normal text-neutral-700 border-b-2 border-transparent bg-white hover:text-neutral-900"
+                  }`}
+                  onClick={() => setActiveTabIdx(globalIdx)}
+                  style={{ borderRadius: 0 }}
                 >
                   {/* Tab Icons */}
                   {tab.type === "project" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3z"/><path d="M9 3v18"/><path d="M15 3v18"/></svg></span>}
@@ -218,40 +249,87 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                   {tab.type === "settings" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>}
                   {tab.type === "notifications" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>}
                   {tab.type === "new-tab" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></span>}
-                  
                   <span>{tab.title}</span>
-                  
-                  {/* Pin Button - Show on hover */}
+                  {/* Pin Button - Always visible for pinned, gold color */}
                   <button 
                     onClick={e => { 
                       e.stopPropagation(); 
                       togglePinTab(tab.key); 
                     }} 
-                    className={`ml-1 p-1 rounded transition-colors ${
-                      pinnedTabs.has(tab.key) 
-                        ? "text-orange-500 hover:text-orange-600" 
-                        : "text-neutral-400 hover:text-orange-500 opacity-0 group-hover:opacity-100"
-                    }`} 
+                    className={`ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500`} 
                     aria-label="Pin tab"
                   >
                     <Pin size={14} className={pinnedTabs.has(tab.key) ? "fill-current" : ""} />
                   </button>
-                  
-                  {/* Close Button */}
+                  {/* Close Button - only on hover for pinned */}
                   <button 
-                    onClick={e => { e.stopPropagation(); closeTab(idx); }} 
+                    onClick={e => { e.stopPropagation(); closeTab(globalIdx); }} 
                     className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors opacity-0 group-hover:opacity-100" 
                     aria-label="Close tab"
                   >
                     <X size={14} />
                   </button>
                 </div>
-              ))}
+              );
+            })}
+          </div>
+          {/* Unpinned Tabs (scrollable) */}
+          <div className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-neutral-100 hover:scrollbar-thumb-neutral-400">
+            <div className="flex items-center gap-0 pt-0 pb-0 min-w-max">
+              {openTabs.filter(tab => !pinnedTabs.has(tab.key)).map((tab, idx) => {
+                const globalIdx = openTabs.findIndex(t => t.key === tab.key);
+                const isActive = activeTabIdx === globalIdx;
+                return (
+                  <div
+                    key={tab.key}
+                    className={`group flex items-center px-4 py-0 h-12 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max ${
+                      isActive
+                        ? "font-bold text-neutral-900 border-b-2 border-blue-600 bg-white"
+                        : "font-normal text-neutral-700 border-b-2 border-transparent bg-white hover:text-neutral-900"
+                    }`}
+                    onClick={() => setActiveTabIdx(globalIdx)}
+                    style={{ borderRadius: 0 }}
+                  >
+                    {/* Tab Icons */}
+                    {tab.type === "project" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3z"/><path d="M9 3v18"/><path d="M15 3v18"/></svg></span>}
+                    {tab.type === "departments" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M8 3.13a4 4 0 0 0 0 7.75"/></svg></span>}
+                    {tab.type === "teams" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a4.5 4.5 0 0 1 9 0v2"/><path d="M17 11v2a4 4 0 0 1-8 0v-2"/></svg></span>}
+                    {tab.type === "sprints" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>}
+                    {tab.type === "companies" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M8 3.13a4 4 0 0 0 0 7.75"/></svg></span>}
+                    {tab.type === "dashboard" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>}
+                    {tab.type === "tasks" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>}
+                    {tab.type === "calendar" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>}
+                    {tab.type === "reports" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></span>}
+                    {tab.type === "settings" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>}
+                    {tab.type === "notifications" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>}
+                    {tab.type === "new-tab" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></span>}
+                    <span>{tab.title}</span>
+                    {/* Pin Button - only on hover for unpinned */}
+                    <button 
+                      onClick={e => { 
+                        e.stopPropagation(); 
+                        togglePinTab(tab.key); 
+                      }} 
+                      className={`ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500 opacity-0 group-hover:opacity-100`} 
+                      aria-label="Pin tab"
+                    >
+                      <Pin size={14} />
+                    </button>
+                    {/* Close Button - always visible for unpinned */}
+                    <button 
+                      onClick={e => { e.stopPropagation(); closeTab(globalIdx); }} 
+                      className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors" 
+                      aria-label="Close tab"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
-          
           {/* Fixed Action Buttons */}
-          <div className="flex items-center gap-2 px-4 py-4 bg-white border-l border-neutral-200">
+          <div className="flex items-center gap-2 px-2 py-0 bg-white border-l border-neutral-200 h-12">
             {/* Add New Tab Button */}
             <button 
               onClick={openNewTab}
@@ -260,7 +338,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             >
               <Plus size={18} />
             </button>
-            
             {/* More Options Button */}
             <button className="p-2 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" aria-label="More options">
               <MoreHorizontal size={18} />
