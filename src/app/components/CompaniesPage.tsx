@@ -1,8 +1,1974 @@
+import { useState } from "react";
+import {
+  Building2,
+  Building,
+  ChevronRight,
+  ChevronDown,
+  Plus,
+  Users,
+  User,
+  FolderKanban,
+  Calendar,
+  BarChart3,
+  Settings,
+  Search,
+  Filter,
+  MoreHorizontal,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Star,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Edit,
+  Trash2,
+  Eye,
+  Download,
+  BookOpen,
+  CheckSquare
+} from "lucide-react";
+
 export default function CompaniesPage() {
+  const [selectedCompany, setSelectedCompany] = useState(1);
+  const [view, setView] = useState("overview");
+  const [expandedDepartments, setExpandedDepartments] = useState<number[]>([]);
+  const [expandedTeams, setExpandedTeams] = useState<number[]>([]);
+  const [expandedSprints, setExpandedSprints] = useState<number[]>([]);
+  const [expandedStories, setExpandedStories] = useState<number[]>([]);
+  const [expandedProjects, setExpandedProjects] = useState<number[]>([]);
+  const [expandedSubprojects, setExpandedSubprojects] = useState<number[]>([]);
+
+    const companies = [
+    {
+      id: 1,
+      name: "whapi project management",
+      description: "Leading project management solutions for enterprise teams",
+      status: "Active",
+      type: "Technology",
+      industry: "Software Development",
+      founded: "2020",
+      employees: 150,
+      location: "San Francisco, CA",
+      website: "https://whapi.com",
+      email: "contact@whapi.com",
+      phone: "+1 (555) 123-4567",
+      totalProjects: 12,
+      activeProjects: 8,
+      completedProjects: 4,
+      totalTeams: 6,
+      members: 89,
+      revenue: "$2.5M",
+      growth: "+15%",
+      lastActivity: "2 hours ago",
+      tags: ["AI", "Enterprise", "SaaS"],
+      projects: [
+        {
+          id: 1,
+          name: "Whapi Project Management Platform",
+          status: "Active",
+          progress: 75,
+          team: "Core Development",
+          deadline: "2024-06-30",
+          priority: "High",
+          budget: "$500K",
+          manager: "Sarah Johnson",
+          description: "Enterprise-grade project management platform with advanced analytics and team collaboration features",
+          subprojects: [
+            {
+              id: 1,
+              name: "User Authentication Module",
+              status: "Completed",
+              progress: 100,
+              team: "Core Development",
+              deadline: "2024-03-15",
+              priority: "High",
+              budget: "$80K",
+              manager: "David Kim",
+              tasks: [
+                {
+                  id: 1,
+                  name: "OAuth Integration",
+                  status: "Completed",
+                  assignee: "Mike Chen",
+                  timeSpent: "40h",
+                  timeEstimate: "35h",
+                  priority: "High"
+                },
+                {
+                  id: 2,
+                  name: "Password Reset Flow",
+                  status: "Completed",
+                  assignee: "Emma Wilson",
+                  timeSpent: "20h",
+                  timeEstimate: "20h",
+                  priority: "Medium"
+                },
+                {
+                  id: 3,
+                  name: "Multi-factor Authentication",
+                  status: "Completed",
+                  assignee: "David Kim",
+                  timeSpent: "30h",
+                  timeEstimate: "25h",
+                  priority: "High"
+                }
+              ]
+            },
+            {
+              id: 2,
+              name: "Dashboard Analytics",
+              status: "In Progress",
+              progress: 65,
+              team: "Frontend Team",
+              deadline: "2024-04-30",
+              priority: "Medium",
+              budget: "$120K",
+              manager: "Alex Rodriguez",
+              tasks: [
+                {
+                  id: 4,
+                  name: "Chart Components",
+                  status: "Completed",
+                  assignee: "Maria Garcia",
+                  timeSpent: "45h",
+                  timeEstimate: "40h",
+                  priority: "Medium"
+                },
+                {
+                  id: 5,
+                  name: "Data Integration",
+                  status: "In Progress",
+                  assignee: "Tom Anderson",
+                  timeSpent: "35h",
+                  timeEstimate: "50h",
+                  priority: "High"
+                },
+                {
+                  id: 6,
+                  name: "Real-time Updates",
+                  status: "To Do",
+                  assignee: "Chris Lee",
+                  timeSpent: "0h",
+                  timeEstimate: "30h",
+                  priority: "Medium"
+                }
+              ]
+            },
+            {
+              id: 3,
+              name: "Team Collaboration Tools",
+              status: "Planning",
+              progress: 15,
+              team: "Product Team",
+              deadline: "2024-07-15",
+              priority: "Medium",
+              budget: "$150K",
+              manager: "Lisa Chen",
+              tasks: [
+                {
+                  id: 7,
+                  name: "Requirements Gathering",
+                  status: "In Progress",
+                  assignee: "Lisa Chen",
+                  timeSpent: "25h",
+                  timeEstimate: "30h",
+                  priority: "Medium"
+                },
+                {
+                  id: 8,
+                  name: "UI/UX Design",
+                  status: "To Do",
+                  assignee: "Alex Rodriguez",
+                  timeSpent: "0h",
+                  timeEstimate: "40h",
+                  priority: "Medium"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: "Client Portal Integration",
+          status: "Planning",
+          progress: 25,
+          team: "Frontend Team",
+          deadline: "2024-08-15",
+          priority: "Medium",
+          budget: "$300K",
+          manager: "Mike Chen",
+          description: "Seamless integration portal for client access and project collaboration",
+          subprojects: [
+            {
+              id: 4,
+              name: "Portal Architecture",
+              status: "Planning",
+              progress: 30,
+              team: "Backend Team",
+              deadline: "2024-05-30",
+              priority: "High",
+              budget: "$100K",
+              manager: "Emma Wilson",
+              tasks: [
+                {
+                  id: 9,
+                  name: "API Design",
+                  status: "In Progress",
+                  assignee: "Emma Wilson",
+                  timeSpent: "20h",
+                  timeEstimate: "25h",
+                  priority: "High"
+                },
+                {
+                  id: 10,
+                  name: "Database Schema",
+                  status: "To Do",
+                  assignee: "David Kim",
+                  timeSpent: "0h",
+                  timeEstimate: "15h",
+                  priority: "Medium"
+                }
+              ]
+            },
+            {
+              id: 5,
+              name: "Client Dashboard",
+              status: "Planning",
+              progress: 10,
+              team: "Frontend Team",
+              deadline: "2024-06-30",
+              priority: "Medium",
+              budget: "$80K",
+              manager: "Maria Garcia",
+              tasks: [
+                {
+                  id: 11,
+                  name: "Wireframe Design",
+                  status: "To Do",
+                  assignee: "Alex Rodriguez",
+                  timeSpent: "0h",
+                  timeEstimate: "20h",
+                  priority: "Medium"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 3,
+          name: "Mobile App Development",
+          status: "Active",
+          progress: 60,
+          team: "Mobile Team",
+          deadline: "2024-07-20",
+          priority: "High",
+          budget: "$400K",
+          manager: "Chris Lee",
+          description: "Cross-platform mobile application for project management on-the-go",
+          subprojects: [
+            {
+              id: 6,
+              name: "iOS Development",
+              status: "In Progress",
+              progress: 70,
+              team: "Mobile Team",
+              deadline: "2024-06-15",
+              priority: "High",
+              budget: "$200K",
+              manager: "Chris Lee",
+              tasks: [
+                {
+                  id: 12,
+                  name: "Core Navigation",
+                  status: "Completed",
+                  assignee: "Chris Lee",
+                  timeSpent: "60h",
+                  timeEstimate: "55h",
+                  priority: "High"
+                },
+                {
+                  id: 13,
+                  name: "Push Notifications",
+                  status: "In Progress",
+                  assignee: "Rachel Green",
+                  timeSpent: "25h",
+                  timeEstimate: "30h",
+                  priority: "Medium"
+                }
+              ]
+            },
+            {
+              id: 7,
+              name: "Android Development",
+              status: "In Progress",
+              progress: 55,
+              team: "Mobile Team",
+              deadline: "2024-06-30",
+              priority: "High",
+              budget: "$180K",
+              manager: "Rachel Green",
+              tasks: [
+                {
+                  id: 14,
+                  name: "UI Implementation",
+                  status: "In Progress",
+                  assignee: "Rachel Green",
+                  timeSpent: "40h",
+                  timeEstimate: "45h",
+                  priority: "High"
+                },
+                {
+                  id: 15,
+                  name: "API Integration",
+                  status: "To Do",
+                  assignee: "Tom Anderson",
+                  timeSpent: "0h",
+                  timeEstimate: "35h",
+                  priority: "Medium"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      departments: [
+        {
+          id: 1,
+          name: "Engineering",
+          manager: "David Kim",
+          employees: 45,
+          projects: 8,
+          budget: "$1.2M",
+          status: "Active",
+          subdepartments: [
+            {
+              id: 1,
+              name: "Frontend Engineering",
+              manager: "Sarah Johnson",
+              employees: 18,
+              projects: 4,
+              budget: "$500K",
+              status: "Active"
+            },
+            {
+              id: 2,
+              name: "Backend Engineering",
+              manager: "Mike Chen",
+              employees: 15,
+              projects: 3,
+              budget: "$400K",
+              status: "Active"
+            },
+            {
+              id: 3,
+              name: "DevOps & Infrastructure",
+              manager: "Emma Wilson",
+              employees: 8,
+              projects: 2,
+              budget: "$300K",
+              status: "Active"
+            },
+            {
+              id: 4,
+              name: "Quality Assurance",
+              manager: "Tom Anderson",
+              employees: 4,
+              projects: 1,
+              budget: "$100K",
+              status: "Active"
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: "Design",
+          manager: "Alex Rodriguez",
+          employees: 12,
+          projects: 4,
+          budget: "$400K",
+          status: "Active",
+          subdepartments: [
+            {
+              id: 5,
+              name: "UI/UX Design",
+              manager: "Alex Rodriguez",
+              employees: 8,
+              projects: 3,
+              budget: "$250K",
+              status: "Active"
+            },
+            {
+              id: 6,
+              name: "Visual Design",
+              manager: "Maria Garcia",
+              employees: 4,
+              projects: 1,
+              budget: "$150K",
+              status: "Active"
+            }
+          ]
+        },
+        {
+          id: 3,
+          name: "Product Management",
+          manager: "Lisa Chen",
+          employees: 8,
+          projects: 6,
+          budget: "$300K",
+          status: "Active",
+          subdepartments: [
+            {
+              id: 7,
+              name: "Product Strategy",
+              manager: "Lisa Chen",
+              employees: 4,
+              projects: 3,
+              budget: "$150K",
+              status: "Active"
+            },
+            {
+              id: 8,
+              name: "Product Operations",
+              manager: "James Brown",
+              employees: 4,
+              projects: 3,
+              budget: "$150K",
+              status: "Active"
+            }
+          ]
+        },
+        {
+          id: 4,
+          name: "Marketing",
+          manager: "John Smith",
+          employees: 15,
+          projects: 3,
+          budget: "$500K",
+          status: "Active",
+          subdepartments: [
+            {
+              id: 9,
+              name: "Digital Marketing",
+              manager: "John Smith",
+              employees: 8,
+              projects: 2,
+              budget: "$250K",
+              status: "Active"
+            },
+            {
+              id: 10,
+              name: "Content Marketing",
+              manager: "Rachel Green",
+              employees: 4,
+              projects: 1,
+              budget: "$150K",
+              status: "Active"
+            },
+            {
+              id: 11,
+              name: "Growth Marketing",
+              manager: "Chris Lee",
+              employees: 3,
+              projects: 1,
+              budget: "$100K",
+              status: "Active"
+            }
+          ]
+        }
+      ],
+      teams: [
+        {
+          id: 1,
+          name: "Core Development",
+          members: 15,
+          lead: "Sarah Johnson",
+          projects: 3,
+          performance: 92,
+          department: "Engineering",
+          subteams: [
+            {
+              id: 1,
+              name: "React Team",
+              members: 6,
+              lead: "David Kim",
+              projects: 2,
+              performance: 94,
+              focus: "Frontend Development"
+            },
+            {
+              id: 2,
+              name: "Node.js Team",
+              members: 5,
+              lead: "Mike Chen",
+              projects: 2,
+              performance: 89,
+              focus: "Backend Development"
+            },
+            {
+              id: 3,
+              name: "Database Team",
+              members: 4,
+              lead: "Emma Wilson",
+              projects: 1,
+              performance: 96,
+              focus: "Data Management"
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: "Frontend Team",
+          members: 8,
+          lead: "Mike Chen",
+          projects: 2,
+          performance: 88,
+          department: "Engineering",
+          subteams: [
+            {
+              id: 4,
+              name: "UI Components",
+              members: 3,
+              lead: "Alex Rodriguez",
+              projects: 1,
+              performance: 91,
+              focus: "Component Library"
+            },
+            {
+              id: 5,
+              name: "User Experience",
+              members: 3,
+              lead: "Maria Garcia",
+              projects: 1,
+              performance: 87,
+              focus: "UX Optimization"
+            },
+            {
+              id: 6,
+              name: "Performance",
+              members: 2,
+              lead: "Tom Anderson",
+              projects: 1,
+              performance: 93,
+              focus: "Performance Optimization"
+            }
+          ]
+        },
+        {
+          id: 3,
+          name: "Mobile Team",
+          members: 6,
+          lead: "Emma Wilson",
+          projects: 1,
+          performance: 95,
+          department: "Engineering",
+          subteams: [
+            {
+              id: 7,
+              name: "iOS Development",
+              members: 3,
+              lead: "Chris Lee",
+              projects: 1,
+              performance: 97,
+              focus: "iOS App Development"
+            },
+            {
+              id: 8,
+              name: "Android Development",
+              members: 3,
+              lead: "Rachel Green",
+              projects: 1,
+              performance: 94,
+              focus: "Android App Development"
+            }
+          ]
+        },
+        {
+          id: 4,
+          name: "UI/UX Design",
+          members: 5,
+          lead: "Alex Rodriguez",
+          projects: 4,
+          performance: 90,
+          department: "Design",
+          subteams: [
+            {
+              id: 9,
+              name: "Visual Design",
+              members: 2,
+              lead: "Maria Garcia",
+              projects: 2,
+              performance: 92,
+              focus: "Visual Identity"
+            },
+            {
+              id: 10,
+              name: "Interaction Design",
+              members: 3,
+              lead: "Alex Rodriguez",
+              projects: 2,
+              performance: 88,
+              focus: "User Interactions"
+            }
+          ]
+        },
+        {
+          id: 5,
+          name: "Product Strategy",
+          members: 4,
+          lead: "Lisa Chen",
+          projects: 2,
+          performance: 87,
+          department: "Product Management",
+          subteams: [
+            {
+              id: 11,
+              name: "Market Research",
+              members: 2,
+              lead: "James Brown",
+              projects: 1,
+              performance: 85,
+              focus: "Market Analysis"
+            },
+            {
+              id: 12,
+              name: "Product Planning",
+              members: 2,
+              lead: "Lisa Chen",
+              projects: 1,
+              performance: 89,
+              focus: "Roadmap Planning"
+            }
+          ]
+        }
+      ],
+      sprints: [
+        {
+          id: 1,
+          name: "Sprint 1 - Q1 2024",
+          status: "Completed",
+          startDate: "2024-01-01",
+          endDate: "2024-01-15",
+          tasks: 24,
+          completed: 24,
+          team: "Core Development",
+          velocity: 85,
+          calendar: {
+            totalEvents: 45,
+            upcomingEvents: 12,
+            completedEvents: 33,
+            todayEvents: 3
+          },
+          stories: [
+            {
+              id: 1,
+              name: "User Authentication System",
+              status: "Completed",
+              priority: "High",
+              assignee: "David Kim",
+              storyPoints: 8,
+              tasks: [
+                {
+                  id: 1,
+                  name: "Design login UI components",
+                  status: "Completed",
+                  assignee: "Alex Rodriguez",
+                  timeSpent: "4h",
+                  timeEstimate: "4h",
+                  priority: "Medium"
+                },
+                {
+                  id: 2,
+                  name: "Implement OAuth integration",
+                  status: "Completed",
+                  assignee: "Mike Chen",
+                  timeSpent: "12h",
+                  timeEstimate: "10h",
+                  priority: "High"
+                },
+                {
+                  id: 3,
+                  name: "Add password reset functionality",
+                  status: "Completed",
+                  assignee: "Emma Wilson",
+                  timeSpent: "6h",
+                  timeEstimate: "6h",
+                  priority: "Medium"
+                }
+              ]
+            },
+            {
+              id: 2,
+              name: "Dashboard Analytics",
+              status: "Completed",
+              priority: "Medium",
+              assignee: "Sarah Johnson",
+              storyPoints: 5,
+              tasks: [
+                {
+                  id: 4,
+                  name: "Create chart components",
+                  status: "Completed",
+                  assignee: "David Kim",
+                  timeSpent: "8h",
+                  timeEstimate: "8h",
+                  priority: "Medium"
+                },
+                {
+                  id: 5,
+                  name: "Integrate data APIs",
+                  status: "Completed",
+                  assignee: "Mike Chen",
+                  timeSpent: "10h",
+                  timeEstimate: "8h",
+                  priority: "High"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: "Sprint 2 - Q1 2024",
+          status: "Active",
+          startDate: "2024-01-16",
+          endDate: "2024-01-29",
+          tasks: 28,
+          completed: 18,
+          team: "Frontend Team",
+          velocity: 78,
+          calendar: {
+            totalEvents: 38,
+            upcomingEvents: 15,
+            completedEvents: 23,
+            todayEvents: 5
+          },
+          stories: [
+            {
+              id: 3,
+              name: "Responsive Design Implementation",
+              status: "In Progress",
+              priority: "High",
+              assignee: "Maria Garcia",
+              storyPoints: 13,
+              tasks: [
+                {
+                  id: 6,
+                  name: "Mobile layout optimization",
+                  status: "In Progress",
+                  assignee: "Alex Rodriguez",
+                  timeSpent: "16h",
+                  timeEstimate: "20h",
+                  priority: "High"
+                },
+                {
+                  id: 7,
+                  name: "Tablet responsive design",
+                  status: "Completed",
+                  assignee: "Tom Anderson",
+                  timeSpent: "12h",
+                  timeEstimate: "12h",
+                  priority: "Medium"
+                },
+                {
+                  id: 8,
+                  name: "Cross-browser testing",
+                  status: "To Do",
+                  assignee: "Emma Wilson",
+                  timeSpent: "0h",
+                  timeEstimate: "8h",
+                  priority: "Medium"
+                }
+              ]
+            },
+            {
+              id: 4,
+              name: "Performance Optimization",
+              status: "In Progress",
+              priority: "Medium",
+              assignee: "Chris Lee",
+              storyPoints: 8,
+              tasks: [
+                {
+                  id: 9,
+                  name: "Code splitting implementation",
+                  status: "Completed",
+                  assignee: "David Kim",
+                  timeSpent: "10h",
+                  timeEstimate: "8h",
+                  priority: "High"
+                },
+                {
+                  id: 10,
+                  name: "Image optimization",
+                  status: "In Progress",
+                  assignee: "Rachel Green",
+                  timeSpent: "6h",
+                  timeEstimate: "6h",
+                  priority: "Medium"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 3,
+          name: "Sprint 3 - Q1 2024",
+          status: "Planning",
+          startDate: "2024-02-01",
+          endDate: "2024-02-14",
+          tasks: 32,
+          completed: 0,
+          team: "Mobile Team",
+          velocity: 0,
+          calendar: {
+            totalEvents: 25,
+            upcomingEvents: 25,
+            completedEvents: 0,
+            todayEvents: 0
+          },
+          stories: [
+            {
+              id: 5,
+              name: "iOS App Development",
+              status: "Planning",
+              priority: "High",
+              assignee: "Chris Lee",
+              storyPoints: 21,
+              tasks: [
+                {
+                  id: 11,
+                  name: "Setup iOS project structure",
+                  status: "To Do",
+                  assignee: "Chris Lee",
+                  timeSpent: "0h",
+                  timeEstimate: "4h",
+                  priority: "High"
+                },
+                {
+                  id: 12,
+                  name: "Implement core navigation",
+                  status: "To Do",
+                  assignee: "Emma Wilson",
+                  timeSpent: "0h",
+                  timeEstimate: "12h",
+                  priority: "High"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 4,
+          name: "Sprint 4 - Q1 2024",
+          status: "Backlog",
+          startDate: "2024-02-15",
+          endDate: "2024-02-28",
+          tasks: 26,
+          completed: 0,
+          team: "UI/UX Design",
+          velocity: 0,
+          calendar: {
+            totalEvents: 18,
+            upcomingEvents: 18,
+            completedEvents: 0,
+            todayEvents: 0
+          },
+          stories: [
+            {
+              id: 6,
+              name: "Design System Implementation",
+              status: "Backlog",
+              priority: "Medium",
+              assignee: "Alex Rodriguez",
+              storyPoints: 13,
+              tasks: [
+                {
+                  id: 13,
+                  name: "Create component library",
+                  status: "To Do",
+                  assignee: "Maria Garcia",
+                  timeSpent: "0h",
+                  timeEstimate: "16h",
+                  priority: "Medium"
+                },
+                {
+                  id: 14,
+                  name: "Design documentation",
+                  status: "To Do",
+                  assignee: "Alex Rodriguez",
+                  timeSpent: "0h",
+                  timeEstimate: "8h",
+                  priority: "Low"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+  const selectedCompanyData = companies.find(c => c.id === selectedCompany);
+
+  const analytics = {
+    totalCompanies: companies.length,
+    activeCompanies: companies.filter(c => c.status === "Active").length,
+    totalProjects: companies.reduce((sum, c) => sum + c.projects.length, 0),
+    totalTeams: companies.reduce((sum, c) => sum + c.teams.length, 0),
+    totalMembers: companies.reduce((sum, c) => sum + c.members, 0)
+  };
+
+  const renderOverview = () => (
+    <div className="space-y-6">
+      {/* Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Building2 className="w-6 h-6 text-blue-600" />
+            </div>
+            <TrendingUp className="w-5 h-5 text-green-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalCompanies}</h3>
+          <p className="text-neutral-600 text-sm">Total Companies</p>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <FolderKanban className="w-6 h-6 text-green-600" />
+            </div>
+            <CheckCircle className="w-5 h-5 text-green-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalProjects}</h3>
+          <p className="text-neutral-600 text-sm">Total Projects</p>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Users className="w-6 h-6 text-purple-600" />
+            </div>
+            <Users className="w-5 h-5 text-purple-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalTeams}</h3>
+          <p className="text-neutral-600 text-sm">Total Teams</p>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <BarChart3 className="w-6 h-6 text-orange-600" />
+            </div>
+            <TrendingUp className="w-5 h-5 text-orange-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalMembers}</h3>
+          <p className="text-neutral-600 text-sm">Total Members</p>
+        </div>
+      </div>
+
+      {/* Company Details */}
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200">
+          <h2 className="text-lg font-semibold text-neutral-900">Company Details</h2>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Company Info */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Building2 className="w-8 h-8 text-blue-500" />
+                <div>
+                  <h3 className="text-xl font-bold text-neutral-900">{selectedCompanyData?.name}</h3>
+                  <p className="text-neutral-600">{selectedCompanyData?.description}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  selectedCompanyData?.status === "Active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                }`}>
+                  {selectedCompanyData?.status}
+                </span>
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                  {selectedCompanyData?.type}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-neutral-500">Industry:</span>
+                  <p className="font-medium">{selectedCompanyData?.industry}</p>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Founded:</span>
+                  <p className="font-medium">{selectedCompanyData?.founded}</p>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Employees:</span>
+                  <p className="font-medium">{selectedCompanyData?.employees}</p>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Revenue:</span>
+                  <p className="font-medium">{selectedCompanyData?.revenue}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            <div className="space-y-4">
+              <h4 className="font-semibold text-neutral-900">Contact Information</h4>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4 text-neutral-400" />
+                  <span className="text-sm">{selectedCompanyData?.location}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Globe className="w-4 h-4 text-neutral-400" />
+                  <span className="text-sm">{selectedCompanyData?.website}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-4 h-4 text-neutral-400" />
+                  <span className="text-sm">{selectedCompanyData?.email}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Phone className="w-4 h-4 text-neutral-400" />
+                  <span className="text-sm">{selectedCompanyData?.phone}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Projects */}
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-neutral-900">Recent Projects</h2>
+          <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">View All</button>
+        </div>
+        
+        <div className="divide-y divide-neutral-200">
+          {selectedCompanyData?.projects.slice(0, 3).map((project) => (
+            <div key={project.id} className="p-6 hover:bg-neutral-50 transition-colors">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <FolderKanban className="w-5 h-5 text-blue-500" />
+                  <h3 className="font-medium text-neutral-900">{project.name}</h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    project.priority === "High" ? "bg-red-100 text-red-700" :
+                    project.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                    "bg-green-100 text-green-700"
+                  }`}>
+                    {project.priority}
+                  </span>
+                  <button className="p-1 text-neutral-400 hover:text-neutral-600">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between text-sm text-neutral-600">
+                <div className="flex items-center gap-4">
+                  <span>{project.team}</span>
+                  <span>Due: {project.deadline}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>{project.progress}%</span>
+                  <div className="w-20 h-2 bg-neutral-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-blue-500 rounded-full" 
+                      style={{ width: `${project.progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderProjects = () => (
+    <div className="space-y-6">
+      {/* Project Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Total Projects</p>
+              <p className="text-2xl font-bold text-neutral-900">{selectedCompanyData?.projects.length}</p>
+            </div>
+            <FolderKanban className="w-8 h-8 text-blue-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Active Projects</p>
+              <p className="text-2xl font-bold text-green-600">
+                {selectedCompanyData?.projects.filter(p => p.status === "Active").length}
+              </p>
+            </div>
+            <Clock className="w-8 h-8 text-green-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Avg Progress</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {Math.round((selectedCompanyData?.projects?.reduce((acc, p) => acc + p.progress, 0) || 0) / (selectedCompanyData?.projects?.length || 1))}%
+              </p>
+            </div>
+            <TrendingUp className="w-8 h-8 text-blue-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Total Budget</p>
+              <p className="text-2xl font-bold text-purple-600">
+                ${(selectedCompanyData?.projects?.reduce((acc, p) => acc + parseInt(p.budget.replace(/[^0-9]/g, '')), 0) || 0) / 1000}M
+              </p>
+            </div>
+            <BarChart3 className="w-8 h-8 text-purple-500" />
+          </div>
+        </div>
+      </div>
+
+      {/* Project Management */}
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-neutral-900">Project Management</h2>
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus size={16} />
+            New Project
+          </button>
+        </div>
+        
+        <div className="divide-y divide-neutral-200">
+          {selectedCompanyData?.projects.map((project) => (
+            <div key={project.id} className="p-6 hover:bg-neutral-50 transition-colors">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => {
+                      setExpandedProjects(prev => 
+                        prev.includes(project.id) 
+                          ? prev.filter(id => id !== project.id)
+                          : [...prev, project.id]
+                      );
+                    }}
+                    className="p-1 rounded hover:bg-neutral-100 transition-colors"
+                  >
+                    {expandedProjects.includes(project.id) ? (
+                      <ChevronDown className="w-4 h-4 text-neutral-400" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-neutral-400" />
+                    )}
+                  </button>
+                  <FolderKanban className="w-6 h-6 text-blue-500" />
+                  <div>
+                    <h3 className="font-medium text-neutral-900">{project.name}</h3>
+                    <p className="text-sm text-neutral-600">Manager: {project.manager} • {project.team}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{project.progress}%</p>
+                    <p className="text-xs text-neutral-500">Progress</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{project.budget}</p>
+                    <p className="text-xs text-neutral-500">Budget</p>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    project.status === "Active" ? "bg-green-100 text-green-700" :
+                    project.status === "Planning" ? "bg-yellow-100 text-yellow-700" :
+                    "bg-neutral-100 text-neutral-700"
+                  }`}>
+                    {project.status}
+                  </span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    project.priority === "High" ? "bg-red-100 text-red-700" :
+                    project.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                    "bg-green-100 text-green-700"
+                  }`}>
+                    {project.priority}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Project Description */}
+              <div className="mb-4 text-sm text-neutral-600">
+                {project.description}
+              </div>
+              
+              {/* Project Details */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+                <div>
+                  <span className="text-neutral-500">Deadline:</span>
+                  <p className="font-medium">{project.deadline}</p>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Progress:</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-16 h-2 bg-neutral-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-500 rounded-full" 
+                        style={{ width: `${project.progress}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs">{project.progress}%</span>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Sub-projects:</span>
+                  <p className="font-medium">{project.subprojects?.length || 0}</p>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Total Tasks:</span>
+                  <p className="font-medium">
+                    {project.subprojects?.reduce((acc, sp) => acc + (sp.tasks?.length || 0), 0) || 0}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Sub-projects */}
+              {expandedProjects.includes(project.id) && project.subprojects && (
+                <div className="ml-10 space-y-4">
+                  {project.subprojects.map((subproject) => (
+                    <div key={subproject.id} className="border border-neutral-200 rounded-lg p-4 bg-neutral-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              setExpandedSubprojects(prev => 
+                                prev.includes(subproject.id) 
+                                  ? prev.filter(id => id !== subproject.id)
+                                  : [...prev, subproject.id]
+                              );
+                            }}
+                            className="p-1 rounded hover:bg-neutral-200 transition-colors"
+                          >
+                            {expandedSubprojects.includes(subproject.id) ? (
+                              <ChevronDown className="w-3 h-3 text-neutral-400" />
+                            ) : (
+                              <ChevronRight className="w-3 h-3 text-neutral-400" />
+                            )}
+                          </button>
+                          <FolderKanban className="w-4 h-4 text-blue-400" />
+                          <div>
+                            <h4 className="font-medium text-neutral-800 text-sm">{subproject.name}</h4>
+                            <p className="text-xs text-neutral-600">Manager: {subproject.manager} • {subproject.team}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-center">
+                            <p className="text-xs font-medium">{subproject.progress}%</p>
+                            <p className="text-xs text-neutral-500">Progress</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-xs font-medium">{subproject.budget}</p>
+                            <p className="text-xs text-neutral-500">Budget</p>
+                          </div>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            subproject.status === "Completed" ? "bg-green-100 text-green-700" :
+                            subproject.status === "In Progress" ? "bg-blue-100 text-blue-700" :
+                            subproject.status === "Planning" ? "bg-yellow-100 text-yellow-700" :
+                            "bg-neutral-100 text-neutral-700"
+                          }`}>
+                            {subproject.status}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            subproject.priority === "High" ? "bg-red-100 text-red-700" :
+                            subproject.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                            "bg-green-100 text-green-700"
+                          }`}>
+                            {subproject.priority}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Tasks */}
+                      {expandedSubprojects.includes(subproject.id) && subproject.tasks && (
+                        <div className="ml-6 space-y-2">
+                          {subproject.tasks.map((task) => (
+                            <div key={task.id} className="flex items-center justify-between p-3 bg-white rounded border border-neutral-200">
+                              <div className="flex items-center gap-3">
+                                <CheckSquare className="w-4 h-4 text-blue-500" />
+                                <div>
+                                  <h5 className="font-medium text-neutral-800 text-sm">{task.name}</h5>
+                                  <p className="text-xs text-neutral-600">Assignee: {task.assignee}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <div className="text-center">
+                                  <p className="text-xs font-medium">{task.timeSpent}</p>
+                                  <p className="text-xs text-neutral-500">Spent</p>
+                                </div>
+                                <div className="text-center">
+                                  <p className="text-xs font-medium">{task.timeEstimate}</p>
+                                  <p className="text-xs text-neutral-500">Estimate</p>
+                                </div>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  task.status === "Completed" ? "bg-green-100 text-green-700" :
+                                  task.status === "In Progress" ? "bg-blue-100 text-blue-700" :
+                                  "bg-neutral-100 text-neutral-700"
+                                }`}>
+                                  {task.status}
+                                </span>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  task.priority === "High" ? "bg-red-100 text-red-700" :
+                                  task.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                                  "bg-green-100 text-green-700"
+                                }`}>
+                                  {task.priority}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderTeams = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-neutral-900">All Teams</h2>
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus size={16} />
+            New Team
+          </button>
+        </div>
+        
+        <div className="divide-y divide-neutral-200">
+          {selectedCompanyData?.teams.map((team) => (
+            <div key={team.id} className="p-6 hover:bg-neutral-50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => {
+                      setExpandedTeams(prev => 
+                        prev.includes(team.id) 
+                          ? prev.filter(id => id !== team.id)
+                          : [...prev, team.id]
+                      );
+                    }}
+                    className="p-1 rounded hover:bg-neutral-100 transition-colors"
+                  >
+                    {expandedTeams.includes(team.id) ? (
+                      <ChevronDown className="w-4 h-4 text-neutral-400" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-neutral-400" />
+                    )}
+                  </button>
+                  <Users className="w-6 h-6 text-purple-500" />
+                  <div>
+                    <h3 className="font-medium text-neutral-900">{team.name}</h3>
+                    <p className="text-sm text-neutral-600">Lead: {team.lead} • {team.department}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{team.members}</p>
+                    <p className="text-xs text-neutral-500">Members</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{team.projects}</p>
+                    <p className="text-xs text-neutral-500">Projects</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{team.performance}%</p>
+                    <p className="text-xs text-neutral-500">Performance</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Sub-teams */}
+              {expandedTeams.includes(team.id) && team.subteams && (
+                <div className="ml-10 mt-4 space-y-3">
+                  {team.subteams.map((subteam) => (
+                    <div key={subteam.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                      <div className="flex items-center gap-3">
+                        <User className="w-5 h-5 text-purple-400" />
+                        <div>
+                          <h4 className="font-medium text-neutral-800 text-sm">{subteam.name}</h4>
+                          <p className="text-xs text-neutral-600">Lead: {subteam.lead} • {subteam.focus}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-center">
+                          <p className="text-xs font-medium">{subteam.members}</p>
+                          <p className="text-xs text-neutral-500">Members</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs font-medium">{subteam.projects}</p>
+                          <p className="text-xs text-neutral-500">Projects</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs font-medium">{subteam.performance}%</p>
+                          <p className="text-xs text-neutral-500">Performance</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderDepartments = () => (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-neutral-900">All Departments</h2>
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus size={16} />
+            New Department
+          </button>
+        </div>
+        
+        <div className="divide-y divide-neutral-200">
+          {selectedCompanyData?.departments.map((department) => (
+            <div key={department.id} className="p-6 hover:bg-neutral-50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => {
+                      setExpandedDepartments(prev => 
+                        prev.includes(department.id) 
+                          ? prev.filter(id => id !== department.id)
+                          : [...prev, department.id]
+                      );
+                    }}
+                    className="p-1 rounded hover:bg-neutral-100 transition-colors"
+                  >
+                    {expandedDepartments.includes(department.id) ? (
+                      <ChevronDown className="w-4 h-4 text-neutral-400" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-neutral-400" />
+                    )}
+                  </button>
+                  <Building2 className="w-6 h-6 text-indigo-500" />
+                  <div>
+                    <h3 className="font-medium text-neutral-900">{department.name}</h3>
+                    <p className="text-sm text-neutral-600">Manager: {department.manager}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{department.employees}</p>
+                    <p className="text-xs text-neutral-500">Employees</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{department.projects}</p>
+                    <p className="text-xs text-neutral-500">Projects</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{department.budget}</p>
+                    <p className="text-xs text-neutral-500">Budget</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      department.status === "Active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                    }`}>
+                      {department.status}
+                    </span>
+                    <button className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Sub-departments */}
+              {expandedDepartments.includes(department.id) && department.subdepartments && (
+                <div className="ml-10 mt-4 space-y-3">
+                  {department.subdepartments.map((subdept) => (
+                    <div key={subdept.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200">
+                      <div className="flex items-center gap-3">
+                        <Building className="w-5 h-5 text-indigo-400" />
+                        <div>
+                          <h4 className="font-medium text-neutral-800 text-sm">{subdept.name}</h4>
+                          <p className="text-xs text-neutral-600">Manager: {subdept.manager}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="text-center">
+                          <p className="text-xs font-medium">{subdept.employees}</p>
+                          <p className="text-xs text-neutral-500">Employees</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs font-medium">{subdept.projects}</p>
+                          <p className="text-xs text-neutral-500">Projects</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs font-medium">{subdept.budget}</p>
+                          <p className="text-xs text-neutral-500">Budget</p>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          subdept.status === "Active" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                        }`}>
+                          {subdept.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSprints = () => (
+    <div className="space-y-6">
+      {/* Sprint Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Total Sprints</p>
+              <p className="text-2xl font-bold text-neutral-900">{selectedCompanyData?.sprints.length}</p>
+            </div>
+            <Calendar className="w-8 h-8 text-blue-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Active Sprints</p>
+              <p className="text-2xl font-bold text-green-600">
+                {selectedCompanyData?.sprints.filter(s => s.status === "Active").length}
+              </p>
+            </div>
+            <Clock className="w-8 h-8 text-green-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Completed</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {selectedCompanyData?.sprints.filter(s => s.status === "Completed").length}
+              </p>
+            </div>
+            <CheckCircle className="w-8 h-8 text-blue-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-neutral-600">Avg Velocity</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {Math.round((selectedCompanyData?.sprints?.reduce((acc, s) => acc + s.velocity, 0) || 0) / (selectedCompanyData?.sprints?.length || 1))}
+              </p>
+            </div>
+            <TrendingUp className="w-8 h-8 text-purple-500" />
+          </div>
+        </div>
+      </div>
+
+      {/* Sprint Calendar Overview */}
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200">
+          <h2 className="text-lg font-semibold text-neutral-900">Sprint Calendar Overview</h2>
+        </div>
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {selectedCompanyData?.sprints.map((sprint) => (
+              <div key={sprint.id} className="border border-neutral-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-medium text-neutral-900 text-sm">{sprint.name}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    sprint.status === "Completed" ? "bg-green-100 text-green-700" :
+                    sprint.status === "Active" ? "bg-blue-100 text-blue-700" :
+                    sprint.status === "Planning" ? "bg-yellow-100 text-yellow-700" :
+                    "bg-neutral-100 text-neutral-700"
+                  }`}>
+                    {sprint.status}
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Events:</span>
+                    <span className="font-medium">{sprint.calendar.totalEvents}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Today:</span>
+                    <span className="font-medium">{sprint.calendar.todayEvents}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">Upcoming:</span>
+                    <span className="font-medium">{sprint.calendar.upcomingEvents}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Detailed Sprint Management */}
+      <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-neutral-900">Sprint Management</h2>
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <Plus size={16} />
+            New Sprint
+          </button>
+        </div>
+        
+        <div className="divide-y divide-neutral-200">
+          {selectedCompanyData?.sprints.map((sprint) => (
+            <div key={sprint.id} className="p-6 hover:bg-neutral-50 transition-colors">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() => {
+                      setExpandedSprints(prev => 
+                        prev.includes(sprint.id) 
+                          ? prev.filter(id => id !== sprint.id)
+                          : [...prev, sprint.id]
+                      );
+                    }}
+                    className="p-1 rounded hover:bg-neutral-100 transition-colors"
+                  >
+                    {expandedSprints.includes(sprint.id) ? (
+                      <ChevronDown className="w-4 h-4 text-neutral-400" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-neutral-400" />
+                    )}
+                  </button>
+                  <Calendar className="w-6 h-6 text-pink-500" />
+                  <div>
+                    <h3 className="font-medium text-neutral-900">{sprint.name}</h3>
+                    <p className="text-sm text-neutral-600">{sprint.team}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{sprint.completed}/{sprint.tasks}</p>
+                    <p className="text-xs text-neutral-500">Tasks</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">{sprint.velocity}</p>
+                    <p className="text-xs text-neutral-500">Velocity</p>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    sprint.status === "Completed" ? "bg-green-100 text-green-700" :
+                    sprint.status === "Active" ? "bg-blue-100 text-blue-700" :
+                    sprint.status === "Planning" ? "bg-yellow-100 text-yellow-700" :
+                    "bg-neutral-100 text-neutral-700"
+                  }`}>
+                    {sprint.status}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Sprint Details */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+                <div>
+                  <span className="text-neutral-500">Duration:</span>
+                  <p className="font-medium">{sprint.startDate} - {sprint.endDate}</p>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Progress:</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-16 h-2 bg-neutral-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-pink-500 rounded-full" 
+                        style={{ width: `${(sprint.completed / sprint.tasks) * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs">{Math.round((sprint.completed / sprint.tasks) * 100)}%</span>
+                  </div>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Calendar Events:</span>
+                  <p className="font-medium">{sprint.calendar.totalEvents}</p>
+                </div>
+                <div>
+                  <span className="text-neutral-500">Stories:</span>
+                  <p className="font-medium">{sprint.stories.length}</p>
+                </div>
+              </div>
+              
+              {/* Stories and Tasks */}
+              {expandedSprints.includes(sprint.id) && (
+                <div className="ml-10 space-y-4">
+                  {sprint.stories.map((story) => (
+                    <div key={story.id} className="border border-neutral-200 rounded-lg p-4 bg-neutral-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => {
+                              setExpandedStories(prev => 
+                                prev.includes(story.id) 
+                                  ? prev.filter(id => id !== story.id)
+                                  : [...prev, story.id]
+                              );
+                            }}
+                            className="p-1 rounded hover:bg-neutral-200 transition-colors"
+                          >
+                            {expandedStories.includes(story.id) ? (
+                              <ChevronDown className="w-3 h-3 text-neutral-400" />
+                            ) : (
+                              <ChevronRight className="w-3 h-3 text-neutral-400" />
+                            )}
+                          </button>
+                          <BookOpen className="w-4 h-4 text-green-500" />
+                          <div>
+                            <h4 className="font-medium text-neutral-800 text-sm">{story.name}</h4>
+                            <p className="text-xs text-neutral-600">Assignee: {story.assignee} • {story.storyPoints} SP</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            story.status === "Completed" ? "bg-green-100 text-green-700" :
+                            story.status === "In Progress" ? "bg-blue-100 text-blue-700" :
+                            story.status === "Planning" ? "bg-yellow-100 text-yellow-700" :
+                            "bg-neutral-100 text-neutral-700"
+                          }`}>
+                            {story.status}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            story.priority === "High" ? "bg-red-100 text-red-700" :
+                            story.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                            "bg-green-100 text-green-700"
+                          }`}>
+                            {story.priority}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Tasks */}
+                      {expandedStories.includes(story.id) && story.tasks && (
+                        <div className="ml-6 space-y-2">
+                          {story.tasks.map((task) => (
+                            <div key={task.id} className="flex items-center justify-between p-3 bg-white rounded border border-neutral-200">
+                              <div className="flex items-center gap-3">
+                                <CheckSquare className="w-4 h-4 text-blue-500" />
+                                <div>
+                                  <h5 className="font-medium text-neutral-800 text-sm">{task.name}</h5>
+                                  <p className="text-xs text-neutral-600">Assignee: {task.assignee}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <div className="text-center">
+                                  <p className="text-xs font-medium">{task.timeSpent}</p>
+                                  <p className="text-xs text-neutral-500">Spent</p>
+                                </div>
+                                <div className="text-center">
+                                  <p className="text-xs font-medium">{task.timeEstimate}</p>
+                                  <p className="text-xs text-neutral-500">Estimate</p>
+                                </div>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  task.status === "Completed" ? "bg-green-100 text-green-700" :
+                                  task.status === "In Progress" ? "bg-blue-100 text-blue-700" :
+                                  "bg-neutral-100 text-neutral-700"
+                                }`}>
+                                  {task.status}
+                                </span>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  task.priority === "High" ? "bg-red-100 text-red-700" :
+                                  task.priority === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                                  "bg-green-100 text-green-700"
+                                }`}>
+                                  {task.priority}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Companies</h1>
-      <p className="text-neutral-700 dark:text-neutral-300">Manage your companies, view details, and add new organizations.</p>
+    <div className="p-6 bg-neutral-50 min-h-screen">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-neutral-900 mb-2">Companies</h1>
+            <p className="text-neutral-600">Manage your companies, projects, and teams in one place.</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <Plus size={16} />
+              Add Company
+            </button>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search companies..."
+                className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <select className="px-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option>All Industries</option>
+              <option>Technology</option>
+              <option>Healthcare</option>
+              <option>Finance</option>
+            </select>
+            <select className="px-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <option>All Status</option>
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Company List Sidebar */}
+        <div className="lg:w-80">
+          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+            <div className="px-4 py-3 border-b border-neutral-200">
+              <h2 className="text-lg font-semibold text-neutral-800">Companies</h2>
+            </div>
+            
+            <div className="p-2">
+              {companies.map((company) => (
+                <div 
+                  key={company.id} 
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition text-neutral-700 hover:bg-neutral-50 relative group ${
+                    selectedCompany === company.id ? "bg-blue-50 text-blue-700" : ""
+                  }`}
+                  onClick={() => setSelectedCompany(company.id)}
+                >
+                  <button className="p-1 rounded hover:bg-neutral-100 transition-colors">
+                    <ChevronRight size={16} className="text-neutral-400" />
+                  </button>
+                  <Building2 size={18} className="text-blue-500" />
+                  <span className="text-sm font-semibold text-neutral-800 flex-1 truncate">{company.name}</span>
+                  <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-medium text-purple-600">AI</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1">
+          {/* View Tabs */}
+          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 mb-6">
+            <div className="flex border-b border-neutral-200 overflow-x-auto">
+              {[
+                { id: "overview", label: "Overview", icon: BarChart3 },
+                { id: "projects", label: "Projects", icon: FolderKanban },
+                { id: "departments", label: "Departments", icon: Building2 },
+                { id: "teams", label: "Teams", icon: Users },
+                { id: "sprints", label: "Sprints", icon: Calendar },
+                { id: "settings", label: "Settings", icon: Settings }
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setView(tab.id)}
+                    className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap ${
+                      view === tab.id
+                        ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
+                        : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Content */}
+          {view === "overview" && renderOverview()}
+          {view === "projects" && renderProjects()}
+          {view === "departments" && renderDepartments()}
+          {view === "teams" && renderTeams()}
+          {view === "sprints" && renderSprints()}
+          {view === "settings" && (
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+              <h2 className="text-lg font-semibold text-neutral-900 mb-4">Company Settings</h2>
+              <p className="text-neutral-600">Settings and configuration options will be displayed here.</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 } 

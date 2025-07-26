@@ -4,14 +4,63 @@ const companies = [
   {
     name: "Whapi Corp",
     projects: [
-      { name: "Whapi Project Management", status: "Active", members: ["A", "B", "C"] },
-      { name: "Client Portal", status: "Planning", members: ["A", "D"] },
+      { 
+        name: "Whapi Project Management", 
+        status: "Active", 
+        members: ["A", "B", "C"],
+        description: "Comprehensive project management platform for enterprise teams",
+        tasks: [
+          { id: 1, title: "Design UI Components", status: "Completed", assignee: "A" },
+          { id: 2, title: "Implement Authentication", status: "In Progress", assignee: "B" },
+          { id: 3, title: "Database Schema Design", status: "Pending", assignee: "C" }
+        ],
+        sprints: [
+          { id: 1, name: "Sprint 1", status: "Completed", tasks: 8 },
+          { id: 2, name: "Sprint 2", status: "Active", tasks: 12 }
+        ],
+        progress: 65,
+        startDate: "2024-01-15",
+        endDate: "2024-06-30"
+      },
+      { 
+        name: "Client Portal", 
+        status: "Planning", 
+        members: ["A", "D"],
+        description: "Customer-facing portal for client management",
+        tasks: [
+          { id: 1, title: "Requirements Gathering", status: "Completed", assignee: "A" },
+          { id: 2, title: "Architecture Design", status: "In Progress", assignee: "D" }
+        ],
+        sprints: [
+          { id: 1, name: "Planning Sprint", status: "Active", tasks: 5 }
+        ],
+        progress: 25,
+        startDate: "2024-03-01",
+        endDate: "2024-08-31"
+      },
     ],
   },
   {
     name: "Inkhub",
     projects: [
-      { name: "Inkhub Docs", status: "Active", members: ["E", "F"] },
+      { 
+        name: "Inkhub Docs", 
+        status: "Active", 
+        members: ["E", "F"],
+        description: "Documentation platform for development teams",
+        tasks: [
+          { id: 1, title: "API Documentation", status: "Completed", assignee: "E" },
+          { id: 2, title: "User Guide Creation", status: "In Progress", assignee: "F" },
+          { id: 3, title: "Integration Testing", status: "Pending", assignee: "E" }
+        ],
+        sprints: [
+          { id: 1, name: "Sprint 1", status: "Completed", tasks: 6 },
+          { id: 2, name: "Sprint 2", status: "Active", tasks: 8 }
+        ],
+        progress: 45,
+        startDate: "2024-02-01",
+        endDate: "2024-07-31"
+      },
     ],
   },
 ];
@@ -23,25 +72,15 @@ const analytics = [
 ];
 
 export default function ProjectsAnalyticsPage({ open, onClose, onViewProject }: { open: boolean, onClose: () => void, onViewProject: (project: any) => void }) {
-  if (!open) return null;
   return (
-    <>
-      {/* Sheet Backdrop */}
-      <div className="fixed inset-0 z-40 bg-black/20 transition-opacity" onClick={onClose} />
-      {/* Sheet */}
-      <div className="fixed left-0 right-0 bottom-0 z-50 max-w-5xl mx-auto rounded-t-2xl bg-white shadow-2xl animate-slide-up overflow-hidden">
-        {/* Header/Tab Bar */}
-        <div className="flex items-center gap-2 px-6 pt-4 bg-white border-b border-neutral-200 rounded-t-2xl">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-blue-50 text-blue-700 font-semibold">
-            <FolderKanban className="text-blue-500 mr-1" size={20} />
-            <span>Projects</span>
-          </div>
-          <button onClick={onClose} className="ml-2 text-neutral-400 hover:text-red-500" aria-label="Close">
-            ×
-          </button>
-        </div>
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-6">
+        <FolderKanban className="text-blue-500" size={24} />
+        <h1 className="text-2xl font-bold text-neutral-800">Projects</h1>
+      </div>
         {/* Analytics Summary */}
-        <div className="flex flex-wrap gap-6 p-6 border-b border-neutral-100">
+        <div className="flex flex-wrap gap-6 mb-6">
           {analytics.map((a) => (
             <div key={a.label} className="flex items-center gap-3 p-4 bg-neutral-50 rounded-lg">
               <BarChart2 className="text-blue-400" size={20} />
@@ -53,7 +92,7 @@ export default function ProjectsAnalyticsPage({ open, onClose, onViewProject }: 
           ))}
         </div>
         {/* Search & Filters */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-neutral-100 bg-white">
+        <div className="flex items-center gap-3 mb-6">
           <div className="flex items-center gap-2 bg-neutral-100 rounded px-3 py-2 flex-1">
             <Search size={16} className="text-neutral-400" />
             <input className="bg-transparent outline-none w-full" placeholder="Search projects..." />
@@ -66,7 +105,7 @@ export default function ProjectsAnalyticsPage({ open, onClose, onViewProject }: 
           </button>
         </div>
         {/* Projects List */}
-        <div className="p-6 overflow-y-auto max-h-[60vh]">
+        <div className="overflow-y-auto">
           {companies.map((company) => (
             <div key={company.name} className="mb-8">
               <div className="flex items-center gap-2 mb-3">
@@ -98,6 +137,5 @@ export default function ProjectsAnalyticsPage({ open, onClose, onViewProject }: 
           ))}
         </div>
       </div>
-    </>
-  );
+    );
 } 
