@@ -1,10 +1,10 @@
 import { FolderKanban, ListChecks, Users, Calendar, BarChart2, Activity, Plus } from "lucide-react";
 
 const stats = [
-  { label: "Projects", value: 8, icon: FolderKanban },
-  { label: "Tasks", value: 124, icon: ListChecks },
-  { label: "Teams", value: 4, icon: Users },
-  { label: "Sprints", value: 6, icon: Calendar },
+  { label: "Projects", value: 8, icon: FolderKanban, action: "projects" },
+  { label: "Tasks", value: 124, icon: ListChecks, action: "tasks" },
+  { label: "Teams", value: 4, icon: Users, action: "teams" },
+  { label: "Sprints", value: 6, icon: Calendar, action: "sprints" },
 ];
 
 const recentActivity = [
@@ -13,7 +13,7 @@ const recentActivity = [
   { user: "Charlie", action: "added member", target: "Team Alpha", time: "1d ago" },
 ];
 
-export default function DashboardPage() {
+export default function DashboardPage({ onOpenTab }: { onOpenTab?: (type: string) => void }) {
   return (
     <div className="p-8 space-y-8">
       {/* Header */}
@@ -22,14 +22,21 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
           <p className="text-neutral-500">Welcome back! Here’s an overview of your workspace analytics.</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+        <button
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+          onClick={() => onOpenTab && onOpenTab("create-project")}
+        >
           <Plus size={18} /> New Project
         </button>
       </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
-          <div key={stat.label} className="flex items-center gap-4 p-6 bg-white rounded-xl shadow border border-neutral-100">
+          <button
+            key={stat.label}
+            className="flex items-center gap-4 p-6 bg-white rounded-xl shadow border border-neutral-100 w-full text-left hover:shadow-md transition"
+            onClick={() => onOpenTab?.(stat.action)}
+          >
             <div className="p-3 rounded-full bg-blue-50 text-blue-600">
               <stat.icon size={28} />
             </div>
@@ -37,7 +44,7 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">{stat.value}</div>
               <div className="text-neutral-500 text-sm">{stat.label}</div>
             </div>
-          </div>
+          </button>
         ))}
       </div>
       {/* Analytics & Activity */}
@@ -73,13 +80,22 @@ export default function DashboardPage() {
       </div>
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-4 mt-8">
-        <button className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-blue-50 text-blue-700 font-medium transition">
+        <button
+          className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-blue-50 text-blue-700 font-medium transition"
+          onClick={() => onOpenTab && onOpenTab("create-task")}
+        >
           <Plus size={16} /> Add Task
         </button>
-        <button className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-blue-50 text-blue-700 font-medium transition">
+        <button
+          className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-blue-50 text-blue-700 font-medium transition"
+          onClick={() => onOpenTab && onOpenTab("create-team")}
+        >
           <Plus size={16} /> Add Team
         </button>
-        <button className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-blue-50 text-blue-700 font-medium transition">
+        <button
+          className="flex items-center gap-2 px-4 py-2 bg-neutral-100 rounded-lg hover:bg-blue-50 text-blue-700 font-medium transition"
+          onClick={() => onOpenTab && onOpenTab("create-sprint")}
+        >
           <Plus size={16} /> Add Sprint
         </button>
       </div>

@@ -32,6 +32,10 @@ import DashboardPage from "./DashboardPage";
 import { X, Pin, Plus, MoreHorizontal } from "lucide-react";
 import ProjectsAnalyticsPage from "./ProjectsAnalyticsPage";
 import NewTabPage from "./NewTabPage";
+import CreateProjectPage from "./CreateProjectPage";
+import CreateTaskPage from "./CreateTaskPage";
+import CreateTeamPage from "./CreateTeamPage";
+import CreateSprintPage from "./CreateSprintPage";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,17 +55,35 @@ const SHEET_COMPONENTS: Record<string, any> = {
   departments: DepartmentsPage,
   teams: TeamsPageSheet,
   sprints: SprintsPage,
+  "create-project": CreateProjectPage,
+  "create-task": CreateTaskPage,
+  "create-team": CreateTeamPage,
+  "create-sprint": CreateSprintPage,
 };
 
 export default function ClientLayout({ children }: { children?: React.ReactNode }) {
-  // Remove default openTabs for project details
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [openTabs, setOpenTabs] = useState<{ type: string; key: string; title: string; component: any; project?: Project }[]>([]);
+  // Set Dashboard as the default open tab
+  const [openTabs, setOpenTabs] = useState<{ type: string; key: string; title: string; component: any; project?: Project }[]>([
+    { type: "dashboard", key: `dashboard-${Date.now()}`, title: "Dashboard", component: DashboardPage }
+  ]);
   const [activeTabIdx, setActiveTabIdx] = useState(0);
   const [pinnedTabs, setPinnedTabs] = useState<Set<string>>(new Set());
 
+  // Map sidebar index to tab type and title
+  const sidebarTabMap = [
+    { type: "dashboard", title: "Dashboard", component: DashboardPage },
+    { type: "projects", title: "Projects", component: ProjectsAnalyticsPage },
+    { type: "tasks", title: "Tasks", component: TasksPage },
+    { type: "teams", title: "Teams", component: TeamsPage },
+    { type: "companies", title: "Companies", component: CompaniesPage },
+    { type: "calendar", title: "Calendar", component: CalendarPage },
+    { type: "reports", title: "Reports", component: ReportsPage },
+    { type: "settings", title: "Settings", component: SettingsPage },
+    { type: "notifications", title: "Notifications", component: NotificationsPage },
+  ];
+
   // Handlers to open new tabs
-  const openTab = (type: string, title: string) => {
+  const openTab = (type: string, title?: string) => {
     setOpenTabs((prev) => {
       // Prevent duplicate tabs of the same type (optional, or allow multiple)
       if (prev.some((tab) => tab.type === type)) {
@@ -69,7 +91,28 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
         setActiveTabIdx(idx);
         return prev;
       }
-      return [...prev, { type, key: `${type}-${Date.now()}`, title, component: SHEET_COMPONENTS[type], project: undefined }];
+      
+      // Find the component from sidebarTabMap or SHEET_COMPONENTS
+      let component;
+      let tabTitle = title;
+      
+      // Check if it's a main sidebar tab
+      const sidebarTab = sidebarTabMap.find(tab => tab.type === type);
+      if (sidebarTab) {
+        component = sidebarTab.component;
+        tabTitle = tabTitle || sidebarTab.title;
+      } else {
+        // Check if it's a sheet component
+        component = SHEET_COMPONENTS[type];
+        tabTitle = tabTitle || type.charAt(0).toUpperCase() + type.slice(1);
+      }
+      
+      if (!component) {
+        console.warn(`No component found for type: ${type}`);
+        return prev;
+      }
+      
+      return [...prev, { type, key: `${type}-${Date.now()}`, title: tabTitle, component, project: undefined }];
     });
     setActiveTabIdx(openTabs.length); // Will be the new tab
   };
@@ -135,19 +178,6 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
     });
   };
 
-  // Map sidebar index to tab type and title
-  const sidebarTabMap = [
-    { type: "dashboard", title: "Dashboard", component: DashboardPage },
-    { type: "projects", title: "Projects", component: ProjectsAnalyticsPage },
-    { type: "tasks", title: "Tasks", component: TasksPage },
-    { type: "teams", title: "Teams", component: TeamsPage },
-    { type: "companies", title: "Companies", component: CompaniesPage },
-    { type: "calendar", title: "Calendar", component: CalendarPage },
-    { type: "reports", title: "Reports", component: ReportsPage },
-    { type: "settings", title: "Settings", component: SettingsPage },
-    { type: "notifications", title: "Notifications", component: NotificationsPage },
-  ];
-
   const onSidebarNavClick = (idx: number) => {
     const tab = sidebarTabMap[idx];
     setOpenTabs((prev) => {
@@ -207,10 +237,7 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
     <div className={`flex h-screen w-screen overflow-hidden ${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
       <Sidebar
         activeTab={sidebarActiveTab}
-        openTabs={[]}
         onNavClick={onSidebarNavClick}
-        onTabClose={() => {}}
-        setActiveTab={setActiveTabIdx}
       />
       {/* Only show ContextSidebar when Companies is active and not viewing a project details tab */}
       {sidebarActiveTab === 4 && !(openTabs[activeTabIdx]?.type === 'project-details') && (
@@ -222,54 +249,39 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
           onAddSprints={() => openTab("sprints", "Sprints")}
         />
       )}
-      <main className="flex-1 min-w-0 bg-background overflow-y-auto">
+      <main className="flex-1 min-w-0 bg-background flex flex-col">
         {/* Tab Bar Container */}
-        <div className="flex items-center bg-white border-b border-neutral-200">
+        <div className="flex items-center bg-white border-b border-neutral-200 h-10">
           {/* Pinned Tabs (fixed, always visible) */}
-          <div className="flex items-center gap-0 pl-4 pt-0 pb-0">
+          <div className="flex items-center gap-0 pl-2">
             {openTabs.filter(tab => pinnedTabs.has(tab.key)).map((tab) => {
               const globalIdx = openTabs.findIndex(t => t.key === tab.key);
               const isActive = activeTabIdx === globalIdx;
               return (
                 <div
                   key={tab.key}
-                  className={`group flex items-center px-4 py-0 h-12 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max ${
-                    isActive
-                      ? "font-bold text-neutral-900 border-b-2 border-blue-600 bg-white"
-                      : "font-normal text-neutral-700 border-b-2 border-transparent bg-white hover:text-neutral-900"
-                  }`}
+                  className={`group flex items-center h-10 px-4 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max select-none
+                    ${isActive ? "font-bold text-neutral-900 bg-white" : "font-normal text-neutral-700 bg-white hover:bg-neutral-100"}
+                  `}
                   onClick={() => setActiveTabIdx(globalIdx)}
-                  style={{ borderRadius: 0 }}
+                  style={{ 
+                    borderRadius: 0,
+                    borderBottom: isActive ? '4px solid #2563eb' : '2px solid transparent'
+                  }}
                 >
-                  {/* Tab Icons */}
-                  {tab.type === "project" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3z"/><path d="M9 3v18"/><path d="M15 3v18"/></svg></span>}
-                  {tab.type === "departments" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M8 3.13a4 4 0 0 0 0 7.75"/></svg></span>}
-                  {tab.type === "teams" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a4.5 4.5 0 0 1 9 0v2"/><path d="M17 11v2a4 4 0 0 1-8 0v-2"/></svg></span>}
-                  {tab.type === "sprints" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>}
-                  {tab.type === "companies" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M8 3.13a4 4 0 0 0 0 7.75"/></svg></span>}
-                  {tab.type === "dashboard" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>}
-                  {tab.type === "tasks" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>}
-                  {tab.type === "calendar" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>}
-                  {tab.type === "reports" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></span>}
-                  {tab.type === "settings" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>}
-                  {tab.type === "notifications" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>}
-                  {tab.type === "new-tab" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></span>}
-                  <span>{tab.title}</span>
+                  <span className="truncate max-w-[120px]">{tab.title}</span>
                   {/* Pin Button - Always visible for pinned, gold color */}
-                  <button 
-                    onClick={e => { 
-                      e.stopPropagation(); 
-                      togglePinTab(tab.key); 
-                    }} 
-                    className={`ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500`} 
+                  <button
+                    onClick={e => { e.stopPropagation(); togglePinTab(tab.key); }}
+                    className="ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500"
                     aria-label="Pin tab"
                   >
                     <Pin size={14} className={pinnedTabs.has(tab.key) ? "fill-current" : ""} />
                   </button>
-                  {/* Close Button - only on hover for pinned */}
-                  <button 
-                    onClick={e => { e.stopPropagation(); closeTab(globalIdx); }} 
-                    className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors opacity-0 group-hover:opacity-100" 
+                  {/* Close Button - always visible */}
+                  <button
+                    onClick={e => { e.stopPropagation(); closeTab(globalIdx); }}
+                    className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors"
                     aria-label="Close tab"
                   >
                     <X size={14} />
@@ -280,50 +292,35 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
           </div>
           {/* Unpinned Tabs (scrollable) */}
           <div className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-neutral-100 hover:scrollbar-thumb-neutral-400">
-            <div className="flex items-center gap-0 pt-0 pb-0 min-w-max">
+            <div className="flex items-center gap-0 min-w-max">
               {openTabs.filter(tab => !pinnedTabs.has(tab.key)).map((tab) => {
                 const globalIdx = openTabs.findIndex(t => t.key === tab.key);
                 const isActive = activeTabIdx === globalIdx;
                 return (
                   <div
                     key={tab.key}
-                    className={`group flex items-center px-4 py-0 h-12 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max ${
-                      isActive
-                        ? "font-bold text-neutral-900 border-b-2 border-blue-600 bg-white"
-                        : "font-normal text-neutral-700 border-b-2 border-transparent bg-white hover:text-neutral-900"
-                    }`}
+                    className={`group flex items-center h-10 px-4 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max select-none
+                      ${isActive ? "font-bold text-neutral-900 bg-white" : "font-normal text-neutral-700 bg-white hover:bg-neutral-100"}
+                    `}
                     onClick={() => setActiveTabIdx(globalIdx)}
-                    style={{ borderRadius: 0 }}
+                    style={{ 
+                      borderRadius: 0,
+                      borderBottom: isActive ? '4px solid #2563eb' : '2px solid transparent'
+                    }}
                   >
-                    {/* Tab Icons */}
-                    {tab.type === "project" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3z"/><path d="M9 3v18"/><path d="M15 3v18"/></svg></span>}
-                    {tab.type === "departments" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M8 3.13a4 4 0 0 0 0 7.75"/></svg></span>}
-                    {tab.type === "teams" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a4.5 4.5 0 0 1 9 0v2"/><path d="M17 11v2a4 4 0 0 1-8 0v-2"/></svg></span>}
-                    {tab.type === "sprints" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>}
-                    {tab.type === "companies" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 21v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M8 3.13a4 4 0 0 0 0 7.75"/></svg></span>}
-                    {tab.type === "dashboard" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>}
-                    {tab.type === "tasks" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>}
-                    {tab.type === "calendar" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>}
-                    {tab.type === "reports" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></span>}
-                    {tab.type === "settings" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>}
-                    {tab.type === "notifications" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>}
-                    {tab.type === "new-tab" && <span className="mr-1"><svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg></span>}
-                    <span>{tab.title}</span>
+                    <span className="truncate max-w-[120px]">{tab.title}</span>
                     {/* Pin Button - only on hover for unpinned */}
-                    <button 
-                      onClick={e => { 
-                        e.stopPropagation(); 
-                        togglePinTab(tab.key); 
-                      }} 
-                      className={`ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500 opacity-0 group-hover:opacity-100`} 
+                    <button
+                      onClick={e => { e.stopPropagation(); togglePinTab(tab.key); }}
+                      className="ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500 opacity-0 group-hover:opacity-100"
                       aria-label="Pin tab"
                     >
                       <Pin size={14} />
                     </button>
-                    {/* Close Button - always visible for unpinned */}
-                    <button 
-                      onClick={e => { e.stopPropagation(); closeTab(globalIdx); }} 
-                      className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors" 
+                    {/* Close Button - always visible */}
+                    <button
+                      onClick={e => { e.stopPropagation(); closeTab(globalIdx); }}
+                      className="ml-1 p-1 text-neutral-400 hover:text-red-500 rounded transition-colors"
                       aria-label="Close tab"
                     >
                       <X size={14} />
@@ -334,11 +331,11 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
             </div>
           </div>
           {/* Fixed Action Buttons */}
-          <div className="flex items-center gap-2 px-2 py-0 bg-white border-l border-neutral-200 h-12">
+          <div className="flex items-center gap-2 px-2 bg-white border-l border-neutral-200 h-10">
             {/* Add New Tab Button */}
-            <button 
+            <button
               onClick={openNewTab}
-              className="p-2 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors" 
+              className="p-2 text-neutral-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-colors"
               aria-label="Add new tab"
             >
               <Plus size={18} />
@@ -350,16 +347,19 @@ export default function ClientLayout({ children }: { children?: React.ReactNode 
           </div>
         </div>
         {/* Active Tab Content */}
-        {openTabs[activeTabIdx] && (() => {
-          const TabComponent = openTabs[activeTabIdx].component;
-          return <TabComponent 
-            open={true} 
-            onClose={() => closeTab(activeTabIdx)} 
-            project={openTabs[activeTabIdx].project}
-            onViewProject={openTabs[activeTabIdx].type === "projects" ? onViewProject : undefined}
-          />;
-        })()}
-
+        <div className="flex-1 overflow-y-auto">
+          {openTabs[activeTabIdx] && (() => {
+            const TabComponent = openTabs[activeTabIdx].component;
+            const props = {
+              open: true,
+              onClose: () => closeTab(activeTabIdx),
+              project: openTabs[activeTabIdx].project,
+              onViewProject: openTabs[activeTabIdx].type === "projects" ? onViewProject : undefined,
+              onOpenTab: (openTabs[activeTabIdx].type === "dashboard" || openTabs[activeTabIdx].type === "projects" || openTabs[activeTabIdx].type === "teams" || openTabs[activeTabIdx].type === "companies" || openTabs[activeTabIdx].type === "calendar" || openTabs[activeTabIdx].type === "reports") ? openTab : undefined
+            };
+            return <TabComponent {...props} />;
+          })()}
+        </div>
       </main>
     </div>
   );

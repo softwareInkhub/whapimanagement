@@ -24,10 +24,15 @@ import {
   Eye,
   Download,
   BookOpen,
-  CheckSquare
+  CheckSquare,
+  Trash2,
+  Archive,
+  Copy,
+  Share2,
+  Filter
 } from "lucide-react";
 
-export default function CompaniesPage() {
+export default function CompaniesPage({ onOpenTab }: { onOpenTab?: (type: string, title?: string) => void }) {
   const [selectedCompany, setSelectedCompany] = useState(1);
   const [view, setView] = useState("overview");
   const [expandedDepartments, setExpandedDepartments] = useState<number[]>([]);
@@ -36,8 +41,12 @@ export default function CompaniesPage() {
   const [expandedStories, setExpandedStories] = useState<number[]>([]);
   const [expandedProjects, setExpandedProjects] = useState<number[]>([]);
   const [expandedSubprojects, setExpandedSubprojects] = useState<number[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
+  const [showProjectMenu, setShowProjectMenu] = useState<number | null>(null);
 
-    const companies = [
+  const [companies, setCompanies] = useState([
     {
       id: 1,
       name: "whapi project management",
@@ -60,6 +69,7 @@ export default function CompaniesPage() {
       growth: "+15%",
       lastActivity: "2 hours ago",
       tags: ["AI", "Enterprise", "SaaS"],
+      archived: false,
       projects: [
         {
           id: 1,
@@ -98,18 +108,9 @@ export default function CompaniesPage() {
                   name: "Password Reset Flow",
                   status: "Completed",
                   assignee: "Emma Wilson",
-                  timeSpent: "20h",
-                  timeEstimate: "20h",
+                  timeSpent: "25h",
+                  timeEstimate: "30h",
                   priority: "Medium"
-                },
-                {
-                  id: 3,
-                  name: "Multi-factor Authentication",
-                  status: "Completed",
-                  assignee: "David Kim",
-                  timeSpent: "30h",
-                  timeEstimate: "25h",
-                  priority: "High"
                 }
               ]
             },
@@ -117,70 +118,21 @@ export default function CompaniesPage() {
               id: 2,
               name: "Dashboard Analytics",
               status: "In Progress",
-              progress: 65,
-              team: "Frontend Team",
+              progress: 60,
+              team: "Core Development",
               deadline: "2024-04-30",
               priority: "Medium",
               budget: "$120K",
               manager: "Alex Rodriguez",
               tasks: [
                 {
-                  id: 4,
+                  id: 3,
                   name: "Chart Components",
-                  status: "Completed",
-                  assignee: "Maria Garcia",
-                  timeSpent: "45h",
-                  timeEstimate: "40h",
-                  priority: "Medium"
-                },
-                {
-                  id: 5,
-                  name: "Data Integration",
                   status: "In Progress",
-                  assignee: "Tom Anderson",
+                  assignee: "Sarah Johnson",
                   timeSpent: "35h",
-                  timeEstimate: "50h",
-                  priority: "High"
-                },
-                {
-                  id: 6,
-                  name: "Real-time Updates",
-                  status: "To Do",
-                  assignee: "Chris Lee",
-                  timeSpent: "0h",
-                  timeEstimate: "30h",
-                  priority: "Medium"
-                }
-              ]
-            },
-            {
-              id: 3,
-              name: "Team Collaboration Tools",
-              status: "Planning",
-              progress: 15,
-              team: "Product Team",
-              deadline: "2024-07-15",
-              priority: "Medium",
-              budget: "$150K",
-              manager: "Lisa Chen",
-              tasks: [
-                {
-                  id: 7,
-                  name: "Requirements Gathering",
-                  status: "In Progress",
-                  assignee: "Lisa Chen",
-                  timeSpent: "25h",
-                  timeEstimate: "30h",
-                  priority: "Medium"
-                },
-                {
-                  id: 8,
-                  name: "UI/UX Design",
-                  status: "To Do",
-                  assignee: "Alex Rodriguez",
-                  timeSpent: "0h",
                   timeEstimate: "40h",
-                  priority: "Medium"
+                  priority: "High"
                 }
               ]
             }
@@ -188,156 +140,27 @@ export default function CompaniesPage() {
         },
         {
           id: 2,
-          name: "Client Portal Integration",
+          name: "Client Portal",
           status: "Planning",
           progress: 25,
-          team: "Frontend Team",
-          deadline: "2024-08-15",
+          team: "Frontend Development",
+          deadline: "2024-08-31",
           priority: "Medium",
           budget: "$300K",
-          manager: "Mike Chen",
-          description: "Seamless integration portal for client access and project collaboration",
-          subprojects: [
-            {
-              id: 4,
-              name: "Portal Architecture",
-              status: "Planning",
-              progress: 30,
-              team: "Backend Team",
-              deadline: "2024-05-30",
-              priority: "High",
-              budget: "$100K",
-              manager: "Emma Wilson",
-              tasks: [
-                {
-                  id: 9,
-                  name: "API Design",
-                  status: "In Progress",
-                  assignee: "Emma Wilson",
-                  timeSpent: "20h",
-                  timeEstimate: "25h",
-                  priority: "High"
-                },
-                {
-                  id: 10,
-                  name: "Database Schema",
-                  status: "To Do",
-                  assignee: "David Kim",
-                  timeSpent: "0h",
-                  timeEstimate: "15h",
-                  priority: "Medium"
-                }
-              ]
-            },
-            {
-              id: 5,
-              name: "Client Dashboard",
-              status: "Planning",
-              progress: 10,
-              team: "Frontend Team",
-              deadline: "2024-06-30",
-              priority: "Medium",
-              budget: "$80K",
-              manager: "Maria Garcia",
-              tasks: [
-                {
-                  id: 11,
-                  name: "Wireframe Design",
-                  status: "To Do",
-                  assignee: "Alex Rodriguez",
-                  timeSpent: "0h",
-                  timeEstimate: "20h",
-                  priority: "Medium"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 3,
-          name: "Mobile App Development",
-          status: "Active",
-          progress: 60,
-          team: "Mobile Team",
-          deadline: "2024-07-20",
-          priority: "High",
-          budget: "$400K",
-          manager: "Chris Lee",
-          description: "Cross-platform mobile application for project management on-the-go",
-          subprojects: [
-            {
-              id: 6,
-              name: "iOS Development",
-              status: "In Progress",
-              progress: 70,
-              team: "Mobile Team",
-              deadline: "2024-06-15",
-              priority: "High",
-              budget: "$200K",
-              manager: "Chris Lee",
-              tasks: [
-                {
-                  id: 12,
-                  name: "Core Navigation",
-                  status: "Completed",
-                  assignee: "Chris Lee",
-                  timeSpent: "60h",
-                  timeEstimate: "55h",
-                  priority: "High"
-                },
-                {
-                  id: 13,
-                  name: "Push Notifications",
-                  status: "In Progress",
-                  assignee: "Rachel Green",
-                  timeSpent: "25h",
-                  timeEstimate: "30h",
-                  priority: "Medium"
-                }
-              ]
-            },
-            {
-              id: 7,
-              name: "Android Development",
-              status: "In Progress",
-              progress: 55,
-              team: "Mobile Team",
-              deadline: "2024-06-30",
-              priority: "High",
-              budget: "$180K",
-              manager: "Rachel Green",
-              tasks: [
-                {
-                  id: 14,
-                  name: "UI Implementation",
-                  status: "In Progress",
-                  assignee: "Rachel Green",
-                  timeSpent: "40h",
-                  timeEstimate: "45h",
-                  priority: "High"
-                },
-                {
-                  id: 15,
-                  name: "API Integration",
-                  status: "To Do",
-                  assignee: "Tom Anderson",
-                  timeSpent: "0h",
-                  timeEstimate: "35h",
-                  priority: "Medium"
-                }
-              ]
-            }
-          ]
+          manager: "Emma Wilson",
+          description: "Customer-facing portal for client management and communication",
+          subprojects: []
         }
       ],
       departments: [
         {
           id: 1,
           name: "Engineering",
-          manager: "David Kim",
-          employees: 45,
+          manager: "Sarah Johnson",
+          members: 45,
           projects: 8,
           budget: "$1.2M",
+          employees: 45,
           status: "Active",
           subdepartments: [
             {
@@ -357,122 +180,19 @@ export default function CompaniesPage() {
               projects: 3,
               budget: "$400K",
               status: "Active"
-            },
-            {
-              id: 3,
-              name: "DevOps & Infrastructure",
-              manager: "Emma Wilson",
-              employees: 8,
-              projects: 2,
-              budget: "$300K",
-              status: "Active"
-            },
-            {
-              id: 4,
-              name: "Quality Assurance",
-              manager: "Tom Anderson",
-              employees: 4,
-              projects: 1,
-              budget: "$100K",
-              status: "Active"
             }
           ]
         },
         {
           id: 2,
-          name: "Design",
+          name: "Product",
           manager: "Alex Rodriguez",
-          employees: 12,
+          members: 12,
           projects: 4,
           budget: "$400K",
+          employees: 12,
           status: "Active",
-          subdepartments: [
-            {
-              id: 5,
-              name: "UI/UX Design",
-              manager: "Alex Rodriguez",
-              employees: 8,
-              projects: 3,
-              budget: "$250K",
-              status: "Active"
-            },
-            {
-              id: 6,
-              name: "Visual Design",
-              manager: "Maria Garcia",
-              employees: 4,
-              projects: 1,
-              budget: "$150K",
-              status: "Active"
-            }
-          ]
-        },
-        {
-          id: 3,
-          name: "Product Management",
-          manager: "Lisa Chen",
-          employees: 8,
-          projects: 6,
-          budget: "$300K",
-          status: "Active",
-          subdepartments: [
-            {
-              id: 7,
-              name: "Product Strategy",
-              manager: "Lisa Chen",
-              employees: 4,
-              projects: 3,
-              budget: "$150K",
-              status: "Active"
-            },
-            {
-              id: 8,
-              name: "Product Operations",
-              manager: "James Brown",
-              employees: 4,
-              projects: 3,
-              budget: "$150K",
-              status: "Active"
-            }
-          ]
-        },
-        {
-          id: 4,
-          name: "Marketing",
-          manager: "John Smith",
-          employees: 15,
-          projects: 3,
-          budget: "$500K",
-          status: "Active",
-          subdepartments: [
-            {
-              id: 9,
-              name: "Digital Marketing",
-              manager: "John Smith",
-              employees: 8,
-              projects: 2,
-              budget: "$250K",
-              status: "Active"
-            },
-            {
-              id: 10,
-              name: "Content Marketing",
-              manager: "Rachel Green",
-              employees: 4,
-              projects: 1,
-              budget: "$150K",
-              status: "Active"
-            },
-            {
-              id: 11,
-              name: "Growth Marketing",
-              manager: "Chris Lee",
-              employees: 3,
-              projects: 1,
-              budget: "$100K",
-              status: "Active"
-            }
-          ]
+          subdepartments: []
         }
       ],
       teams: [
@@ -480,8 +200,8 @@ export default function CompaniesPage() {
           id: 1,
           name: "Core Development",
           members: 15,
-          lead: "Sarah Johnson",
           projects: 3,
+          lead: "David Kim",
           performance: 92,
           department: "Engineering",
           subteams: [
@@ -502,140 +222,26 @@ export default function CompaniesPage() {
               projects: 2,
               performance: 89,
               focus: "Backend Development"
-            },
-            {
-              id: 3,
-              name: "Database Team",
-              members: 4,
-              lead: "Emma Wilson",
-              projects: 1,
-              performance: 96,
-              focus: "Data Management"
             }
           ]
         },
         {
           id: 2,
-          name: "Frontend Team",
-          members: 8,
-          lead: "Mike Chen",
+          name: "Frontend Development",
+          members: 12,
           projects: 2,
+          lead: "Emma Wilson",
           performance: 88,
           department: "Engineering",
           subteams: [
             {
-              id: 4,
+              id: 3,
               name: "UI Components",
               members: 3,
               lead: "Alex Rodriguez",
               projects: 1,
               performance: 91,
               focus: "Component Library"
-            },
-            {
-              id: 5,
-              name: "User Experience",
-              members: 3,
-              lead: "Maria Garcia",
-              projects: 1,
-              performance: 87,
-              focus: "UX Optimization"
-            },
-            {
-              id: 6,
-              name: "Performance",
-              members: 2,
-              lead: "Tom Anderson",
-              projects: 1,
-              performance: 93,
-              focus: "Performance Optimization"
-            }
-          ]
-        },
-        {
-          id: 3,
-          name: "Mobile Team",
-          members: 6,
-          lead: "Emma Wilson",
-          projects: 1,
-          performance: 95,
-          department: "Engineering",
-          subteams: [
-            {
-              id: 7,
-              name: "iOS Development",
-              members: 3,
-              lead: "Chris Lee",
-              projects: 1,
-              performance: 97,
-              focus: "iOS App Development"
-            },
-            {
-              id: 8,
-              name: "Android Development",
-              members: 3,
-              lead: "Rachel Green",
-              projects: 1,
-              performance: 94,
-              focus: "Android App Development"
-            }
-          ]
-        },
-        {
-          id: 4,
-          name: "UI/UX Design",
-          members: 5,
-          lead: "Alex Rodriguez",
-          projects: 4,
-          performance: 90,
-          department: "Design",
-          subteams: [
-            {
-              id: 9,
-              name: "Visual Design",
-              members: 2,
-              lead: "Maria Garcia",
-              projects: 2,
-              performance: 92,
-              focus: "Visual Identity"
-            },
-            {
-              id: 10,
-              name: "Interaction Design",
-              members: 3,
-              lead: "Alex Rodriguez",
-              projects: 2,
-              performance: 88,
-              focus: "User Interactions"
-            }
-          ]
-        },
-        {
-          id: 5,
-          name: "Product Strategy",
-          members: 4,
-          lead: "Lisa Chen",
-          projects: 2,
-          performance: 87,
-          department: "Product Management",
-          subteams: [
-            {
-              id: 11,
-              name: "Market Research",
-              members: 2,
-              lead: "James Brown",
-              projects: 1,
-              performance: 85,
-              focus: "Market Analysis"
-            },
-            {
-              id: 12,
-              name: "Product Planning",
-              members: 2,
-              lead: "Lisa Chen",
-              projects: 1,
-              performance: 89,
-              focus: "Roadmap Planning"
             }
           ]
         }
@@ -643,12 +249,12 @@ export default function CompaniesPage() {
       sprints: [
         {
           id: 1,
-          name: "Sprint 1 - Q1 2024",
+          name: "Sprint 1",
           status: "Completed",
           startDate: "2024-01-01",
-          endDate: "2024-01-15",
+          endDate: "2024-01-14",
           tasks: 24,
-          completed: 24,
+          completed: 22,
           team: "Core Development",
           velocity: 85,
           calendar: {
@@ -674,52 +280,6 @@ export default function CompaniesPage() {
                   timeSpent: "4h",
                   timeEstimate: "4h",
                   priority: "Medium"
-                },
-                {
-                  id: 2,
-                  name: "Implement OAuth integration",
-                  status: "Completed",
-                  assignee: "Mike Chen",
-                  timeSpent: "12h",
-                  timeEstimate: "10h",
-                  priority: "High"
-                },
-                {
-                  id: 3,
-                  name: "Add password reset functionality",
-                  status: "Completed",
-                  assignee: "Emma Wilson",
-                  timeSpent: "6h",
-                  timeEstimate: "6h",
-                  priority: "Medium"
-                }
-              ]
-            },
-            {
-              id: 2,
-              name: "Dashboard Analytics",
-              status: "Completed",
-              priority: "Medium",
-              assignee: "Sarah Johnson",
-              storyPoints: 5,
-              tasks: [
-                {
-                  id: 4,
-                  name: "Create chart components",
-                  status: "Completed",
-                  assignee: "David Kim",
-                  timeSpent: "8h",
-                  timeEstimate: "8h",
-                  priority: "Medium"
-                },
-                {
-                  id: 5,
-                  name: "Integrate data APIs",
-                  status: "Completed",
-                  assignee: "Mike Chen",
-                  timeSpent: "10h",
-                  timeEstimate: "8h",
-                  priority: "High"
                 }
               ]
             }
@@ -727,13 +287,13 @@ export default function CompaniesPage() {
         },
         {
           id: 2,
-          name: "Sprint 2 - Q1 2024",
+          name: "Sprint 2",
           status: "Active",
-          startDate: "2024-01-16",
-          endDate: "2024-01-29",
+          startDate: "2024-01-15",
+          endDate: "2024-01-28",
           tasks: 28,
           completed: 18,
-          team: "Frontend Team",
+          team: "Frontend Development",
           velocity: 78,
           calendar: {
             totalEvents: 38,
@@ -743,169 +303,180 @@ export default function CompaniesPage() {
           },
           stories: [
             {
-              id: 3,
-              name: "Responsive Design Implementation",
-              status: "In Progress",
-              priority: "High",
-              assignee: "Maria Garcia",
-              storyPoints: 13,
-              tasks: [
-                {
-                  id: 6,
-                  name: "Mobile layout optimization",
-                  status: "In Progress",
-                  assignee: "Alex Rodriguez",
-                  timeSpent: "16h",
-                  timeEstimate: "20h",
-                  priority: "High"
-                },
-                {
-                  id: 7,
-                  name: "Tablet responsive design",
-                  status: "Completed",
-                  assignee: "Tom Anderson",
-                  timeSpent: "12h",
-                  timeEstimate: "12h",
-                  priority: "Medium"
-                },
-                {
-                  id: 8,
-                  name: "Cross-browser testing",
-                  status: "To Do",
-                  assignee: "Emma Wilson",
-                  timeSpent: "0h",
-                  timeEstimate: "8h",
-                  priority: "Medium"
-                }
-              ]
-            },
-            {
-              id: 4,
-              name: "Performance Optimization",
+              id: 2,
+              name: "Dashboard Implementation",
               status: "In Progress",
               priority: "Medium",
-              assignee: "Chris Lee",
-              storyPoints: 8,
+              assignee: "Emma Wilson",
+              storyPoints: 5,
               tasks: [
                 {
-                  id: 9,
-                  name: "Code splitting implementation",
-                  status: "Completed",
-                  assignee: "David Kim",
-                  timeSpent: "10h",
-                  timeEstimate: "8h",
-                  priority: "High"
-                },
-                {
-                  id: 10,
-                  name: "Image optimization",
+                  id: 2,
+                  name: "Create chart components",
                   status: "In Progress",
-                  assignee: "Rachel Green",
-                  timeSpent: "6h",
-                  timeEstimate: "6h",
-                  priority: "Medium"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 3,
-          name: "Sprint 3 - Q1 2024",
-          status: "Planning",
-          startDate: "2024-02-01",
-          endDate: "2024-02-14",
-          tasks: 32,
-          completed: 0,
-          team: "Mobile Team",
-          velocity: 0,
-          calendar: {
-            totalEvents: 25,
-            upcomingEvents: 25,
-            completedEvents: 0,
-            todayEvents: 0
-          },
-          stories: [
-            {
-              id: 5,
-              name: "iOS App Development",
-              status: "Planning",
-              priority: "High",
-              assignee: "Chris Lee",
-              storyPoints: 21,
-              tasks: [
-                {
-                  id: 11,
-                  name: "Setup iOS project structure",
-                  status: "To Do",
-                  assignee: "Chris Lee",
-                  timeSpent: "0h",
-                  timeEstimate: "4h",
-                  priority: "High"
-                },
-                {
-                  id: 12,
-                  name: "Implement core navigation",
-                  status: "To Do",
                   assignee: "Emma Wilson",
-                  timeSpent: "0h",
-                  timeEstimate: "12h",
-                  priority: "High"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          id: 4,
-          name: "Sprint 4 - Q1 2024",
-          status: "Backlog",
-          startDate: "2024-02-15",
-          endDate: "2024-02-28",
-          tasks: 26,
-          completed: 0,
-          team: "UI/UX Design",
-          velocity: 0,
-          calendar: {
-            totalEvents: 18,
-            upcomingEvents: 18,
-            completedEvents: 0,
-            todayEvents: 0
-          },
-          stories: [
-            {
-              id: 6,
-              name: "Design System Implementation",
-              status: "Backlog",
-              priority: "Medium",
-              assignee: "Alex Rodriguez",
-              storyPoints: 13,
-              tasks: [
-                {
-                  id: 13,
-                  name: "Create component library",
-                  status: "To Do",
-                  assignee: "Maria Garcia",
-                  timeSpent: "0h",
-                  timeEstimate: "16h",
+                  timeSpent: "8h",
+                  timeEstimate: "10h",
                   priority: "Medium"
-                },
-                {
-                  id: 14,
-                  name: "Design documentation",
-                  status: "To Do",
-                  assignee: "Alex Rodriguez",
-                  timeSpent: "0h",
-                  timeEstimate: "8h",
-                  priority: "Low"
                 }
               ]
             }
           ]
         }
       ]
+    },
+    {
+      id: 2,
+      name: "Inkhub",
+      description: "Documentation and knowledge management platform",
+      status: "Active",
+      type: "Technology",
+      industry: "Software Development",
+      founded: "2021",
+      employees: 75,
+      location: "New York, NY",
+      website: "https://inkhub.com",
+      email: "hello@inkhub.com",
+      phone: "+1 (555) 987-6543",
+      totalProjects: 6,
+      activeProjects: 4,
+      completedProjects: 2,
+      totalTeams: 4,
+      members: 45,
+      revenue: "$1.8M",
+      growth: "+22%",
+      lastActivity: "1 hour ago",
+      tags: ["Documentation", "Knowledge Management", "SaaS"],
+      archived: false,
+      projects: [],
+      departments: [],
+      teams: [],
+      sprints: []
     }
-  ];
+  ]);
+
+  // Company actions
+  const deleteCompany = (companyId: number) => {
+    setCompanies(prev => prev.filter(company => company.id !== companyId));
+    setShowMoreMenu(null);
+  };
+
+  const archiveCompany = (companyId: number) => {
+    setCompanies(prev => prev.map(company => 
+      company.id === companyId ? { ...company, archived: true } : company
+    ));
+    setShowMoreMenu(null);
+  };
+
+  const duplicateCompany = (company: any) => {
+    const newCompany = {
+      ...company,
+      id: Math.max(...companies.map(c => c.id)) + 1,
+      name: `${company.name} (Copy)`,
+      status: "Planning"
+    };
+    setCompanies(prev => [...prev, newCompany]);
+    setShowMoreMenu(null);
+  };
+
+  const exportCompany = (company: any) => {
+    const dataStr = JSON.stringify(company, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${company.name}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Project actions
+  const deleteProject = (companyId: number, projectId: number) => {
+    setCompanies(prev => prev.map(company => 
+      company.id === companyId 
+        ? { ...company, projects: company.projects.filter(p => p.id !== projectId) }
+        : company
+    ));
+    setShowProjectMenu(null);
+  };
+
+  const archiveProject = (companyId: number, projectId: number) => {
+    setCompanies(prev => prev.map(company => 
+      company.id === companyId 
+        ? { 
+            ...company, 
+            projects: company.projects.map(p => 
+              p.id === projectId ? { ...p, status: "Archived" } : p
+            )
+          }
+        : company
+    ));
+    setShowProjectMenu(null);
+  };
+
+  // Toggle expansion functions
+  const toggleDepartment = (deptId: number) => {
+    setExpandedDepartments(prev => 
+      prev.includes(deptId) 
+        ? prev.filter(id => id !== deptId)
+        : [...prev, deptId]
+    );
+  };
+
+  const toggleTeam = (teamId: number) => {
+    setExpandedTeams(prev => 
+      prev.includes(teamId) 
+        ? prev.filter(id => id !== teamId)
+        : [...prev, teamId]
+    );
+  };
+
+  const toggleSprint = (sprintId: number) => {
+    setExpandedSprints(prev => 
+      prev.includes(sprintId) 
+        ? prev.filter(id => id !== sprintId)
+        : [...prev, sprintId]
+    );
+  };
+
+  const toggleProject = (projectId: number) => {
+    setExpandedProjects(prev => 
+      prev.includes(projectId) 
+        ? prev.filter(id => id !== projectId)
+        : [...prev, projectId]
+    );
+  };
+
+  const toggleSubproject = (subprojectId: number) => {
+    setExpandedSubprojects(prev => 
+      prev.includes(subprojectId) 
+        ? prev.filter(id => id !== subprojectId)
+        : [...prev, subprojectId]
+    );
+  };
+
+  // Contact actions
+  const contactCompany = (company: any, method: 'email' | 'phone' | 'website') => {
+    switch (method) {
+      case 'email':
+        window.open(`mailto:${company.email}`);
+        break;
+      case 'phone':
+        window.open(`tel:${company.phone}`);
+        break;
+      case 'website':
+        window.open(company.website, '_blank');
+        break;
+    }
+  };
+
+  // Clear filters
+  const clearFilters = () => {
+    setSearchTerm("");
+    setShowFilters(false);
+  };
+
+  const hasActiveFilters = searchTerm;
 
   const selectedCompanyData = companies.find(c => c.id === selectedCompany);
 

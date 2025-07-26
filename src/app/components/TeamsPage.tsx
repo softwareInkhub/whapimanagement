@@ -10,51 +10,60 @@ import {
   Activity,
   Target,
   Award,
-  BarChart3
+  BarChart3,
+  Edit,
+  Trash2,
+  Archive,
+  Mail,
+  Phone,
+  MessageSquare
 } from "lucide-react";
 
 // Sample team data
-const teams = [
+const initialTeams = [
   {
     id: 1,
     name: "Frontend Development",
     description: "Responsible for user interface and user experience",
     members: [
-      { id: 1, name: "Sarah Johnson", role: "Team Lead", avatar: "SJ", email: "sarah@company.com", status: "Online" },
-      { id: 2, name: "Mike Chen", role: "Senior Developer", avatar: "MC", email: "mike@company.com", status: "Online" },
-      { id: 3, name: "Emma Wilson", role: "UI/UX Designer", avatar: "EW", email: "emma@company.com", status: "Away" }
+      { id: 1, name: "Sarah Johnson", role: "Team Lead", avatar: "SJ", email: "sarah@company.com", status: "Online", phone: "+1-555-0123" },
+      { id: 2, name: "Mike Chen", role: "Senior Developer", avatar: "MC", email: "mike@company.com", status: "Online", phone: "+1-555-0124" },
+      { id: 3, name: "Emma Wilson", role: "UI/UX Designer", avatar: "EW", email: "emma@company.com", status: "Away", phone: "+1-555-0125" }
     ],
     project: "Whapi Project Management",
     tasksCompleted: 45,
     totalTasks: 60,
-    performance: 92
+    performance: 92,
+    archived: false
   },
   {
     id: 2,
     name: "Backend Development",
     description: "Server-side development and database management",
     members: [
-      { id: 4, name: "Alex Rodriguez", role: "Team Lead", avatar: "AR", email: "alex@company.com", status: "Online" },
-      { id: 5, name: "David Kim", role: "Senior Developer", avatar: "DK", email: "david@company.com", status: "Offline" }
+      { id: 4, name: "Alex Rodriguez", role: "Team Lead", avatar: "AR", email: "alex@company.com", status: "Online", phone: "+1-555-0126" },
+      { id: 5, name: "David Kim", role: "Senior Developer", avatar: "DK", email: "david@company.com", status: "Offline", phone: "+1-555-0127" }
     ],
     project: "Whapi Project Management",
     tasksCompleted: 38,
     totalTasks: 50,
-    performance: 88
+    performance: 88,
+    archived: false
   },
   {
     id: 3,
     name: "Quality Assurance",
     description: "Testing and quality control for all projects",
     members: [
-      { id: 6, name: "Lisa Thompson", role: "QA Lead", avatar: "LT", email: "lisa@company.com", status: "Online" },
-      { id: 7, name: "James Brown", role: "Test Engineer", avatar: "JB", email: "james@company.com", status: "Online" },
-      { id: 8, name: "Maria Garcia", role: "Automation Engineer", avatar: "MG", email: "maria@company.com", status: "Away" }
+      { id: 6, name: "Lisa Thompson", role: "QA Lead", avatar: "LT", email: "lisa@company.com", status: "Online", phone: "+1-555-0128" },
+      { id: 7, name: "James Brown", role: "Test Engineer", avatar: "JB", email: "james@company.com", status: "Online", phone: "+1-555-0129" },
+      { id: 8, name: "Maria Garcia", role: "Automation Engineer", avatar: "MG", email: "maria@company.com", status: "Away", phone: "+1-555-0130" }
     ],
     project: "Client Portal",
     tasksCompleted: 52,
     totalTasks: 65,
-    performance: 95
+    performance: 95,
+    archived: false
   }
 ];
 
@@ -64,9 +73,33 @@ const statusColors = {
   "Offline": "bg-neutral-400"
 };
 
-export default function TeamsPage() {
+interface Team {
+  id: number;
+  name: string;
+  description: string;
+  members: Array<{
+    id: number;
+    name: string;
+    role: string;
+    avatar: string;
+    email: string;
+    status: string;
+    phone: string;
+  }>;
+  project: string;
+  tasksCompleted: number;
+  totalTasks: number;
+  performance: number;
+  archived: boolean;
+}
+
+export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, title?: string) => void }) {
+  const [teams, setTeams] = useState<Team[]>(initialTeams);
   const [searchTerm, setSearchTerm] = useState("");
   const [projectFilter, setProjectFilter] = useState("All");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
+  const [showMemberMenu, setShowMemberMenu] = useState<{ teamId: number; memberId: number } | null>(null);
 
   const filteredTeams = teams.filter(team => {
     const matchesSearch = team.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -74,15 +107,77 @@ export default function TeamsPage() {
                          team.members.some(member => member.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesProject = projectFilter === "All" || team.project === projectFilter;
     
-    return matchesSearch && matchesProject;
+    return matchesSearch && matchesProject && !team.archived;
   });
 
   const analytics = {
-    totalTeams: teams.length,
-    totalMembers: teams.reduce((sum, team) => sum + team.members.length, 0),
-    activeMembers: teams.reduce((sum, team) => sum + team.members.filter(m => m.status === "Online").length, 0),
-    avgPerformance: Math.round(teams.reduce((sum, team) => sum + team.performance, 0) / teams.length)
+    totalTeams: teams.filter(t => !t.archived).length,
+    totalMembers: teams.filter(t => !t.archived).reduce((sum, team) => sum + team.members.length, 0),
+    activeMembers: teams.filter(t => !t.archived).reduce((sum, team) => sum + team.members.filter(m => m.status === "Online").length, 0),
+    avgPerformance: Math.round(teams.filter(t => !t.archived).reduce((sum, team) => sum + team.performance, 0) / teams.filter(t => !t.archived).length)
   };
+
+  // Team actions
+  const deleteTeam = (teamId: number) => {
+    setTeams(prev => prev.filter(team => team.id !== teamId));
+    setShowMoreMenu(null);
+  };
+
+  const archiveTeam = (teamId: number) => {
+    setTeams(prev => prev.map(team => 
+      team.id === teamId ? { ...team, archived: true } : team
+    ));
+    setShowMoreMenu(null);
+  };
+
+  const duplicateTeam = (team: Team) => {
+    const newTeam = {
+      ...team,
+      id: Math.max(...teams.map(t => t.id)) + 1,
+      name: `${team.name} (Copy)`,
+      members: team.members.map(member => ({
+        ...member,
+        id: Math.max(...teams.flatMap(t => t.members.map(m => m.id))) + member.id
+      }))
+    };
+    setTeams(prev => [...prev, newTeam]);
+    setShowMoreMenu(null);
+  };
+
+  // Member actions
+  const contactMember = (member: any, method: 'email' | 'phone' | 'message') => {
+    switch (method) {
+      case 'email':
+        window.open(`mailto:${member.email}`);
+        break;
+      case 'phone':
+        window.open(`tel:${member.phone}`);
+        break;
+      case 'message':
+        // Could open a chat interface
+        console.log(`Opening chat with ${member.name}`);
+        break;
+    }
+    setShowMemberMenu(null);
+  };
+
+  const removeMember = (teamId: number, memberId: number) => {
+    setTeams(prev => prev.map(team => 
+      team.id === teamId 
+        ? { ...team, members: team.members.filter(m => m.id !== memberId) }
+        : team
+    ));
+    setShowMemberMenu(null);
+  };
+
+  // Clear filters
+  const clearFilters = () => {
+    setSearchTerm("");
+    setProjectFilter("All");
+    setShowFilters(false);
+  };
+
+  const hasActiveFilters = searchTerm || projectFilter !== "All";
 
   return (
     <div className="p-6 bg-neutral-50 min-h-screen">
@@ -93,7 +188,10 @@ export default function TeamsPage() {
             <h1 className="text-3xl font-bold text-neutral-900 mb-2">Teams</h1>
             <p className="text-neutral-600">Manage your teams, track performance, and collaborate effectively.</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <button 
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => onOpenTab && onOpenTab("create-team", "Create Team")}
+          >
             <Plus size={16} />
             Create Team
           </button>
@@ -170,11 +268,58 @@ export default function TeamsPage() {
               <option value="Client Portal">Client Portal</option>
             </select>
 
-            <button className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
+            <button 
+              className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter className="w-4 h-4" />
               More Filters
             </button>
+
+            {hasActiveFilters && (
+              <button 
+                className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-red-50 text-red-700 transition-colors"
+                onClick={clearFilters}
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
+
+          {/* Advanced Filters */}
+          {showFilters && (
+            <div className="mt-4 pt-4 border-t border-neutral-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Performance Range</label>
+                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
+                    <option>All Performance</option>
+                    <option>90%+ (Excellent)</option>
+                    <option>80-89% (Good)</option>
+                    <option>70-79% (Average)</option>
+                    <option>&lt;70% (Needs Improvement)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Team Size</label>
+                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
+                    <option>All Sizes</option>
+                    <option>1-3 members</option>
+                    <option>4-6 members</option>
+                    <option>7+ members</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">Status</label>
+                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
+                    <option>All Status</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -232,7 +377,7 @@ export default function TeamsPage() {
                     <h4 className="text-sm font-medium text-neutral-700 mb-3">Team Members</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {team.members.map((member) => (
-                        <div key={member.id} className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg">
+                        <div key={member.id} className="flex items-center gap-3 p-3 bg-neutral-50 rounded-lg relative">
                           <div className="relative">
                             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                               <span className="text-sm font-medium text-blue-700">{member.avatar}</span>
@@ -243,16 +388,95 @@ export default function TeamsPage() {
                             <p className="text-sm font-medium text-neutral-900 truncate">{member.name}</p>
                             <p className="text-xs text-neutral-500 truncate">{member.role}</p>
                           </div>
+                          <button 
+                            className="p-1 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-200 rounded transition-colors"
+                            onClick={() => setShowMemberMenu(showMemberMenu?.teamId === team.id && showMemberMenu?.memberId === member.id ? null : { teamId: team.id, memberId: member.id })}
+                          >
+                            <MoreHorizontal className="w-3 h-3" />
+                          </button>
+                          
+                          {/* Member Actions Menu */}
+                          {showMemberMenu?.teamId === team.id && showMemberMenu?.memberId === member.id && (
+                            <div className="absolute right-0 top-12 z-10 bg-white border border-neutral-200 rounded shadow-lg min-w-[160px]">
+                              <button 
+                                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
+                                onClick={() => contactMember(member, 'email')}
+                              >
+                                <Mail className="w-4 h-4" />
+                                Send Email
+                              </button>
+                              <button 
+                                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
+                                onClick={() => contactMember(member, 'phone')}
+                              >
+                                <Phone className="w-4 h-4" />
+                                Call
+                              </button>
+                              <button 
+                                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
+                                onClick={() => contactMember(member, 'message')}
+                              >
+                                <MessageSquare className="w-4 h-4" />
+                                Message
+                              </button>
+                              <hr className="my-1" />
+                              <button 
+                                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-red-50 text-red-600 text-left"
+                                onClick={() => removeMember(team.id, member.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Remove from Team
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 ml-4">
-                  <button className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors">
+                <div className="flex items-center gap-2 ml-4 relative">
+                  <button 
+                    className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                    onClick={() => setShowMoreMenu(showMoreMenu === team.id ? null : team.id)}
+                  >
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
+                  
+                  {/* Team Actions Menu */}
+                  {showMoreMenu === team.id && (
+                    <div className="absolute right-0 top-12 z-10 bg-white border border-neutral-200 rounded shadow-lg min-w-[160px]">
+                                             <button 
+                         className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
+                         onClick={() => onOpenTab && onOpenTab("edit-team", `Edit: ${team.name}`)}
+                       >
+                        <Edit className="w-4 h-4" />
+                        Edit Team
+                      </button>
+                      <button 
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
+                        onClick={() => duplicateTeam(team)}
+                      >
+                        <Plus className="w-4 h-4" />
+                        Duplicate Team
+                      </button>
+                      <button 
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-yellow-50 text-yellow-600 text-left"
+                        onClick={() => archiveTeam(team.id)}
+                      >
+                        <Archive className="w-4 h-4" />
+                        Archive Team
+                      </button>
+                      <hr className="my-1" />
+                      <button 
+                        className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-red-50 text-red-600 text-left"
+                        onClick={() => deleteTeam(team.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete Team
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -265,7 +489,13 @@ export default function TeamsPage() {
               <Users className="w-8 h-8 text-neutral-400" />
             </div>
             <h3 className="text-lg font-medium text-neutral-900 mb-2">No teams found</h3>
-            <p className="text-neutral-600">Try adjusting your search or filter criteria.</p>
+            <p className="text-neutral-600 mb-4">Try adjusting your search or filter criteria.</p>
+            <button 
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={() => onOpenTab && onOpenTab("create-team", "Create Team")}
+            >
+              Create Your First Team
+            </button>
           </div>
         )}
       </div>
