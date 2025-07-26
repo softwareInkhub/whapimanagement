@@ -125,7 +125,7 @@ export default function NewTabPage() {
       indigo: "bg-indigo-50 text-indigo-600 border-indigo-200",
       orange: "bg-orange-50 text-orange-600 border-orange-200"
     };
-    return colorMap[color] || "bg-neutral-50 text-neutral-600 border-neutral-200";
+    return colorMap[color as keyof typeof colorMap] || "bg-neutral-50 text-neutral-600 border-neutral-200";
   };
 
   return (

@@ -237,7 +237,7 @@ export default function TeamsPage() {
                             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                               <span className="text-sm font-medium text-blue-700">{member.avatar}</span>
                             </div>
-                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${statusColors[member.status]}`}></div>
+                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${statusColors[member.status as keyof typeof statusColors]}`}></div>
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-neutral-900 truncate">{member.name}</p>

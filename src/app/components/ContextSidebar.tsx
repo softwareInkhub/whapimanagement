@@ -75,7 +75,7 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
   const toggleSection = (companyId: number, section: string) => {
     setCompaniesList(prev => prev.map(c =>
       c.id === companyId
-        ? { ...c, sections: { ...c.sections, [section]: { ...c.sections[section], expanded: !c.sections[section].expanded } } }
+        ? { ...c, sections: { ...c.sections, [section]: { ...c.sections[section as keyof typeof c.sections], expanded: !c.sections[section as keyof typeof c.sections].expanded } } }
         : c
     ));
   };
@@ -90,12 +90,14 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
               ...c, 
               sections: { 
                 ...c.sections, 
-                [parentSection]: { 
-                  ...c.sections[parentSection], 
-                  [nestedSection]: { 
-                    ...c.sections[parentSection][nestedSection], 
-                    expanded: !c.sections[parentSection][nestedSection].expanded 
-                  } 
+                                [parentSection]: {
+                  ...c.sections[parentSection as keyof typeof c.sections],
+                  [nestedSection]: {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ...(c.sections[parentSection as keyof typeof c.sections] as any)[nestedSection],
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    expanded: !(c.sections[parentSection as keyof typeof c.sections] as any)[nestedSection].expanded
+                  }
                 } 
               } 
             }

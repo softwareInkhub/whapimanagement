@@ -95,7 +95,7 @@ export default function CalendarPage() {
     return days;
   };
 
-  const getEventsForDate = (date) => {
+  const getEventsForDate = (date: Date) => {
     return events.filter(event => event.date === date.toISOString().split('T')[0]);
   };
 
@@ -259,7 +259,6 @@ export default function CalendarPage() {
                   {dayEvents.slice(0, 2).map((event) => (
                     <div
                       key={event.id}
-                      onClick={() => setSelectedEvent(event)}
                       className="p-2 bg-blue-100 rounded text-xs cursor-pointer hover:bg-blue-200 transition-colors"
                     >
                       <div className="font-medium text-blue-900 truncate">{event.title}</div>
@@ -287,7 +286,7 @@ export default function CalendarPage() {
         <div className="divide-y divide-neutral-200">
           {events
             .filter(event => new Date(event.date) >= new Date())
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
             .slice(0, 5)
             .map((event) => (
             <div key={event.id} className="p-6 hover:bg-neutral-50 transition-colors">
@@ -295,10 +294,10 @@ export default function CalendarPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-medium text-neutral-900">{event.title}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${eventTypes[event.type]}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${eventTypes[event.type as keyof typeof eventTypes] || 'bg-gray-100 text-gray-700'}`}>
                       {event.type}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityColors[event.priority]}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityColors[event.priority as keyof typeof priorityColors] || 'bg-gray-100 text-gray-700'}`}>
                       {event.priority}
                     </span>
                   </div>

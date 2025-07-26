@@ -130,12 +130,12 @@ export default function NotificationsPage() {
     highPriority: notifications.filter(n => n.priority === "high").length
   };
 
-  const markAsRead = (id) => {
+  const markAsRead = (id: number) => {
     // In a real app, this would update the notification status
     console.log(`Marked notification ${id} as read`);
   };
 
-  const deleteNotification = (id) => {
+  const deleteNotification = (id: number) => {
     // In a real app, this would remove the notification
     console.log(`Deleted notification ${id}`);
   };
@@ -264,7 +264,7 @@ export default function NotificationsPage() {
         
         <div className="divide-y divide-neutral-200">
           {filteredNotifications.map((notification) => {
-            const typeConfig = notificationTypes[notification.type];
+            const typeConfig = notificationTypes[notification.type as keyof typeof notificationTypes];
             const TypeIcon = typeConfig.icon;
             
             return (

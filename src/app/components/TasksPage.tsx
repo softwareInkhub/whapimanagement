@@ -231,10 +231,10 @@ export default function TasksPage() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-medium text-neutral-900">{task.title}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[task.status]}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[task.status as keyof typeof statusColors]}`}>
                       {task.status}
                     </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityColors[task.priority]}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityColors[task.priority as keyof typeof priorityColors]}`}>
                       {task.priority}
                     </span>
                   </div>

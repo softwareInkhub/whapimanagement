@@ -3,6 +3,20 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Sidebar from "./Sidebar";
 import ContextSidebar from "./ContextSidebar";
 import { useState } from "react";
+
+interface Project {
+  name: string;
+  company?: string;
+  status?: string;
+  description?: string;
+  tasks?: Array<{ title: string; status: string }>;
+  sprints?: Array<{ name: string; start: string; end: string }>;
+  members?: string[];
+  activity?: Array<{ user: string; action: string; target: string; time: string }>;
+  attachments?: Array<{ name: string; size: string; type: string }>;
+}
+
+
 import ProjectsPage from "./ProjectsPage";
 import DepartmentsPage from "./DepartmentsPage";
 import TeamsPageSheet from "./TeamsPageSheet";
@@ -31,16 +45,18 @@ const geistMono = Geist_Mono({
 
 
 
-const SHEET_COMPONENTS = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SHEET_COMPONENTS: Record<string, any> = {
   project: ProjectsPage,
   departments: DepartmentsPage,
   teams: TeamsPageSheet,
   sprints: SprintsPage,
 };
 
-export default function ClientLayout() {
+export default function ClientLayout({ children }: { children?: React.ReactNode }) {
   // Remove default openTabs for project details
-  const [openTabs, setOpenTabs] = useState([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [openTabs, setOpenTabs] = useState<{ type: string; key: string; title: string; component: any; project?: Project }[]>([]);
   const [activeTabIdx, setActiveTabIdx] = useState(0);
   const [pinnedTabs, setPinnedTabs] = useState<Set<string>>(new Set());
 
@@ -53,7 +69,7 @@ export default function ClientLayout() {
         setActiveTabIdx(idx);
         return prev;
       }
-      return [...prev, { type, key: `${type}-${Date.now()}`, title, component: SHEET_COMPONENTS[type] }];
+      return [...prev, { type, key: `${type}-${Date.now()}`, title, component: SHEET_COMPONENTS[type], project: undefined }];
     });
     setActiveTabIdx(openTabs.length); // Will be the new tab
   };
@@ -149,7 +165,7 @@ export default function ClientLayout() {
   };
 
   // Handler to open a project details tab from analytics sheet
-  const onViewProject = (project) => {
+  const onViewProject = (project: Project) => {
     setOpenTabs((prev) => {
       const existingIdx = prev.findIndex((t) => t.type === "project-details" && t.project?.name === project.name);
       if (existingIdx !== -1) {
@@ -204,7 +220,6 @@ export default function ClientLayout() {
           onAddDepartments={() => openTab("departments", "Departments")}
           onAddTeams={() => openTab("teams", "Teams")}
           onAddSprints={() => openTab("sprints", "Sprints")}
-          onOpenCompany={() => openTab("companies", "Companies")}
         />
       )}
       <main className="flex-1 min-w-0 bg-background overflow-y-auto">
