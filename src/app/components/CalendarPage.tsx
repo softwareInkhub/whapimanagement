@@ -83,7 +83,7 @@ export default function CalendarPage() {
   const [view, setView] = useState("week");
 
 
-  const getDaysInWeek = (date) => {
+  const getDaysInWeek = (date: Date) => {
     const start = new Date(date);
     start.setDate(start.getDate() - start.getDay());
     const days = [];
