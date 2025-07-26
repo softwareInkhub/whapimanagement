@@ -6,8 +6,6 @@ import {
   Shield,
   Palette,
   Globe,
-  Database,
-  Key,
   Mail,
   Smartphone,
   Monitor,

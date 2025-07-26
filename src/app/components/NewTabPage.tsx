@@ -9,18 +9,8 @@ import {
   Search,
   ArrowRight,
   Star,
-  Zap,
   Target,
-  TrendingUp,
-  Settings,
-  Bell,
-  Mail,
-  Phone,
-  MapPin,
-  Globe,
-  CheckCircle,
-  Clock,
-  AlertCircle
+  CheckCircle
 } from "lucide-react";
 
 export default function NewTabPage() {

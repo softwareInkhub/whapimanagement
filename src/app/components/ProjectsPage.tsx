@@ -1,6 +1,18 @@
 import { X, Users, ListChecks, Calendar, FileText, Activity, FolderKanban, Paperclip, Building } from "lucide-react";
 
-export default function ProjectsPage({ project, onClose }: { project: any, onClose?: () => void }) {
+interface Project {
+  name: string;
+  company?: string;
+  status?: string;
+  description?: string;
+  tasks?: Array<{ title: string; status: string }>;
+  sprints?: Array<{ name: string; start: string; end: string }>;
+  members?: string[];
+  activity?: Array<{ user: string; action: string; target: string; time: string }>;
+  attachments?: Array<{ name: string; size: string; type: string }>;
+}
+
+export default function ProjectsPage({ project, onClose }: { project: Project, onClose?: () => void }) {
   if (!project) return null;
   return (
     <div className="w-full">
@@ -43,7 +55,7 @@ export default function ProjectsPage({ project, onClose }: { project: any, onClo
             <section className="bg-neutral-50 rounded-xl p-6 border border-neutral-100">
               <h3 className="flex items-center gap-2 text-lg font-semibold mb-2"><ListChecks size={18} /> Tasks</h3>
               <ul className="space-y-1">
-                {project.tasks.map((task: any, i: number) => (
+                {project.tasks.map((task, i: number) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
                     <span className={`w-2 h-2 rounded-full ${task.status === 'Done' ? 'bg-green-500' : task.status === 'In Progress' ? 'bg-yellow-400' : 'bg-gray-300'}`}></span>
                     <span>{task.title}</span>
@@ -58,7 +70,7 @@ export default function ProjectsPage({ project, onClose }: { project: any, onClo
             <section className="bg-neutral-50 rounded-xl p-6 border border-neutral-100">
               <h3 className="flex items-center gap-2 text-lg font-semibold mb-2"><Calendar size={18} /> Sprints</h3>
               <ul className="space-y-1">
-                {project.sprints.map((sprint: any, i: number) => (
+                {project.sprints.map((sprint, i: number) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
                     <span className="font-medium">{sprint.name}</span>
                     <span className="text-xs text-neutral-400">{sprint.start} - {sprint.end}</span>
@@ -75,7 +87,7 @@ export default function ProjectsPage({ project, onClose }: { project: any, onClo
             <section className="bg-neutral-50 rounded-xl p-6 border border-neutral-100">
               <h3 className="flex items-center gap-2 text-lg font-semibold mb-2"><Users size={18} /> Members</h3>
               <div className="flex gap-2 flex-wrap">
-                {project.members.map((m: any, i: number) => (
+                {project.members.map((m, i: number) => (
                   <div key={i} className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-700 text-sm" title={m}>{m}</div>
                 ))}
               </div>
@@ -86,7 +98,7 @@ export default function ProjectsPage({ project, onClose }: { project: any, onClo
             <section className="bg-neutral-50 rounded-xl p-6 border border-neutral-100">
               <h3 className="flex items-center gap-2 text-lg font-semibold mb-2"><Activity size={18} /> Activity</h3>
               <ul className="space-y-1">
-                {project.activity.map((a: any, i: number) => (
+                {project.activity.map((a, i: number) => (
                   <li key={i} className="text-sm text-neutral-700">
                     <span className="font-medium text-blue-700">{a.user}</span> {a.action} <span className="font-medium">{a.target}</span> <span className="text-xs text-neutral-400">{a.time}</span>
                   </li>

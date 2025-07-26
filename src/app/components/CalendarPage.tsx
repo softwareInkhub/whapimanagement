@@ -2,17 +2,12 @@ import { useState } from "react";
 import { 
   Calendar as CalendarIcon,
   Plus,
-  Search,
-  Filter,
   ChevronLeft,
   ChevronRight,
-  Clock,
-  MapPin,
-  Users,
-  MoreHorizontal,
   Bell,
+  AlertCircle,
   CheckCircle,
-  AlertCircle
+  Clock
 } from "lucide-react";
 
 // Sample calendar events
@@ -83,7 +78,7 @@ const priorityColors = {
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("week");
-  const [selectedEvent, setSelectedEvent] = useState(null);
+
 
   const getDaysInWeek = (date) => {
     const start = new Date(date);
@@ -168,7 +163,7 @@ export default function CalendarPage() {
               <AlertCircle className="w-5 h-5 text-orange-500" />
             </div>
             <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.todayEvents}</h3>
-            <p className="text-neutral-600 text-sm">Today's Events</p>
+            <p className="text-neutral-600 text-sm">Today&apos;s Events</p>
           </div>
         </div>
 

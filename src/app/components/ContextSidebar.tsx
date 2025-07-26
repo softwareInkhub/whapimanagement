@@ -62,13 +62,12 @@ const namespaces = [
 // Companies tab index (after Teams, before Calendar)
 const COMPANIES_TAB_INDEX = 4;
 
-export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepartments, onAddTeams, onAddSprints, onOpenCompany }: {
+export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepartments, onAddTeams, onAddSprints }: {
   activeTab?: number,
   onAddProject?: () => void,
   onAddDepartments?: () => void,
   onAddTeams?: () => void,
   onAddSprints?: () => void,
-  onOpenCompany?: () => void,
 }) {
   const [companiesList, setCompaniesList] = useState(companies);
 
@@ -152,7 +151,7 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
                       <span className="text-sm font-medium">Projects</span>
                       <button
                         className="ml-auto w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
-                        onClick={() => { onAddProject && onAddProject(); }}
+                        onClick={() => { if (onAddProject) onAddProject(); }}
                       >
                         <Plus size={12} className="text-white" />
                       </button>
@@ -168,14 +167,14 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
                         <span className="text-sm font-medium">Departments</span>
                         <button
                           className="ml-auto w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center hover:bg-purple-600 transition-colors"
-                          onClick={e => { e.stopPropagation(); onAddDepartments && onAddDepartments(); }}
+                          onClick={e => { e.stopPropagation(); if (onAddDepartments) onAddDepartments(); }}
                         >
                           <Plus size={12} className="text-white" />
                         </button>
                       </div>
                       {company.sections.departments.expanded && (
                         <div className="ml-6 space-y-1">
-                          {company.sections.departments.subdepartments && company.sections.departments.subdepartments.map((sub, i) => (
+                          {company.sections.departments.subdepartments && company.sections.departments.subdepartments.map((sub) => (
                             <div key={sub} className="flex items-center gap-2 px-3 py-1 rounded-lg text-neutral-600 hover:bg-neutral-100">
                               <ChevronRight size={14} className="text-neutral-300" />
                               <Building size={14} className="text-purple-400" />
@@ -196,14 +195,14 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
                         <span className="text-sm font-medium">Teams</span>
                         <button
                           className="ml-auto w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
-                          onClick={e => { e.stopPropagation(); onAddTeams && onAddTeams(); }}
+                          onClick={e => { e.stopPropagation(); if (onAddTeams) onAddTeams(); }}
                         >
                           <Plus size={12} className="text-white" />
                         </button>
                       </div>
                       {company.sections.teams.expanded && (
                         <div className="ml-6 space-y-1">
-                          {company.sections.teams.subteams && company.sections.teams.subteams.map((sub, i) => (
+                          {company.sections.teams.subteams && company.sections.teams.subteams.map((sub) => (
                             <div key={sub} className="flex items-center gap-2 px-3 py-1 rounded-lg text-neutral-600 hover:bg-neutral-100">
                               <ChevronRight size={14} className="text-neutral-300" />
                               <User size={14} className="text-blue-400" />
@@ -224,7 +223,7 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
                         <span className="text-sm font-medium">Sprints</span>
                         <button
                           className="ml-auto w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors"
-                          onClick={e => { e.stopPropagation(); onAddSprints && onAddSprints(); }}
+                          onClick={e => { e.stopPropagation(); if (onAddSprints) onAddSprints(); }}
                         >
                           <Plus size={12} className="text-white" />
                         </button>
@@ -246,7 +245,7 @@ export default function ContextSidebar({ activeTab = 0, onAddProject, onAddDepar
                           </div>
                           {(() => {
                             console.log('Stories state:', company.sections.sprints.stories);
-                            return company.sections.sprints.stories.expanded && company.sections.sprints.stories.tasks && company.sections.sprints.stories.tasks.map((task, i) => (
+                            return company.sections.sprints.stories.expanded && company.sections.sprints.stories.tasks && company.sections.sprints.stories.tasks.map((task) => (
                               <div key={task} className="flex items-center gap-2 px-6 py-1 rounded-lg text-neutral-500 hover:bg-neutral-100">
                                 <ChevronRight size={12} className="text-neutral-300" />
                                 <CheckSquare size={12} className="text-green-400" />

@@ -10,10 +10,6 @@ import {
   Activity,
   Target,
   Award,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
   BarChart3
 } from "lucide-react";
 

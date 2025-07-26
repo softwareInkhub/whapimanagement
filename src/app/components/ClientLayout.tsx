@@ -29,17 +29,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const navItems = [
-  { label: "Dashboard", component: DashboardPage },
-  { label: "Projects", component: ProjectsPage },
-  { label: "Tasks", component: TasksPage },
-  { label: "Teams", component: TeamsPage },
-  { label: "Companies", component: CompaniesPage },
-  { label: "Calendar", component: CalendarPage },
-  { label: "Reports", component: ReportsPage },
-  { label: "Settings", component: SettingsPage },
-  { label: "Notifications", component: NotificationsPage },
-];
+
 
 const SHEET_COMPONENTS = {
   project: ProjectsPage,
@@ -48,7 +38,7 @@ const SHEET_COMPONENTS = {
   sprints: SprintsPage,
 };
 
-export default function ClientLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout() {
   // Remove default openTabs for project details
   const [openTabs, setOpenTabs] = useState([]);
   const [activeTabIdx, setActiveTabIdx] = useState(0);
@@ -222,7 +212,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         <div className="flex items-center bg-white border-b border-neutral-200">
           {/* Pinned Tabs (fixed, always visible) */}
           <div className="flex items-center gap-0 pl-4 pt-0 pb-0">
-            {openTabs.filter(tab => pinnedTabs.has(tab.key)).map((tab, idx) => {
+            {openTabs.filter(tab => pinnedTabs.has(tab.key)).map((tab) => {
               const globalIdx = openTabs.findIndex(t => t.key === tab.key);
               const isActive = activeTabIdx === globalIdx;
               return (
@@ -276,7 +266,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           {/* Unpinned Tabs (scrollable) */}
           <div className="flex-1 overflow-x-auto scrollbar-thin scrollbar-thumb-neutral-300 scrollbar-track-neutral-100 hover:scrollbar-thumb-neutral-400">
             <div className="flex items-center gap-0 pt-0 pb-0 min-w-max">
-              {openTabs.filter(tab => !pinnedTabs.has(tab.key)).map((tab, idx) => {
+              {openTabs.filter(tab => !pinnedTabs.has(tab.key)).map((tab) => {
                 const globalIdx = openTabs.findIndex(t => t.key === tab.key);
                 const isActive = activeTabIdx === globalIdx;
                 return (

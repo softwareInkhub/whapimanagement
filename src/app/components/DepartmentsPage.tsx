@@ -1,4 +1,4 @@
-import { X, Users, Briefcase } from "lucide-react";
+import { X, Briefcase } from "lucide-react";
 
 export default function DepartmentsPage({ open, onClose }: { open: boolean, onClose: () => void }) {
   if (!open) return null;

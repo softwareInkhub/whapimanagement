@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { 
   CheckCircle, 
-  Clock, 
   AlertCircle, 
   Plus, 
   Search, 
@@ -13,8 +12,7 @@ import {
   BarChart3,
   TrendingUp,
   Activity,
-  Target,
-  Zap
+  Target
 } from "lucide-react";
 
 // Sample task data

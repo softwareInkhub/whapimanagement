@@ -12,10 +12,7 @@ import {
   User,
   Tag,
   Settings,
-  Trash2,
-  Archive,
-  Mail,
-  Smartphone
+  Trash2
 } from "lucide-react";
 
 // Sample notifications data

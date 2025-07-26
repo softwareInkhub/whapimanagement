@@ -71,7 +71,20 @@ const analytics = [
   { label: "Planning", value: 2 },
 ];
 
-export default function ProjectsAnalyticsPage({ open, onClose, onViewProject }: { open: boolean, onClose: () => void, onViewProject: (project: any) => void }) {
+interface Project {
+  name: string;
+  status: string;
+  members: string[];
+  description: string;
+  tasks: Array<{ id: number; title: string; status: string; assignee: string }>;
+  sprints: Array<{ id: number; name: string; status: string; tasks: number }>;
+  progress: number;
+  startDate: string;
+  endDate: string;
+  company?: string;
+}
+
+export default function ProjectsAnalyticsPage({ open, onClose, onViewProject }: { open: boolean, onClose: () => void, onViewProject: (project: Project) => void }) {
   return (
     <div className="p-6">
       {/* Header */}

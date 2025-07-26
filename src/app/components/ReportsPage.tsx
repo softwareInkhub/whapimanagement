@@ -6,7 +6,6 @@ import {
   Calendar,
   Users,
   Target,
-  Award,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -89,7 +88,7 @@ const chartData = {
 };
 
 export default function ReportsPage() {
-  const [selectedReport, setSelectedReport] = useState(null);
+
   const [timeRange, setTimeRange] = useState("30d");
 
   return (
