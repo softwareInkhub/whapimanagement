@@ -21,7 +21,38 @@ import {
   CheckCircle,
   AlertCircle,
   Star,
-  GitBranch
+  GitBranch,
+  BarChart3,
+  Zap,
+  Award,
+  TrendingDown,
+  FilterX,
+  SortAsc,
+  Grid3X3,
+  List,
+  Bell,
+  MessageSquare,
+  Heart,
+  ExternalLink,
+  GitCommit,
+  Activity,
+  DollarSign,
+  CalendarDays,
+  UserCheck,
+  Timer,
+  Flag,
+  Layers,
+  ChevronDown,
+  Save,
+  ArrowLeft,
+  Building,
+  Briefcase,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  UserPlus,
+  Settings
 } from "lucide-react";
 
 // Sample project data
@@ -45,6 +76,11 @@ const initialProjects = [
     archived: false,
     tags: ["Frontend", "E-commerce", "Mobile"],
     repository: "github.com/company/ecommerce-platform",
+    likes: 24,
+    comments: 8,
+    views: 156,
+    health: "excellent",
+    velocity: 87,
     subprojects: [
       {
         id: 1,
@@ -71,167 +107,115 @@ const initialProjects = [
         progress: 0,
         tasks: 8,
         completed: 0,
-        assignee: "Alex Rodriguez"
+        assignee: "Lisa Wang"
       }
     ]
   },
   {
     id: 2,
-    name: "CRM System",
-    status: "Planning",
+    name: "Data Analytics Dashboard",
+    status: "Active",
     priority: "Medium",
-    assignee: "Lisa Chen",
-    team: "Backend Development",
-    startDate: "2024-02-01",
-    endDate: "2024-05-31",
-    progress: 15,
-    tasks: 36,
-    completed: 5,
+    assignee: "Alex Rodriguez",
+    team: "Data Science",
+    startDate: "2024-02-15",
+    endDate: "2024-05-30",
+    progress: 45,
+    tasks: 32,
+    completed: 14,
     budget: "$200K",
-    description: "Customer relationship management system with analytics and reporting",
-    created: "2024-01-15",
+    description: "Comprehensive analytics dashboard for business intelligence and reporting",
+    created: "2024-02-15",
     lastActivity: "1 day ago",
     archived: false,
-    tags: ["Backend", "CRM", "Analytics"],
-    repository: "github.com/company/crm-system",
+    tags: ["Data", "Analytics", "BI"],
+    repository: "github.com/company/analytics-dashboard",
+    likes: 18,
+    comments: 12,
+    views: 89,
+    health: "good",
+    velocity: 72,
     subprojects: [
       {
-        id: 4,
-        name: "Database Design",
-        status: "In Progress",
-        progress: 60,
+        id: 1,
+        name: "Data Pipeline",
+        status: "Completed",
+        progress: 100,
         tasks: 8,
-        completed: 5,
-        assignee: "Tom Anderson"
+        completed: 8,
+        assignee: "Alex Rodriguez"
       },
       {
-        id: 5,
+        id: 2,
+        name: "Visualization Layer",
+        status: "In Progress",
+        progress: 60,
+        tasks: 15,
+        completed: 9,
+        assignee: "Maria Garcia"
+      },
+      {
+        id: 3,
         name: "API Development",
         status: "Planning",
         progress: 0,
-        tasks: 10,
+        tasks: 9,
         completed: 0,
-        assignee: "Emma Wilson"
+        assignee: "James Wilson"
       }
     ]
   },
   {
     id: 3,
-    name: "Design System",
-    status: "Completed",
-    priority: "High",
-    assignee: "Alex Rodriguez",
-    team: "UI/UX Design",
-    startDate: "2023-12-01",
-    endDate: "2024-01-31",
-    progress: 100,
-    tasks: 24,
-    completed: 24,
-    budget: "$80K",
-    description: "Comprehensive design system with component library and documentation",
-    created: "2023-11-15",
-    lastActivity: "1 week ago",
-    archived: false,
-    tags: ["Design", "Components", "Documentation"],
-    repository: "github.com/company/design-system",
-    subprojects: [
-      {
-        id: 6,
-        name: "Component Library",
-        status: "Completed",
-        progress: 100,
-        tasks: 12,
-        completed: 12,
-        assignee: "Maria Garcia"
-      },
-      {
-        id: 7,
-        name: "Style Guide",
-        status: "Completed",
-        progress: 100,
-        tasks: 8,
-        completed: 8,
-        assignee: "Rachel Green"
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: "Mobile App",
-    status: "In Progress",
-    priority: "High",
-    assignee: "David Kim",
-    team: "Mobile Development",
-    startDate: "2024-01-15",
-    endDate: "2024-04-30",
-    progress: 40,
-    tasks: 42,
-    completed: 17,
-    budget: "$120K",
-    description: "Cross-platform mobile application for iOS and Android",
-    created: "2024-01-10",
-    lastActivity: "30 minutes ago",
-    archived: false,
-    tags: ["Mobile", "iOS", "Android"],
-    repository: "github.com/company/mobile-app",
-    subprojects: [
-      {
-        id: 8,
-        name: "iOS Development",
-        status: "In Progress",
-        progress: 55,
-        tasks: 18,
-        completed: 10,
-        assignee: "James Brown"
-      },
-      {
-        id: 9,
-        name: "Android Development",
-        status: "In Progress",
-        progress: 35,
-        tasks: 16,
-        completed: 6,
-        assignee: "Chris Lee"
-      }
-    ]
-  },
-  {
-    id: 5,
-    name: "Analytics Dashboard",
+    name: "Mobile Banking App",
     status: "Planning",
-    priority: "Medium",
-    assignee: "Emma Wilson",
-    team: "Data Science",
+    priority: "Critical",
+    assignee: "Emily Chen",
+    team: "Mobile Development",
     startDate: "2024-03-01",
-    endDate: "2024-06-30",
-    progress: 5,
-    tasks: 28,
-    completed: 1,
-    budget: "$90K",
-    description: "Real-time analytics dashboard with data visualization and reporting",
-    created: "2024-02-01",
-    lastActivity: "2 days ago",
+    endDate: "2024-08-31",
+    progress: 15,
+    tasks: 56,
+    completed: 8,
+    budget: "$300K",
+    description: "Secure mobile banking application with biometric authentication",
+    created: "2024-03-01",
+    lastActivity: "3 days ago",
     archived: false,
-    tags: ["Analytics", "Dashboard", "Data"],
-    repository: "github.com/company/analytics-dashboard",
+    tags: ["Mobile", "Banking", "Security"],
+    repository: "github.com/company/mobile-banking",
+    likes: 32,
+    comments: 15,
+    views: 203,
+    health: "excellent",
+    velocity: 85,
     subprojects: [
       {
-        id: 10,
-        name: "Data Pipeline",
-        status: "Planning",
-        progress: 0,
-        tasks: 6,
-        completed: 0,
-        assignee: "Emma Wilson"
+        id: 1,
+        name: "Security Framework",
+        status: "In Progress",
+        progress: 80,
+        tasks: 12,
+        completed: 10,
+        assignee: "Emily Chen"
       },
       {
-        id: 11,
-        name: "Visualization Components",
+        id: 2,
+        name: "UI/UX Design",
         status: "Planning",
         progress: 0,
-        tasks: 8,
+        tasks: 20,
         completed: 0,
-        assignee: "Lisa Thompson"
+        assignee: "Sophie Lee"
+      },
+      {
+        id: 3,
+        name: "Backend API",
+        status: "Planning",
+        progress: 0,
+        tasks: 24,
+        completed: 0,
+        assignee: "Ryan Thompson"
       }
     ]
   }
@@ -256,6 +240,11 @@ interface Project {
   archived: boolean;
   tags: string[];
   repository: string;
+  likes: number;
+  comments: number;
+  views: number;
+  health: string;
+  velocity: number;
   subprojects: Array<{
     id: number;
     name: string;
@@ -274,22 +263,133 @@ export default function ProjectsPage({ open, onClose, onOpenTab }: {
 }) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("All");
+  const [priorityFilter, setPriorityFilter] = useState<string>("All");
+  const [teamFilter, setTeamFilter] = useState<string>("All");
   const [showFilters, setShowFilters] = useState(false);
-  const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
-  const [expandedProjects, setExpandedProjects] = useState<number[]>([]);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [sortBy, setSortBy] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
-  // Project actions
+  // Form states for inline form
+  const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [projectStatus, setProjectStatus] = useState("Planning");
+  const [projectPriority, setProjectPriority] = useState("Medium");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [budget, setBudget] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [showCompanyDropdown, setShowCompanyDropdown] = useState(false);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+  const [showNewCompanyModal, setShowNewCompanyModal] = useState(false);
+  const [newCompanyName, setNewCompanyName] = useState("");
+  const [newCompanyDescription, setNewCompanyDescription] = useState("");
+
+  const companies = ["Whapi Corp", "Inkhub", "Acme Corp", "Globex Inc."];
+  const statuses = ["Planning", "Active", "Completed", "On Hold", "Cancelled"];
+  const priorities = ["Low", "Medium", "High", "Critical"];
+  const availableMembers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller"];
+
+  const toggleMember = (member: string) => {
+    setSelectedMembers(prev => 
+      prev.includes(member) 
+        ? prev.filter(m => m !== member) 
+        : [...prev, member]
+    );
+  };
+
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (projectName && selectedCompany) {
+      try {
+        // Create new project object
+        const newProject: Project = {
+          id: Math.max(...projects.map(p => p.id)) + 1,
+          name: projectName,
+          description: projectDescription,
+          status: projectStatus,
+          priority: projectPriority,
+          assignee: selectedMembers[0] || "Unassigned",
+          team: selectedMembers.join(", "),
+          startDate: startDate,
+          endDate: endDate,
+          progress: 0,
+          tasks: 0,
+          completed: 0,
+          budget: budget,
+          created: new Date().toISOString().split('T')[0],
+          lastActivity: "Just now",
+          archived: false,
+          tags: [selectedCompany],
+          repository: "",
+          likes: 0,
+          comments: 0,
+          views: 0,
+          health: "excellent",
+          velocity: 0,
+          subprojects: []
+        };
+        
+        setProjects([...projects, newProject]);
+        
+        // Reset form
+        setProjectName("");
+        setProjectDescription("");
+        setSelectedCompany("");
+        setProjectStatus("Planning");
+        setProjectPriority("Medium");
+        setStartDate("");
+        setEndDate("");
+        setBudget("");
+        setSelectedMembers([]);
+        setShowCreateForm(false);
+      } catch (error) {
+        console.error('Error creating project:', error);
+      }
+    }
+  };
+
+  const handleCreateNewCompany = () => {
+    if (newCompanyName.trim()) {
+      const newCompany = newCompanyName.trim();
+      setSelectedCompany(newCompany);
+      if (!companies.includes(newCompany)) {
+        companies.push(newCompany);
+      }
+      setNewCompanyName("");
+      setNewCompanyDescription("");
+      setShowNewCompanyModal(false);
+      setShowCompanyDropdown(false);
+    }
+  };
+
+  const cancelCreate = () => {
+    setShowCreateForm(false);
+    // Reset form
+    setProjectName("");
+    setProjectDescription("");
+    setSelectedCompany("");
+    setProjectStatus("Planning");
+    setProjectPriority("Medium");
+    setStartDate("");
+    setEndDate("");
+    setBudget("");
+    setSelectedMembers([]);
+  };
+
   const deleteProject = (projectId: number) => {
-    setProjects(prev => prev.filter(project => project.id !== projectId));
-    setShowMoreMenu(null);
+    setProjects(projects.filter(p => p.id !== projectId));
   };
 
   const archiveProject = (projectId: number) => {
-    setProjects(prev => prev.map(project => 
-      project.id === projectId ? { ...project, archived: true } : project
+    setProjects(projects.map(p => 
+      p.id === projectId ? { ...p, archived: !p.archived } : p
     ));
-    setShowMoreMenu(null);
   };
 
   const duplicateProject = (project: Project) => {
@@ -299,10 +399,14 @@ export default function ProjectsPage({ open, onClose, onOpenTab }: {
       name: `${project.name} (Copy)`,
       status: "Planning",
       progress: 0,
-      completed: 0
+      completed: 0,
+      created: new Date().toISOString().split('T')[0],
+      lastActivity: "Just now",
+      likes: 0,
+      comments: 0,
+      views: 0
     };
-    setProjects(prev => [...prev, newProject]);
-    setShowMoreMenu(null);
+    setProjects([...projects, newProject]);
   };
 
   const exportProject = (project: Project) => {
@@ -311,7 +415,7 @@ export default function ProjectsPage({ open, onClose, onOpenTab }: {
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${project.name}.json`;
+    link.download = `${project.name.replace(/\s+/g, '_')}.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -319,79 +423,59 @@ export default function ProjectsPage({ open, onClose, onOpenTab }: {
   const downloadProjectReport = (project: Project) => {
     const report = `
 Project Report: ${project.name}
-Team: ${project.team}
 Status: ${project.status}
-Priority: ${project.priority}
-Assignee: ${project.assignee}
-Duration: ${project.startDate} to ${project.endDate}
-Progress: ${project.completed}/${project.tasks} tasks (${project.progress}% complete)
+Progress: ${project.progress}%
+Tasks: ${project.completed}/${project.tasks}
 Budget: ${project.budget}
-
+Team: ${project.team}
+Assignee: ${project.assignee}
+Start Date: ${project.startDate}
+End Date: ${project.endDate}
 Description: ${project.description}
-
-Subprojects:
-${project.subprojects.map(sub => `- ${sub.name} (${sub.status}) - ${sub.progress}% complete`).join('\n')}
+Last Activity: ${project.lastActivity}
     `;
+    
     const dataBlob = new Blob([report], { type: 'text/plain' });
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${project.name}-report.txt`;
+    link.download = `${project.name.replace(/\s+/g, '_')}_report.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
 
-  // Toggle expansion
   const toggleProject = (projectId: number) => {
-    setExpandedProjects(prev => 
-      prev.includes(projectId) 
-        ? prev.filter(id => id !== projectId)
-        : [...prev, projectId]
-    );
+    const newExpanded = new Set(expandedProjects);
+    if (newExpanded.has(projectId)) {
+      newExpanded.delete(projectId);
+    } else {
+      newExpanded.add(projectId);
+    }
+    setExpandedProjects(newExpanded);
   };
 
-  // Clear filters
   const clearFilters = () => {
     setSearchTerm("");
-    setShowFilters(false);
+    setStatusFilter("All");
+    setPriorityFilter("All");
+    setTeamFilter("All");
   };
 
-  const hasActiveFilters = searchTerm;
-
-  // Filter projects
-  const filteredProjects = projects.filter(project => 
-    !project.archived && (
-      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.assignee.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.team.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
-  );
-
-  // Analytics
-  const analytics = {
-    totalProjects: projects.filter(p => !p.archived).length,
-    activeProjects: projects.filter(p => !p.archived && p.status === "In Progress").length,
-    completedProjects: projects.filter(p => !p.archived && p.status === "Completed").length,
-    avgProgress: Math.round(projects.filter(p => !p.archived).reduce((sum, project) => sum + project.progress, 0) / projects.filter(p => !p.archived).length)
-  };
-
-  // Get status icon and color
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case "In Progress":
-        return { icon: Clock, color: "text-blue-600", bg: "bg-blue-100" };
       case "Completed":
-        return { icon: CheckCircle, color: "text-green-600", bg: "bg-green-100" };
+        return { color: "text-green-600", bg: "bg-green-100", icon: CheckCircle };
+      case "In Progress":
+        return { color: "text-blue-600", bg: "bg-blue-100", icon: Clock };
       case "Planning":
-        return { icon: AlertCircle, color: "text-yellow-600", bg: "bg-yellow-100" };
+        return { color: "text-yellow-600", bg: "bg-yellow-100", icon: AlertCircle };
+      case "On Hold":
+        return { color: "text-red-600", bg: "bg-red-100", icon: AlertCircle };
       default:
-        return { icon: Clock, color: "text-neutral-600", bg: "bg-neutral-100" };
+        return { color: "text-neutral-600", bg: "bg-neutral-100", icon: Clock };
     }
   };
 
-  // Get priority color
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "High":
@@ -405,381 +489,589 @@ ${project.subprojects.map(sub => `- ${sub.name} (${sub.status}) - ${sub.progress
     }
   };
 
+  const getHealthColor = (health: string) => {
+    switch (health) {
+      case "excellent":
+        return "text-green-600 bg-green-100";
+      case "good":
+        return "text-blue-600 bg-blue-100";
+      case "warning":
+        return "text-yellow-600 bg-yellow-100";
+      case "critical":
+        return "text-red-600 bg-red-100";
+      default:
+        return "text-neutral-600 bg-neutral-100";
+    }
+  };
+
+  const filteredProjects = projects.filter(project => {
+    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.assignee.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         project.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = statusFilter === "All" || project.status === statusFilter;
+    const matchesPriority = priorityFilter === "All" || project.priority === priorityFilter;
+    const matchesTeam = teamFilter === "All" || project.team === teamFilter;
+    
+    return matchesSearch && matchesStatus && matchesPriority && matchesTeam;
+  });
+
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    let aValue: string | number | Date, bValue: string | number | Date;
+    
+    switch (sortBy) {
+      case "name":
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+        break;
+      case "progress":
+        aValue = a.progress;
+        bValue = b.progress;
+        break;
+      case "priority":
+        aValue = a.priority === "High" ? 3 : a.priority === "Medium" ? 2 : 1;
+        bValue = b.priority === "High" ? 3 : b.priority === "Medium" ? 2 : 1;
+        break;
+      case "created":
+        aValue = new Date(a.created);
+        bValue = new Date(b.created);
+        break;
+      case "velocity":
+        aValue = a.velocity;
+        bValue = b.velocity;
+        break;
+      default:
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+    }
+    
+    if (sortOrder === "asc") {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
+
   if (!open) return null;
 
   return (
-    <div className="w-full h-full bg-neutral-50">
+    <div className="w-full h-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-neutral-200">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-blue-50 text-blue-700 font-semibold">
-            <FolderOpen className="text-blue-500 mr-1" size={20} />
-            <span>Projects</span>
+      <div className="flex items-center justify-between p-6 border-b border-white/20">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
+            <FolderOpen className="w-6 h-6" />
           </div>
-          <button onClick={onClose} className="ml-2 text-neutral-400 hover:text-red-500" aria-label="Close">
-            <X size={18} />
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
+            <p className="text-slate-600">Manage and track all your projects</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button 
+            className="group flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl border border-white/20 hover:bg-white/90 text-slate-700 font-medium transition-all duration-200 hover:scale-105 focus-ring"
+          >
+            <Download size={16} />
+            Export All
+          </button>
+          <button 
+            className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-semibold focus-ring"
+            onClick={() => setShowCreateForm(true)}
+          >
+            <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
+            New Project
           </button>
         </div>
-        <button 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={() => onOpenTab && onOpenTab("create-project", "Create Project")}
-        >
-          <Plus size={16} />
-          New Project
-        </button>
       </div>
 
-      <div className="p-6">
-        {/* Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <FolderOpen className="w-6 h-6 text-blue-600" />
+      <div className="p-6 space-y-6">
+        {/* Professional Inline Create Project Form */}
+        {showCreateForm && (
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-lg p-8 mb-8">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2">Create New Project</h2>
+                <p className="text-slate-600">Fill in the details below to create a new project</p>
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalProjects}</h3>
-            <p className="text-neutral-600 text-sm">Total Projects</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Clock className="w-6 h-6 text-green-600" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.activeProjects}</h3>
-            <p className="text-neutral-600 text-sm">Active Projects</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-purple-600" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.completedProjects}</h3>
-            <p className="text-neutral-600 text-sm">Completed Projects</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Target className="w-6 h-6 text-orange-600" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.avgProgress}%</h3>
-            <p className="text-neutral-600 text-sm">Avg Progress</p>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search projects, assignees, or tags..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <button 
+                onClick={cancelCreate}
+                className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                <X size={24} />
+              </button>
             </div>
             
-            <button 
-              className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="w-4 h-4" />
-              More Filters
-            </button>
-
-            {hasActiveFilters && (
-              <button 
-                className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-red-50 text-red-700 transition-colors"
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </button>
-            )}
-          </div>
-
-          {/* Advanced Filters */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-neutral-200">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Status</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Status</option>
-                    <option>In Progress</option>
-                    <option>Completed</option>
-                    <option>Planning</option>
-                  </select>
+            <form onSubmit={handleCreateProject} className="space-y-8">
+              {/* Project Information Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <Briefcase className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Project Information</h3>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Priority</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Priorities</option>
-                    <option>High</option>
-                    <option>Medium</option>
-                    <option>Low</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Sort By</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>Name A-Z</option>
-                    <option>Start Date</option>
-                    <option>End Date</option>
-                    <option>Highest Progress</option>
-                    <option>Most Tasks</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Projects List */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h2 className="text-lg font-semibold text-neutral-900">All Projects ({filteredProjects.length})</h2>
-          </div>
-          
-          <div className="divide-y divide-neutral-200">
-            {filteredProjects.map((project) => {
-              const StatusIcon = getStatusInfo(project.status).icon;
-              const statusColor = getStatusInfo(project.status).color;
-              const statusBg = getStatusInfo(project.status).bg;
-              
-              return (
-                <div key={project.id} className="p-6 hover:bg-neutral-50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <button
-                          onClick={() => toggleProject(project.id)}
-                          className="p-1 rounded hover:bg-neutral-100 transition-colors"
-                        >
-                          {expandedProjects.includes(project.id) ? (
-                            <span className="text-neutral-400">▼</span>
-                          ) : (
-                            <span className="text-neutral-400">▶</span>
-                          )}
-                        </button>
-                        <FolderOpen className="w-5 h-5 text-blue-500" />
-                        <h3 className="text-lg font-semibold text-neutral-900">{project.name}</h3>
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${statusBg} ${statusColor}`}>
-                          {project.status}
-                        </div>
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(project.priority)}`}>
-                          {project.priority}
-                        </div>
-                      </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Project Name *</label>
+                    <input 
+                      value={projectName} 
+                      onChange={e => setProjectName(e.target.value)} 
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                      placeholder="Enter project name"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Company *</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      >
+                        <span className={selectedCompany ? "text-slate-900" : "text-slate-500"}>
+                          {selectedCompany || "Select a company"}
+                        </span>
+                        <ChevronDown size={16} className="text-slate-400" />
+                      </button>
                       
-                      <p className="text-neutral-600 mb-3">{project.description}</p>
-                      
-                      <div className="flex items-center gap-6 text-sm text-neutral-500 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4" />
-                          <span>{project.team}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>{project.startDate} - {project.endDate}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Target className="w-4 h-4" />
-                          <span>{project.completed}/{project.tasks} tasks</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4" />
-                          <span>{project.progress}% complete</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Star className="w-4 h-4" />
-                          <span>{project.budget}</span>
-                        </div>
-                      </div>
-
-                      {/* Tags */}
-                      <div className="flex items-center gap-2 mb-4">
-                        {project.tags.map((tag, index) => (
-                          <span key={index} className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Progress Bar */}
-                      <div className="mb-4">
-                        <div className="flex justify-between text-sm text-neutral-600 mb-1">
-                          <span>Progress</span>
-                          <span>{project.completed}/{project.tasks} tasks ({project.progress}%)</span>
-                        </div>
-                        <div className="w-full bg-neutral-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${project.progress}%` }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      {/* Repository Link */}
-                      <div className="flex items-center gap-2 mb-4">
-                        <GitBranch className="w-4 h-4 text-neutral-400" />
-                        <a 
-                          href={`https://${project.repository}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 text-sm"
-                        >
-                          {project.repository}
-                        </a>
-                      </div>
-
-                      {/* Sub-projects */}
-                      {expandedProjects.includes(project.id) && (
-                        <div className="ml-8 mt-4 space-y-3">
-                          <h4 className="text-sm font-medium text-neutral-700 mb-3">Sub-projects ({project.subprojects.length})</h4>
-                          {project.subprojects.map((subproject) => (
-                            <div key={subproject.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200">
-                              <div className="flex items-center gap-3">
-                                <FolderOpen className="w-4 h-4 text-blue-400" />
-                                <div>
-                                  <h5 className="font-medium text-neutral-800 text-sm">{subproject.name}</h5>
-                                  <p className="text-xs text-neutral-600">Assignee: {subproject.assignee}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-4">
-                                <div className="text-center">
-                                  <p className="text-xs font-medium">{subproject.completed}/{subproject.tasks}</p>
-                                  <p className="text-xs text-neutral-500">Tasks</p>
-                                </div>
-                                <div className="text-center">
-                                  <p className="text-xs font-medium">{subproject.progress}%</p>
-                                  <p className="text-xs text-neutral-500">Progress</p>
-                                </div>
-                                <div className={`px-2 py-1 rounded text-xs font-medium ${
-                                  subproject.status === "Completed" ? "bg-green-100 text-green-700" :
-                                  subproject.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                                  "bg-neutral-100 text-neutral-700"
-                                }`}>
-                                  {subproject.status}
-                                </div>
-                              </div>
-                            </div>
+                      {showCompanyDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                          {companies.map((company) => (
+                            <button
+                              key={company}
+                              type="button"
+                              onClick={() => {
+                                setSelectedCompany(company);
+                                setShowCompanyDropdown(false);
+                              }}
+                              className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm transition-colors"
+                            >
+                              {company}
+                            </button>
                           ))}
+                          <div className="border-t border-slate-200">
+                            <button
+                              type="button"
+                              onClick={() => setShowNewCompanyModal(true)}
+                              className="w-full text-left px-4 py-3 text-blue-600 hover:bg-blue-50 text-sm font-medium transition-colors"
+                            >
+                              + Add New Company
+                            </button>
+                          </div>
                         </div>
                       )}
-                    </div>
-
-                    <div className="flex items-center gap-2 ml-4">
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        onClick={() => onOpenTab && onOpenTab("edit-project", `Edit: ${project.name}`)}
-                        title="Edit Project"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        onClick={() => downloadProjectReport(project)}
-                        title="Download Report"
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
-                        onClick={() => setShowMoreMenu(showMoreMenu === project.id ? null : project.id)}
-                      >
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
                       
-                      {/* Project Actions Menu */}
-                      {showMoreMenu === project.id && (
-                        <div className="absolute right-0 top-12 z-10 bg-white border border-neutral-200 rounded shadow-lg min-w-[160px]">
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => onOpenTab && onOpenTab("edit-project", `Edit: ${project.name}`)}
-                          >
-                            <Edit className="w-4 h-4" />
-                            Edit Project
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => onOpenTab && onOpenTab("view-project", `View: ${project.name}`)}
-                          >
-                            <Eye className="w-4 h-4" />
-                            View Project
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => duplicateProject(project)}
-                          >
-                            <Copy className="w-4 h-4" />
-                            Duplicate Project
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => exportProject(project)}
-                          >
-                            <Share2 className="w-4 h-4" />
-                            Export Project
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-green-50 text-green-600 text-left"
-                            onClick={() => downloadProjectReport(project)}
-                          >
-                            <Download className="w-4 h-4" />
-                            Download Report
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-yellow-50 text-yellow-600 text-left"
-                            onClick={() => archiveProject(project.id)}
-                          >
-                            <Archive className="w-4 h-4" />
-                            Archive Project
-                          </button>
-                          <hr className="my-1" />
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-red-50 text-red-600 text-left"
-                            onClick={() => deleteProject(project.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete Project
-                          </button>
+                      {/* Inline New Company Form */}
+                      {showNewCompanyModal && (
+                        <div className="absolute z-20 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="text-sm font-semibold text-slate-900">Add New Company</h4>
+                            <button 
+                              onClick={() => setShowNewCompanyModal(false)}
+                              className="text-slate-400 hover:text-slate-600"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-xs font-medium text-slate-700 mb-1">Company Name *</label>
+                              <input
+                                type="text"
+                                value={newCompanyName}
+                                onChange={(e) => setNewCompanyName(e.target.value)}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                placeholder="Enter company name"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-700 mb-1">Description (Optional)</label>
+                              <textarea
+                                value={newCompanyDescription}
+                                onChange={(e) => setNewCompanyDescription(e.target.value)}
+                                rows={2}
+                                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
+                                placeholder="Brief company description..."
+                              />
+                            </div>
+                            <div className="flex gap-2 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => setShowNewCompanyModal(false)}
+                                className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleCreateNewCompany}
+                                disabled={!newCompanyName.trim()}
+                                className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Add Company
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
 
-          {filteredProjects.length === 0 && (
-            <div className="p-12 text-center">
-              <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FolderOpen className="w-8 h-8 text-neutral-400" />
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+                  <textarea 
+                    value={projectDescription} 
+                    onChange={e => setProjectDescription(e.target.value)} 
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" 
+                    rows={3}
+                    placeholder="Describe the project goals, objectives, and key deliverables..."
+                  />
+                </div>
               </div>
-              <h3 className="text-lg font-medium text-neutral-900 mb-2">No projects found</h3>
-              <p className="text-neutral-600 mb-4">Try adjusting your search or create a new project.</p>
-              <button 
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={() => onOpenTab && onOpenTab("create-project", "Create Project")}
-              >
-                Create Your First Project
-              </button>
+
+              {/* Project Details Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Settings className="w-5 h-5 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Project Details</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      >
+                        <span className="text-slate-900">{projectStatus}</span>
+                        <ChevronDown size={16} className="text-slate-400" />
+                      </button>
+                      
+                      {showStatusDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                          {statuses.map((statusOption) => (
+                            <button
+                              key={statusOption}
+                              type="button"
+                              onClick={() => {
+                                setProjectStatus(statusOption);
+                                setShowStatusDropdown(false);
+                              }}
+                              className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm transition-colors"
+                            >
+                              {statusOption}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Priority</label>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      >
+                        <span className="text-slate-900">{projectPriority}</span>
+                        <ChevronDown size={16} className="text-slate-400" />
+                      </button>
+                      
+                      {showPriorityDropdown && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                          {priorities.map((priorityOption) => (
+                            <button
+                              key={priorityOption}
+                              type="button"
+                              onClick={() => {
+                                setProjectPriority(priorityOption);
+                                setShowPriorityDropdown(false);
+                              }}
+                              className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm transition-colors"
+                            >
+                              {priorityOption}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Budget</label>
+                    <input 
+                      value={budget} 
+                      onChange={e => setBudget(e.target.value)} 
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                      placeholder="e.g., $50,000"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Timeline Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <Calendar className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Timeline</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Start Date *</label>
+                    <input 
+                      type="date"
+                      value={startDate} 
+                      onChange={e => setStartDate(e.target.value)} 
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">End Date *</label>
+                    <input 
+                      type="date"
+                      value={endDate} 
+                      onChange={e => setEndDate(e.target.value)} 
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Team Members Section */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-orange-100 rounded-lg">
+                    <Users className="w-5 h-5 text-orange-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Team Members</h3>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Assign Team Members</label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {availableMembers.map(member => (
+                      <button
+                        key={member}
+                        type="button"
+                        onClick={() => toggleMember(member)}
+                        className={`p-3 rounded-lg border-2 transition-all ${
+                          selectedMembers.includes(member) 
+                            ? 'border-blue-500 bg-blue-50 text-blue-700' 
+                            : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center text-sm font-medium">
+                            {member.split(' ').map(n => n[0]).join('')}
+                          </div>
+                          <span className="text-sm font-medium">{member}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+                <button 
+                  type="button"
+                  onClick={cancelCreate}
+                  className="px-6 py-3 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all font-medium"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={!projectName || !selectedCompany} 
+                  className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  Create Project
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedProjects.map((project, index) => (
+            <div 
+              key={project.id} 
+              className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105 animate-fade-in"
+              style={{ animationDelay: `${300 + index * 100}ms` }}
+            >
+              {/* Project Header */}
+              <div className="p-6 border-b border-white/20">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                      {project.name}
+                    </h3>
+                    <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                      {project.description}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                      <Heart size={16} />
+                    </button>
+                    <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                      <MoreHorizontal size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Project Stats */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-slate-900">{project.progress}%</div>
+                    <div className="text-xs text-slate-500">Progress</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-slate-900">{project.velocity}</div>
+                    <div className="text-xs text-slate-500">Velocity</div>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-slate-200 rounded-full h-2 mb-4">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${project.progress}%` }}
+                  ></div>
+                </div>
+
+                {/* Status and Priority */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const statusInfo = getStatusInfo(project.status);
+                      const StatusIcon = statusInfo.icon;
+                      return (
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusInfo.bg} ${statusInfo.color}`}>
+                          <StatusIcon size={12} className="inline mr-1" />
+                          {project.status}
+                        </span>
+                      );
+                    })()}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(project.priority)}`}>
+                      {project.priority}
+                    </span>
+                  </div>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getHealthColor(project.health)}`}>
+                    {project.health}
+                  </span>
+                </div>
+
+                {/* Project Meta */}
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1">
+                      <Users size={12} />
+                      {project.assignee}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Calendar size={12} />
+                      {project.endDate}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1">
+                      <Eye size={12} />
+                      {project.views}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MessageSquare size={12} />
+                      {project.comments}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Project Actions */}
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button 
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                    onClick={() => toggleProject(project.id)}
+                  >
+                    <Layers size={14} />
+                    {expandedProjects.has(project.id) ? 'Hide' : 'Show'} Details
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                    <Edit size={14} />
+                  </button>
+                  <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                    <Share2 size={14} />
+                  </button>
+                  <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                    <ExternalLink size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Expanded Details */}
+              {expandedProjects.has(project.id) && (
+                <div className="px-6 pb-6 animate-fade-in">
+                  <div className="border-t border-white/20 pt-4">
+                    <h4 className="font-semibold text-slate-900 mb-3">Subprojects</h4>
+                    <div className="space-y-3">
+                      {project.subprojects.map((subproject) => (
+                        <div key={subproject.id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
+                          <div className="flex-1">
+                            <div className="font-medium text-slate-900">{subproject.name}</div>
+                            <div className="text-sm text-slate-500">{subproject.assignee}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-medium text-slate-900">{subproject.progress}%</div>
+                            <div className="text-xs text-slate-500">{subproject.completed}/{subproject.tasks} tasks</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          ))}
         </div>
+
+        {/* Empty State */}
+        {sortedProjects.length === 0 && (
+          <div className="text-center py-12 animate-fade-in">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
+              <FolderOpen className="w-8 h-8 text-slate-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">No projects found</h3>
+            <p className="text-slate-600 mb-4">Try adjusting your search or filters</p>
+            <button 
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={clearFilters}
+            >
+              Clear Filters
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,16 +1,7 @@
 "use client";
 import { useState } from "react";
 import {
-  Building2,
-  FolderKanban,
-  Users,
-  Calendar,
-  Plus,
-  Search,
-  ArrowRight,
-  Star,
-  Target,
-  CheckCircle
+  Building2, FolderKanban, Users, Calendar, Plus, Search, ArrowRight, Star, Target, CheckCircle, TrendingUp, Clock, Heart, ExternalLink, GitCommit, DollarSign, UserCheck, Timer, Flag, Layers, Zap, SortAsc, CheckSquare, Square, Play, Pause, StopCircle, RotateCcw, LineChart, Crown, Shield, Trophy, Medal, Users2, UserX, UserCheck2, UserMinus, UserPlus2, Briefcase, Video, Phone, MessageSquare, Mail, AlertCircle, Info, Award, Paperclip, FileText, BarChart, PieChart, ScatterChart, AreaChart, Gauge, TrendingDown, Activity, Filter, Eye, Share2, Archive, Copy, Trash2, ArrowUpRight, ArrowDownRight, Minus, Building, Globe, Settings, Download, Upload, Key, Lock, Unlock, Database, Server, Cloud, Wifi, WifiOff, Volume2, VolumeX, Languages, MapPin, Home, School, ThumbsUp, ThumbsDown, HelpCircle, BookOpen, File, FileImage, FileVideo, FileAudio, FileArchive, MoreHorizontal
 } from "lucide-react";
 
 export default function NewTabPage() {
@@ -18,61 +9,67 @@ export default function NewTabPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const categories = [
-    { id: "all", label: "All", icon: Star, count: 12 },
-    { id: "companies", label: "Companies", icon: Building2, count: 3 },
-    { id: "projects", label: "Projects", icon: FolderKanban, count: 4 },
-    { id: "teams", label: "Teams", icon: Users, count: 2 },
-    { id: "sprints", label: "Sprints", icon: Calendar, count: 3 }
+    { id: "all", label: "All", icon: Star, count: 12, description: "View all recent items" },
+    { id: "companies", label: "Companies", icon: Building2, count: 3, description: "Manage organizations" },
+    { id: "projects", label: "Projects", icon: FolderKanban, count: 4, description: "Track project progress" },
+    { id: "teams", label: "Teams", icon: Users, count: 2, description: "Team collaboration" },
+    { id: "sprints", label: "Sprints", icon: Calendar, count: 3, description: "Agile development" }
   ];
 
   const quickActions = [
     {
       id: "new-company",
       title: "New Company",
-      description: "Create a new company organization",
+      description: "Create a new company organization with departments and teams",
       icon: Building2,
       color: "blue",
-      category: "companies"
+      category: "companies",
+      priority: "high"
     },
     {
       id: "new-project",
       title: "New Project",
-      description: "Start a new project with team collaboration",
+      description: "Start a new project with team collaboration and task management",
       icon: FolderKanban,
       color: "green",
-      category: "projects"
+      category: "projects",
+      priority: "high"
     },
     {
       id: "new-team",
       title: "New Team",
-      description: "Create a new team with members",
+      description: "Create a new team with members and assign roles",
       icon: Users,
       color: "purple",
-      category: "teams"
+      category: "teams",
+      priority: "medium"
     },
     {
       id: "new-sprint",
       title: "New Sprint",
-      description: "Plan a new sprint with tasks and stories",
+      description: "Plan a new sprint with tasks, stories, and deadlines",
       icon: Calendar,
       color: "pink",
-      category: "sprints"
+      category: "sprints",
+      priority: "medium"
     },
     {
       id: "new-department",
       title: "New Department",
-      description: "Organize teams into departments",
+      description: "Organize teams into departments with clear hierarchy",
       icon: Target,
       color: "indigo",
-      category: "companies"
+      category: "companies",
+      priority: "low"
     },
     {
       id: "new-task",
       title: "New Task",
-      description: "Create individual tasks and assignments",
+      description: "Create individual tasks and assignments with priorities",
       icon: CheckCircle,
       color: "orange",
-      category: "projects"
+      category: "projects",
+      priority: "high"
     }
   ];
 
@@ -83,7 +80,10 @@ export default function NewTabPage() {
       type: "Company",
       icon: Building2,
       lastModified: "2 hours ago",
-      status: "Active"
+      status: "Active",
+      description: "Leading project management solutions for enterprise teams",
+      priority: "high",
+      health: "excellent"
     },
     {
       id: 2,
@@ -91,212 +91,309 @@ export default function NewTabPage() {
       type: "Project",
       icon: FolderKanban,
       lastModified: "1 day ago",
-      status: "In Progress"
+      status: "In Progress",
+      description: "Cross-platform mobile application development",
+      priority: "high",
+      health: "good"
     },
     {
       id: 3,
       title: "Core Development Team",
       type: "Team",
       icon: Users,
-      lastModified: "3 days ago",
-      status: "Active"
+      lastModified: "3 hours ago",
+      status: "Active",
+      description: "Main development team for core features",
+      priority: "medium",
+      health: "excellent"
     },
     {
       id: 4,
-      title: "Sprint 1 - Q1 2024",
+      title: "Sprint 24",
       type: "Sprint",
       icon: Calendar,
+      lastModified: "5 hours ago",
+      status: "Active",
+      description: "Current sprint with 65% completion",
+      priority: "high",
+      health: "good"
+    },
+    {
+      id: 5,
+      title: "TechCorp Solutions",
+      type: "Company",
+      icon: Building2,
       lastModified: "1 week ago",
-      status: "Completed"
+      status: "Active",
+      description: "Innovative technology solutions provider",
+      priority: "medium",
+      health: "good"
+    },
+    {
+      id: 6,
+      title: "UI/UX Redesign",
+      type: "Project",
+      icon: FolderKanban,
+      lastModified: "2 days ago",
+      status: "Planning",
+      description: "Complete user interface redesign project",
+      priority: "medium",
+      health: "fair"
     }
   ];
 
-  const filteredQuickActions = quickActions.filter(action => 
-    (selectedCategory === "all" || action.category === selectedCategory) &&
-    (searchQuery === "" || action.title.toLowerCase().includes(searchQuery.toLowerCase()) || action.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
   const getColorClasses = (color: string) => {
-    const colorMap = {
-      blue: "bg-blue-50 text-blue-600 border-blue-200",
-      green: "bg-green-50 text-green-600 border-green-200",
-      purple: "bg-purple-50 text-purple-600 border-purple-200",
-      pink: "bg-pink-50 text-pink-600 border-pink-200",
-      indigo: "bg-indigo-50 text-indigo-600 border-indigo-200",
-      orange: "bg-orange-50 text-orange-600 border-orange-200"
-    };
-    return colorMap[color as keyof typeof colorMap] || "bg-neutral-50 text-neutral-600 border-neutral-200";
+    switch (color) {
+      case "blue":
+        return "bg-gradient-to-br from-blue-500 to-indigo-600";
+      case "green":
+        return "bg-gradient-to-br from-emerald-500 to-teal-600";
+      case "purple":
+        return "bg-gradient-to-br from-purple-500 to-pink-600";
+      case "pink":
+        return "bg-gradient-to-br from-pink-500 to-rose-600";
+      case "indigo":
+        return "bg-gradient-to-br from-indigo-500 to-purple-600";
+      case "orange":
+        return "bg-gradient-to-br from-orange-500 to-red-600";
+      default:
+        return "bg-gradient-to-br from-slate-500 to-gray-600";
+    }
   };
 
-  return (
-    <div className="p-8 bg-neutral-50 min-h-screen">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 mb-2">Create New</h1>
-        <p className="text-neutral-600">Start building your project management workspace</p>
-      </div>
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return "text-red-600 bg-red-100";
+      case "medium":
+        return "text-yellow-600 bg-yellow-100";
+      case "low":
+        return "text-green-600 bg-green-100";
+      default:
+        return "text-slate-600 bg-slate-100";
+    }
+  };
 
-      {/* Search Bar */}
-      <div className="mb-8">
-        <div className="relative max-w-2xl">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Search for templates, actions, or recent items..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border border-neutral-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+  const getHealthColor = (health: string) => {
+    switch (health) {
+      case "excellent":
+        return "text-green-600 bg-green-100";
+      case "good":
+        return "text-blue-600 bg-blue-100";
+      case "fair":
+        return "text-yellow-600 bg-yellow-100";
+      case "poor":
+        return "text-red-600 bg-red-100";
+      default:
+        return "text-slate-600 bg-slate-100";
+    }
+  };
+
+  const filteredQuickActions = quickActions.filter(action => 
+    selectedCategory === "all" || action.category === selectedCategory
+  );
+
+  const filteredRecentItems = recentItems.filter(item => 
+    selectedCategory === "all" || item.type.toLowerCase() === selectedCategory.slice(0, -1)
+  );
+
+  return (
+    <div className="w-full h-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30">
+      {/* Enhanced Header */}
+      <div className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-sm border-b border-white/20 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold shadow-lg">
+            <Plus className="text-white mr-1" size={20} />
+            <span>New Tab</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <button 
+            className="group flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl border border-white/20 hover:bg-white/90 text-slate-700 font-medium transition-all duration-200 hover:scale-105 focus-ring"
+          >
+            <Download size={16} />
+            Export Template
+          </button>
+          <button 
+            className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-semibold focus-ring"
+          >
+            <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
+            Quick Create
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Quick Actions */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-neutral-900">Quick Actions</h2>
-              <div className="flex items-center gap-2">
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-                      selectedCategory === category.id
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-                    }`}
-                  >
-                    {category.label} ({category.count})
-                  </button>
-                ))}
-              </div>
-            </div>
+      <div className="p-6 space-y-6">
+        {/* Enhanced Search */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 animate-fade-in">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search for actions, recent items, or categories..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white/50 backdrop-blur-sm"
+            />
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {filteredQuickActions.map((action) => (
-                <div
-                  key={action.id}
-                  className="group p-4 border border-neutral-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all cursor-pointer"
+        {/* Category Filter */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Filter className="w-5 h-5 text-emerald-500" />
+            Categories
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`group p-4 rounded-xl text-left transition-all duration-200 hover:scale-105 ${
+                    selectedCategory === category.id
+                      ? "bg-emerald-100 border-2 border-emerald-500 shadow-lg"
+                      : "bg-slate-50/50 border-2 border-white/20 hover:bg-slate-100/50"
+                  }`}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg border ${getColorClasses(action.color)}`}>
-                      <action.icon className="w-5 h-5" />
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className={`p-2 rounded-lg ${getColorClasses("blue")} text-white shadow-lg`}>
+                      <Icon className="w-5 h-5" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-neutral-900 mb-1">{action.title}</h3>
-                      <p className="text-sm text-neutral-600 mb-3">{action.description}</p>
-                      <div className="flex items-center gap-2">
-                        <button className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                          <Plus className="w-4 h-4" />
-                          Create
-                        </button>
-                        <button className="flex items-center gap-1 px-3 py-1 border border-neutral-200 text-neutral-600 rounded-lg text-sm font-medium hover:bg-neutral-50 transition-colors">
-                          <ArrowRight className="w-4 h-4" />
-                          Learn More
-                        </button>
+                      <div className="font-semibold text-slate-900">{category.label}</div>
+                      <div className="text-xs text-slate-500">{category.count} items</div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600">{category.description}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 animate-fade-in" style={{ animationDelay: '400ms' }}>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-yellow-500" />
+            Quick Actions
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredQuickActions.map((action, index) => {
+              const Icon = action.icon;
+              return (
+                <button
+                  key={action.id}
+                  className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105 animate-fade-in"
+                  style={{ animationDelay: `${600 + index * 100}ms` }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`p-3 rounded-xl ${getColorClasses(action.color)} text-white shadow-lg`}>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(action.priority)}`}>
+                      {action.priority}
+                    </span>
+                  </div>
+                  <h4 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">
+                    {action.title}
+                  </h4>
+                  <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                    {action.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-500 capitalize">{action.category}</span>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all duration-200" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Recent Items */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 animate-fade-in" style={{ animationDelay: '600ms' }}>
+          <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <Clock className="w-5 h-5 text-blue-500" />
+            Recent Items
+          </h3>
+          <div className="space-y-4">
+            {filteredRecentItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.id}
+                  className="group bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105 animate-fade-in"
+                  style={{ animationDelay: `${800 + index * 100}ms` }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-4">
+                      <div className={`p-3 rounded-xl ${getColorClasses("blue")} text-white shadow-lg`}>
+                        <Icon className="w-5 h-5" />
                       </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h4 className="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                            {item.title}
+                          </h4>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getHealthColor(item.health)}`}>
+                            {item.health}
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-600 mb-2">{item.description}</p>
+                        <div className="flex items-center gap-4 text-xs text-slate-500">
+                          <span className="flex items-center gap-1">
+                            <Clock size={12} />
+                            {item.lastModified}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Target size={12} />
+                            {item.type}
+                          </span>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(item.priority)}`}>
+                            {item.priority}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                        <Heart size={16} />
+                      </button>
+                      <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                        <ExternalLink size={16} />
+                      </button>
+                      <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
+                        <MoreHorizontal size={16} />
+                      </button>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {filteredQuickActions.length === 0 && (
-              <div className="text-center py-8">
-                <Search className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-                <p className="text-neutral-600">No actions found matching your search</p>
-              </div>
-            )}
+              );
+            })}
           </div>
         </div>
 
-        {/* Recent Items & Templates */}
-        <div className="space-y-6">
-          {/* Recent Items */}
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <h3 className="text-lg font-semibold text-neutral-900 mb-4">Recent Items</h3>
-            <div className="space-y-3">
-              {recentItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">
-                  <div className="p-2 bg-neutral-100 rounded-lg">
-                    <item.icon className="w-4 h-4 text-neutral-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-neutral-900 text-sm truncate">{item.title}</p>
-                    <p className="text-xs text-neutral-500">{item.type} • {item.lastModified}</p>
-                  </div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    item.status === "Active" ? "bg-green-100 text-green-700" :
-                    item.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                    "bg-neutral-100 text-neutral-700"
-                  }`}>
-                    {item.status}
-                  </span>
-                </div>
-              ))}
+        {/* Empty State */}
+        {filteredQuickActions.length === 0 && filteredRecentItems.length === 0 && (
+          <div className="text-center py-12 animate-fade-in">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
+              <Search className="w-8 h-8 text-slate-400" />
             </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">No items found</h3>
+            <p className="text-slate-600 mb-4">Try adjusting your search or category filter</p>
+            <button 
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("all");
+              }}
+            >
+              Clear Filters
+            </button>
           </div>
-
-          {/* Templates */}
-          <div className="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
-            <h3 className="text-lg font-semibold text-neutral-900 mb-4">Popular Templates</h3>
-            <div className="space-y-3">
-              <div className="p-3 border border-neutral-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <Building2 className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-neutral-900 text-sm">Startup Company</p>
-                    <p className="text-xs text-neutral-500">Complete startup template</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-3 border border-neutral-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <FolderKanban className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-neutral-900 text-sm">Agile Project</p>
-                    <p className="text-xs text-neutral-500">Scrum methodology ready</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-3 border border-neutral-200 rounded-lg hover:border-blue-300 cursor-pointer transition-colors">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 rounded-lg">
-                    <Users className="w-4 h-4 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-neutral-900 text-sm">Development Team</p>
-                    <p className="text-xs text-neutral-500">Full-stack team structure</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-6 text-white">
-            <h3 className="text-lg font-semibold mb-4">Workspace Stats</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Active Projects</span>
-                <span className="font-semibold">8</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Team Members</span>
-                <span className="font-semibold">89</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Completed Tasks</span>
-                <span className="font-semibold">1,247</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

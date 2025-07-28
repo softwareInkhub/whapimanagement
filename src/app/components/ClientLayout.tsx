@@ -89,7 +89,7 @@ export default function ClientLayout() {
   // Map sidebar index to tab type and title
   const sidebarTabMap = [
     { type: "dashboard", title: "Dashboard", component: DashboardPage },
-    { type: "projects", title: "Projects", component: ProjectsAnalyticsPage },
+    { type: "projects", title: "All Projects", component: ProjectsAnalyticsPage },
     { type: "tasks", title: "Tasks", component: TasksPage },
     { type: "teams", title: "Teams", component: TeamsPage },
     { type: "companies", title: "Companies", component: CompaniesPage },
@@ -178,6 +178,15 @@ export default function ClientLayout() {
 
   const onSidebarNavClick = (idx: number) => {
     const tab = sidebarTabMap[idx];
+    
+    // Custom logic for projects and companies
+    let customTitle = tab.title;
+    if (tab.type === "projects") {
+      customTitle = "All Projects";
+    } else if (tab.type === "companies") {
+      customTitle = "Companies";
+    }
+    
     setOpenTabs((prev) => {
       const existingIdx = prev.findIndex((t) => t.type === tab.type);
       if (existingIdx !== -1) {
@@ -186,7 +195,7 @@ export default function ClientLayout() {
         return prev;
       }
       // If tab doesn't exist, add it at the end and set as active
-      const newTabs = [...prev, { ...tab, key: `${tab.type}-${Date.now()}` }];
+      const newTabs = [...prev, { ...tab, key: `${tab.type}-${Date.now()}`, title: customTitle }];
       setActiveTabIdx(newTabs.length - 1); // Set to the new tab
       return newTabs;
     });
@@ -216,6 +225,30 @@ export default function ClientLayout() {
     });
   };
 
+  // Handler to open company-specific projects
+  const onOpenCompanyProjects = (companyName: string) => {
+    setOpenTabs((prev) => {
+      const tabKey = `company-projects-${companyName}`;
+      const existingIdx = prev.findIndex((t) => t.key === tabKey);
+      if (existingIdx !== -1) {
+        setActiveTabIdx(existingIdx);
+        return prev;
+      }
+      // Add company projects tab at the end
+      const newTabs = [
+        ...prev,
+        {
+          type: "company-projects",
+          key: tabKey,
+          title: `${companyName} Projects`,
+          component: ProjectsPage,
+        },
+      ];
+      setActiveTabIdx(newTabs.length - 1);
+      return newTabs;
+    });
+  };
+
   // Map tab type to sidebar index
   const sidebarIndexMap: Record<string, number> = {
     dashboard: 0,
@@ -237,8 +270,8 @@ export default function ClientLayout() {
         activeTab={sidebarActiveTab}
         onNavClick={onSidebarNavClick}
       />
-      {/* Only show ContextSidebar when Companies is active and not viewing a project details tab */}
-      {sidebarActiveTab === 4 && !(openTabs[activeTabIdx]?.type === 'project-details') && (
+      {/* Show ContextSidebar only when Companies tab is active */}
+      {sidebarActiveTab === 4 && (
         <ContextSidebar
           activeTab={sidebarActiveTab}
           onAddProject={() => openTab("project", "Projects")}
@@ -247,6 +280,20 @@ export default function ClientLayout() {
           onAddSprints={() => openTab("sprints", "Sprints")}
           onAddStories={() => openTab("stories", "Stories")}
           onAddTasks={() => openTab("tasks", "Tasks")}
+          onOpenCompanyProjects={onOpenCompanyProjects}
+        />
+      )}
+      {/* Show ContextSidebar when Projects tab is active */}
+      {sidebarActiveTab === 1 && (
+        <ContextSidebar
+          activeTab={sidebarActiveTab}
+          onAddProject={() => openTab("project", "Projects")}
+          onAddDepartments={() => openTab("departments", "Departments")}
+          onAddTeams={() => openTab("teams", "Teams")}
+          onAddSprints={() => openTab("sprints", "Sprints")}
+          onAddStories={() => openTab("stories", "Stories")}
+          onAddTasks={() => openTab("tasks", "Tasks")}
+          onOpenCompanyProjects={onOpenCompanyProjects}
         />
       )}
       <main className="flex-1 min-w-0 bg-background flex flex-col">
@@ -343,7 +390,7 @@ export default function ClientLayout() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto">
           {openTabs[activeTabIdx] && (() => {
             const TabComponent = openTabs[activeTabIdx].component;
             return (
