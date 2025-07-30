@@ -1,29 +1,31 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { 
-  X, 
   BookOpen, 
-  Plus, 
+  Calendar, 
+  MapPin, 
+  Mail, 
+  Phone, 
+  MoreHorizontal, 
+  Edit, 
+  Trash2, 
+  Archive, 
+  Copy, 
+  Download, 
   Search, 
   Filter, 
-  MoreHorizontal,
-  Calendar,
-  User,
-  Target,
+  X, 
+  Plus,
+  ChevronDown,
+  ChevronRight,
   TrendingUp,
-  Edit,
-  Trash2,
-  Archive,
-  Copy,
-  Share2,
-  Download,
+  BarChart3,
+  DollarSign,
+  Target,
+  FileText,
+  CheckSquare,
+  Users,
   Eye,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Star,
-  GitBranch,
-  MessageSquare,
-  Tag
+  Share2
 } from "lucide-react";
 
 // Sample story data
@@ -225,6 +227,23 @@ export default function StoriesPage({ open, onClose, onOpenTab }: {
   const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
   const [expandedStories, setExpandedStories] = useState<number[]>([]);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  
+  // Form states
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    project: "",
+    sprint: "",
+    status: "",
+    priority: "",
+    storyPoints: "",
+    assignee: "",
+    startDate: "",
+    dueDate: "",
+    acceptanceCriteria: [""] as string[],
+    teamMembers: [] as string[]
+  });
 
   // Story actions
   const deleteStory = (storyId: number) => {
@@ -333,15 +352,15 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
   const getStatusInfo = (status: string) => {
     switch (status) {
       case "In Progress":
-        return { icon: Clock, color: "text-blue-600", bg: "bg-blue-100" };
+        return { icon: Calendar, color: "text-blue-600", bg: "bg-blue-100" };
       case "Completed":
-        return { icon: CheckCircle, color: "text-green-600", bg: "bg-green-100" };
+        return { icon: CheckSquare, color: "text-green-600", bg: "bg-green-100" };
       case "To Do":
-        return { icon: AlertCircle, color: "text-yellow-600", bg: "bg-yellow-100" };
+        return { icon: ChevronRight, color: "text-yellow-600", bg: "bg-yellow-100" };
       case "Planning":
-        return { icon: AlertCircle, color: "text-purple-600", bg: "bg-purple-100" };
+        return { icon: ChevronRight, color: "text-purple-600", bg: "bg-purple-100" };
       default:
-        return { icon: Clock, color: "text-neutral-600", bg: "bg-neutral-100" };
+        return { icon: Calendar, color: "text-neutral-600", bg: "bg-neutral-100" };
     }
   };
 
@@ -358,6 +377,88 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
         return "text-neutral-600 bg-neutral-100";
     }
   };
+
+  const handleCreateStory = () => {
+    if (formData.title && formData.project) {
+      const newStory: Story = {
+        id: Math.max(...stories.map(s => s.id)) + 1,
+        name: formData.title,
+        status: formData.status || "To Do",
+        priority: formData.priority || "Medium",
+        assignee: formData.assignee || "Unassigned",
+        reporter: "Current User",
+        storyPoints: parseInt(formData.storyPoints) || 0,
+        tasks: 0,
+        completed: 0,
+        sprint: formData.sprint || "Backlog",
+        epic: "Default Epic",
+        description: formData.description,
+        acceptanceCriteria: formData.acceptanceCriteria.filter(criteria => criteria.trim() !== ""),
+        created: new Date().toISOString().split('T')[0],
+        updated: new Date().toISOString().split('T')[0],
+        dueDate: formData.dueDate,
+        archived: false,
+        tags: [],
+        comments: []
+      };
+      
+      setStories(prev => [...prev, newStory]);
+      setShowCreateForm(false);
+      setFormData({
+        title: "",
+        description: "",
+        project: "",
+        sprint: "",
+        status: "",
+        priority: "",
+        storyPoints: "",
+        assignee: "",
+        startDate: "",
+        dueDate: "",
+        acceptanceCriteria: [""],
+        teamMembers: []
+      });
+    }
+  };
+
+  const toggleMember = (member: string) => {
+    setFormData(prev => ({
+      ...prev,
+      teamMembers: prev.teamMembers.includes(member) 
+        ? prev.teamMembers.filter(m => m !== member)
+        : [...prev.teamMembers, member]
+    }));
+  };
+
+  const addAcceptanceCriteria = () => {
+    setFormData(prev => ({
+      ...prev,
+      acceptanceCriteria: [...prev.acceptanceCriteria, ""]
+    }));
+  };
+
+  const updateAcceptanceCriteria = (index: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      acceptanceCriteria: prev.acceptanceCriteria.map((criteria, i) => 
+        i === index ? value : criteria
+      )
+    }));
+  };
+
+  const removeAcceptanceCriteria = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      acceptanceCriteria: prev.acceptanceCriteria.filter((_, i) => i !== index)
+    }));
+  };
+
+  const availableMembers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller", "Grace Lee", "Henry Brown"];
+  const projects = ["Whapi Project Management", "E-commerce Platform", "Client Portal", "Mobile App Development", "API Integration"];
+  const sprints = ["Sprint 1", "Sprint 2", "Sprint 3", "Sprint 4", "Sprint 5"];
+  const statuses = ["To Do", "In Progress", "Review", "Done", "Blocked"];
+  const priorities = ["Low", "Medium", "High", "Critical"];
+  const assignees = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller"];
 
   if (!open) return null;
 
@@ -376,14 +477,272 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
         </div>
         <button 
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={() => onOpenTab && onOpenTab("create-story", "Create Story")}
+          onClick={() => setShowCreateForm(!showCreateForm)}
         >
           <Plus size={16} />
-          New Story
+          {showCreateForm ? 'Cancel' : 'New Story'}
         </button>
       </div>
 
       <div className="p-6">
+        {/* Create Form */}
+        {showCreateForm && (
+          <div className="mb-6 bg-white rounded-xl shadow-lg border border-neutral-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-neutral-900">Create New Story</h3>
+              <button 
+                onClick={() => setShowCreateForm(false)}
+                className="text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Story Information */}
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <BookOpen className="w-3 h-3 text-orange-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Story Information</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Story Title *</label>
+                  <input 
+                    value={formData.title} 
+                    onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                    placeholder="Enter story title"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Project *</label>
+                  <select
+                    value={formData.project}
+                    onChange={e => setFormData(prev => ({ ...prev, project: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select a project</option>
+                    {projects.map(project => (
+                      <option key={project} value={project}>{project}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1">Description</label>
+                <textarea 
+                  value={formData.description} 
+                  onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))} 
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all resize-none"
+                  rows={2}
+                  placeholder="Describe the story requirements and goals..."
+                />
+              </div>
+
+              {/* Story Details */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Target className="w-3 h-3 text-green-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Story Details</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Sprint</label>
+                  <select
+                    value={formData.sprint}
+                    onChange={e => setFormData(prev => ({ ...prev, sprint: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select a sprint</option>
+                    {sprints.map(sprint => (
+                      <option key={sprint} value={sprint}>{sprint}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={e => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select status</option>
+                    {statuses.map(status => (
+                      <option key={status} value={status}>{status}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Priority</label>
+                  <select
+                    value={formData.priority}
+                    onChange={e => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select priority</option>
+                    {priorities.map(priority => (
+                      <option key={priority} value={priority}>{priority}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Story Points</label>
+                  <input
+                    value={formData.storyPoints}
+                    onChange={e => setFormData(prev => ({ ...prev, storyPoints: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                    placeholder="e.g., 3"
+                    type="number"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Assignee</label>
+                  <select
+                    value={formData.assignee}
+                    onChange={e => setFormData(prev => ({ ...prev, assignee: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select assignee</option>
+                    {assignees.map(assignee => (
+                      <option key={assignee} value={assignee}>{assignee}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-3 h-3 text-blue-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Timeline</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Start Date</label>
+                  <input 
+                    type="date"
+                    value={formData.startDate} 
+                    onChange={e => setFormData(prev => ({ ...prev, startDate: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-neutral-50/50 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Due Date</label>
+                  <input 
+                    type="date"
+                    value={formData.dueDate} 
+                    onChange={e => setFormData(prev => ({ ...prev, dueDate: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-neutral-50/50 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Acceptance Criteria */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <CheckSquare className="w-3 h-3 text-purple-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Acceptance Criteria</h4>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">Criteria</label>
+                <div className="space-y-2">
+                  {formData.acceptanceCriteria.map((criteria, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <input
+                        value={criteria}
+                        onChange={e => updateAcceptanceCriteria(index, e.target.value)}
+                        className="flex-1 border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                        placeholder={`Acceptance criteria ${index + 1}`}
+                      />
+                      {formData.acceptanceCriteria.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeAcceptanceCriteria(index)}
+                          className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addAcceptanceCriteria}
+                    className="flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                  >
+                    <Plus size={14} />
+                    Add Criteria
+                  </button>
+                </div>
+              </div>
+
+              {/* Team Members */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-3 h-3 text-indigo-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Team Members</h4>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">Story Team</label>
+                <div className="flex flex-wrap gap-1">
+                  {availableMembers.map(member => (
+                    <button
+                      key={member}
+                      type="button"
+                      onClick={() => toggleMember(member)}
+                      className={`px-2 py-1 rounded-md border text-xs font-medium transition-all ${
+                        formData.teamMembers.includes(member) 
+                          ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
+                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:border-neutral-300'
+                      }`}
+                    >
+                      {member}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="flex-1 px-3 py-2 border border-neutral-200 rounded-lg text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleCreateStory}
+                  disabled={!formData.title || !formData.project}
+                  className="flex-1 px-3 py-2 bg-orange-600 text-white rounded-lg text-xs font-medium hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  Create Story
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
@@ -400,7 +759,7 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
           <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-green-600" />
+                <CheckSquare className="w-6 h-6 text-green-600" />
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
@@ -411,7 +770,7 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
           <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <Clock className="w-6 h-6 text-purple-600" />
+                <Calendar className="w-6 h-6 text-purple-600" />
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
@@ -422,7 +781,7 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
           <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-orange-100 rounded-lg">
-                <Star className="w-6 h-6 text-orange-600" />
+                <BarChart3 className="w-6 h-6 text-orange-600" />
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
@@ -542,15 +901,15 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
                       
                       <div className="flex items-center gap-6 text-sm text-neutral-500 mb-4">
                         <div className="flex items-center gap-2">
-                          <User className="w-4 h-4" />
+                          <Users className="w-4 h-4" />
                           <span>Assignee: {story.assignee}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <User className="w-4 h-4" />
+                          <Users className="w-4 h-4" />
                           <span>Reporter: {story.reporter}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Star className="w-4 h-4" />
+                          <BarChart3 className="w-4 h-4" />
                           <span>{story.storyPoints} points</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -589,7 +948,7 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
                       {/* Epic and Sprint */}
                       <div className="flex items-center gap-4 text-sm text-neutral-500 mb-4">
                         <div className="flex items-center gap-2">
-                          <Tag className="w-4 h-4" />
+                          <BarChart3 className="w-4 h-4" />
                           <span>Epic: {story.epic}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -621,7 +980,7 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
                               {story.comments.map((comment) => (
                                 <div key={comment.id} className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <User className="w-4 h-4 text-neutral-400" />
+                                    <Users className="w-4 h-4 text-neutral-400" />
                                     <span className="text-sm font-medium text-neutral-800">{comment.author}</span>
                                     <span className="text-xs text-neutral-500">{comment.timestamp}</span>
                                   </div>
@@ -730,7 +1089,7 @@ ${story.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${com
               <p className="text-neutral-600 mb-4">Try adjusting your search or create a new story.</p>
               <button 
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={() => onOpenTab && onOpenTab("create-story", "Create Story")}
+                onClick={() => setShowCreateForm(true)}
               >
                 Create Your First Story
               </button>

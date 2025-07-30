@@ -1,756 +1,734 @@
-import { useState } from "react";
-import { 
-  Calendar as CalendarIcon, Plus, ChevronLeft, ChevronRight, Bell, CheckCircle, Clock, MapPin, Users, MoreHorizontal, Edit, Trash2, Copy, Share2, Filter, Search, CalendarDays, Star, Eye, Download, FilterX, Grid3X3, List, Heart, ExternalLink, GitCommit, DollarSign, UserCheck, Timer, Flag, Layers, Zap, TrendingDown, SortAsc, CheckSquare, Square, Play, Pause, StopCircle, RotateCcw, BarChart3, PieChart, LineChart, Crown, Shield, Trophy, Medal, Users2, UserX, UserCheck2, UserMinus, UserPlus2, Settings, Globe, Building, Briefcase, Video, Phone, MessageSquare, Mail, AlertCircle, Info, Award, TrendingUp, Paperclip
-} from "lucide-react";
+'use client';
 
-// Sample calendar events
-const initialEvents = [
+import React, { useState } from 'react';
+import { 
+  Calendar, 
+  ChevronLeft, 
+  ChevronRight, 
+  Plus,
+  Clock,
+  User,
+  Tag,
+  X,
+  Save,
+  ArrowLeft,
+  AlertCircle,
+  MessageSquare,
+  Building,
+  Target,
+  CheckSquare,
+  Users,
+  MapPin,
+  DollarSign,
+  CalendarDays,
+  UserPlus,
+  FileText,
+  Bell,
+  Star,
+  Eye,
+  Share2,
+  Download,
+  FilterX,
+  Grid3X3,
+  List,
+  Heart,
+  ExternalLink,
+  GitCommit,
+  Activity,
+  Timer,
+  Flag,
+  Layers,
+  Zap,
+  TrendingDown,
+  SortAsc,
+  CheckCircle,
+  Square,
+  Play,
+  Pause,
+  StopCircle,
+  RotateCcw,
+  BarChart3,
+  PieChart,
+  LineChart,
+  Crown,
+  Shield,
+  Trophy,
+  Medal,
+  Users2,
+  UserX,
+  UserCheck2,
+  UserMinus,
+  UserPlus2,
+  Settings,
+  Globe,
+  MapPin as MapPinIcon,
+  Building as BuildingIcon,
+  Briefcase
+} from 'lucide-react';
+
+interface CalendarEvent {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  type: 'meeting' | 'deadline' | 'reminder';
+  attendees?: string[];
+  description?: string;
+}
+
+const mockEvents: CalendarEvent[] = [
   {
-    id: 1,
-    title: "Project Review Meeting",
-    description: "Weekly review of Whapi Project Management progress with stakeholders and team leads",
-    date: "2024-02-15",
-    time: "10:00 AM",
-    duration: "1 hour",
-    type: "Meeting",
-    attendees: ["Sarah Johnson", "Mike Chen", "Alex Rodriguez"],
-    location: "Conference Room A",
-    priority: "High",
-    completed: false,
-    recurring: "Weekly",
-    reminder: "15 min before",
-    notes: "Prepare progress report and demo",
-    tags: ["Review", "Stakeholders", "Progress"],
-    color: "blue",
-    notifications: 3,
-    attachments: 2
+    id: '1',
+    title: 'Project Review Meeting',
+    date: '2024-01-15',
+    time: '10:00 AM',
+    type: 'meeting',
+    attendees: ['John Doe', 'Jane Smith'],
+    description: 'Review progress on E-commerce Platform project'
   },
   {
-    id: 2,
-    title: "Client Presentation",
-    description: "Present final deliverables to client with live demo and Q&A session",
-    date: "2024-02-16",
-    time: "2:00 PM",
-    duration: "2 hours",
-    type: "Presentation",
-    attendees: ["Emma Wilson", "David Kim", "Lisa Chen"],
-    location: "Virtual Meeting",
-    priority: "High",
-    completed: false,
-    recurring: "One-time",
-    reminder: "30 min before",
-    notes: "Prepare slides and demo environment",
-    tags: ["Client", "Demo", "Delivery"],
-    color: "purple",
-    notifications: 5,
-    attachments: 4
+    id: '2',
+    title: 'Client Portal Deadline',
+    date: '2024-01-20',
+    time: '5:00 PM',
+    type: 'deadline',
+    description: 'Final delivery of Client Portal features'
   },
   {
-    id: 3,
-    title: "Team Standup",
-    description: "Daily standup for Frontend Development team with progress updates",
-    date: "2024-02-15",
-    time: "9:00 AM",
-    duration: "30 min",
-    type: "Standup",
-    attendees: ["Sarah Johnson", "Mike Chen", "Emma Wilson"],
-    location: "Team Room",
-    priority: "Medium",
-    completed: false,
-    recurring: "Daily",
-    reminder: "5 min before",
-    notes: "Update on sprint progress",
-    tags: ["Daily", "Team", "Progress"],
-    color: "green",
-    notifications: 1,
-    attachments: 0
-  },
-  {
-    id: 4,
-    title: "Code Review",
-    description: "Review authentication system implementation with security focus",
-    date: "2024-02-17",
-    time: "11:00 AM",
-    duration: "1 hour",
-    type: "Review",
-    attendees: ["Alex Rodriguez", "David Kim"],
-    location: "Development Lab",
-    priority: "Medium",
-    completed: false,
-    recurring: "As needed",
-    reminder: "10 min before",
-    notes: "Focus on security implementation",
-    tags: ["Code", "Security", "Review"],
-    color: "orange",
-    notifications: 2,
-    attachments: 1
-  },
-  {
-    id: 5,
-    title: "Sprint Planning",
-    description: "Plan next sprint with team capacity and story point estimation",
-    date: "2024-02-18",
-    time: "1:00 PM",
-    duration: "2 hours",
-    type: "Planning",
-    attendees: ["Sarah Johnson", "Mike Chen", "Alex Rodriguez", "Emma Wilson"],
-    location: "Planning Room",
-    priority: "High",
-    completed: false,
-    recurring: "Bi-weekly",
-    reminder: "1 hour before",
-    notes: "Prepare backlog and capacity planning",
-    tags: ["Planning", "Sprint", "Capacity"],
-    color: "indigo",
-    notifications: 4,
-    attachments: 3
-  },
-  {
-    id: 6,
-    title: "Retrospective",
-    description: "Team retrospective to discuss improvements and action items",
-    date: "2024-02-19",
-    time: "3:00 PM",
-    duration: "1 hour",
-    type: "Retrospective",
-    attendees: ["All Team Members"],
-    location: "Team Room",
-    priority: "Medium",
-    completed: false,
-    recurring: "Bi-weekly",
-    reminder: "15 min before",
-    notes: "Prepare feedback and improvement suggestions",
-    tags: ["Retro", "Improvement", "Team"],
-    color: "teal",
-    notifications: 2,
-    attachments: 1
+    id: '3',
+    title: 'Team Standup',
+    date: '2024-01-16',
+    time: '9:00 AM',
+    type: 'meeting',
+    attendees: ['All Team Members']
   }
 ];
 
-const eventTypes = {
-  "Meeting": { color: "bg-blue-100 text-blue-700", icon: Users },
-  "Presentation": { color: "bg-purple-100 text-purple-700", icon: Video },
-  "Standup": { color: "bg-green-100 text-green-700", icon: Clock },
-  "Review": { color: "bg-orange-100 text-orange-700", icon: CheckCircle },
-  "Planning": { color: "bg-indigo-100 text-indigo-700", icon: CalendarDays },
-  "Retrospective": { color: "bg-teal-100 text-teal-700", icon: MessageSquare }
-};
+const attendees = [
+  "Sarah Johnson",
+  "Mike Chen", 
+  "Alex Rodriguez",
+  "Emily Davis",
+  "David Wilson",
+  "Lisa Thompson",
+  "James Brown",
+  "Maria Garcia",
+  "Emma Wilson",
+  "David Kim",
+  "Anna Lee",
+  "Tom Anderson"
+];
 
-const priorityColors = {
-  "High": "bg-red-100 text-red-700",
-  "Medium": "bg-yellow-100 text-yellow-700",
-  "Low": "bg-green-100 text-green-700"
-};
+const eventTypes = [
+  { value: 'meeting', label: 'Meeting', icon: Users },
+  { value: 'deadline', label: 'Deadline', icon: Clock },
+  { value: 'reminder', label: 'Reminder', icon: Bell }
+];
 
-const colorVariants = {
-  "blue": "bg-blue-500",
-  "purple": "bg-purple-500",
-  "green": "bg-green-500",
-  "orange": "bg-orange-500",
-  "indigo": "bg-indigo-500",
-  "teal": "bg-teal-500",
-  "pink": "bg-pink-500",
-  "red": "bg-red-500"
-};
+const projects = [
+  "Whapi Project Management",
+  "E-commerce Platform", 
+  "Client Portal",
+  "Mobile App Development",
+  "API Integration"
+];
 
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  duration: string;
-  type: string;
-  attendees: string[];
-  location: string;
-  priority: string;
-  completed: boolean;
-  recurring: string;
-  reminder: string;
-  notes: string;
-  tags: string[];
-  color: string;
-  notifications: number;
-  attachments: number;
-}
-
-export default function CalendarPage({ onOpenTab }: { onOpenTab?: (type: string, title?: string) => void }) {
-  const [events, setEvents] = useState<Event[]>(initialEvents);
+export default function CalendarPage({ onOpenTab, context }: { onOpenTab?: (tabType: string, context?: any) => void; context?: { company: string } }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [viewMode, setViewMode] = useState<"week" | "month" | "list">("week");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [priorityFilter, setPriorityFilter] = useState("All");
-  const [showFilters, setShowFilters] = useState(false);
-  const [expandedEvents, setExpandedEvents] = useState<Set<number>>(new Set());
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
-  let avgDuration = 0;
-  if (events.length > 0) {
-    const totalDuration = events.reduce((sum, e) => sum + parseInt(e.duration.split(' ')[0]), 0);
-    avgDuration = Math.round(totalDuration / events.length);
-  }
-
-  const analytics = {
-    totalEvents: events.length,
-    completedEvents: events.filter(e => e.completed).length,
-    upcomingEvents: events.filter(e => new Date(e.date) > new Date()).length,
-    todayEvents: events.filter(e => e.date === new Date().toISOString().split('T')[0]).length,
-    avgDuration
-  };
-
-  const getDaysInWeek = (date: Date) => {
-    const start = new Date(date);
-    start.setDate(start.getDate() - start.getDay());
-    const days = [];
-    for (let i = 0; i < 7; i++) {
-      const day = new Date(start);
-      day.setDate(start.getDate() + i);
-      days.push(day);
-    }
-    return days;
-  };
-
-  const getEventsForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
-    return events.filter(event => event.date === dateStr);
-  };
-
-  const navigateWeek = (direction: 'prev' | 'next') => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
-    setCurrentDate(newDate);
-  };
-
-  const goToToday = () => {
-    setCurrentDate(new Date());
-  };
-
-  const deleteEvent = (eventId: number) => {
-    setEvents(events.filter(event => event.id !== eventId));
-  };
-
-  const duplicateEvent = (event: Event) => {
-    const newEvent = {
-      ...event,
-      id: Math.max(...events.map(e => e.id)) + 1,
-      title: `${event.title} (Copy)`,
-      date: new Date().toISOString().split('T')[0],
-      completed: false
-    };
-    setEvents([...events, newEvent]);
-  };
-
-  const toggleEventCompletion = (eventId: number) => {
-    setEvents(events.map(event => 
-      event.id === eventId ? { ...event, completed: !event.completed } : event
-    ));
-  };
-
-  const shareEvent = (event: Event) => {
-    const eventDetails = `
-Event: ${event.title}
-Date: ${event.date} at ${event.time}
-Duration: ${event.duration}
-Location: ${event.location}
-Attendees: ${event.attendees.join(', ')}
-Description: ${event.description}
-    `;
-    
-    if (navigator.share) {
-      navigator.share({
-        title: event.title,
-        text: eventDetails
-      });
-    } else {
-      // Fallback to copying to clipboard
-      navigator.clipboard.writeText(eventDetails);
-    }
-  };
-
-  const contactAttendee = (attendee: string, method: 'email' | 'message') => {
-    switch (method) {
-      case 'email':
-        window.open(`mailto:${attendee.toLowerCase().replace(' ', '.')}@company.com`);
-        break;
-      case 'message':
-        console.log(`Open messaging for ${attendee}`);
-        break;
-    }
-  };
-
-  const clearFilters = () => {
-    setSearchTerm("");
-    setTypeFilter("All");
-    setPriorityFilter("All");
-  };
-
-  const toggleEvent = (eventId: number) => {
-    const newExpanded = new Set(expandedEvents);
-    if (newExpanded.has(eventId)) {
-      newExpanded.delete(eventId);
-    } else {
-      newExpanded.add(eventId);
-    }
-    setExpandedEvents(newExpanded);
-  };
-
-  const filteredEvents = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.attendees.some(attendee => attendee.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesType = typeFilter === "All" || event.type === typeFilter;
-    const matchesPriority = priorityFilter === "All" || event.priority === priorityFilter;
-    
-    return matchesSearch && matchesType && matchesPriority;
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    type: "meeting",
+    attendees: [] as string[],
+    project: context?.company || projects[0],
+    location: "",
+    duration: "",
+    priority: "medium",
+    notes: ""
   });
 
-  const weekDays = getDaysInWeek(currentDate);
-  const today = new Date().toISOString().split('T')[0];
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startingDay = firstDay.getDay();
+    
+    return { daysInMonth, startingDay };
+  };
+
+  const getEventsForDate = (date: string) => {
+    return mockEvents.filter(event => event.date === date);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Creating event:", formData);
+    
+    // Create new event object
+    const newEvent = {
+      id: Date.now().toString(), // Generate unique ID
+      title: formData.title,
+      date: formData.date,
+      time: formData.time,
+      type: formData.type as 'meeting' | 'deadline' | 'reminder',
+      attendees: formData.attendees,
+      description: formData.description
+    };
+
+    // Add the new event to the mockEvents array
+    mockEvents.push(newEvent);
+    
+    // Reset form and hide it
+    setShowCreateForm(false);
+    setFormData({
+      title: "",
+      description: "",
+      date: "",
+      time: "",
+      type: "meeting",
+      attendees: [],
+      project: context?.company || projects[0],
+      location: "",
+      duration: "",
+      priority: "medium",
+      notes: ""
+    });
+  };
+
+  const toggleAttendee = (attendee: string) => {
+    setFormData(prev => ({
+      ...prev,
+      attendees: prev.attendees.includes(attendee) 
+        ? prev.attendees.filter(a => a !== attendee)
+        : [...prev.attendees, attendee]
+    }));
+  };
+
+  const { daysInMonth, startingDay } = getDaysInMonth(currentDate);
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const emptyDays = Array.from({ length: startingDay }, (_, i) => i);
+
+  const getEventTypeColor = (type: string) => {
+    switch (type) {
+      case 'meeting': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'deadline': return 'bg-red-100 text-red-700 border-red-200';
+      case 'reminder': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+  };
+
+  const getEventTypeIcon = (type: string) => {
+    switch (type) {
+      case 'meeting': return <User size={12} />;
+      case 'deadline': return <Clock size={12} />;
+      case 'reminder': return <Tag size={12} />;
+      default: return <Calendar size={12} />;
+    }
+  };
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30">
-      {/* Enhanced Header */}
-      <div className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-sm border-b border-white/20 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 text-white font-semibold shadow-lg">
-            <CalendarIcon className="text-white mr-1" size={20} />
-            <span>Calendar</span>
+    <div className="h-full bg-white">
+      {/* Header */}
+      <div className="p-6 border-b border-slate-200">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-xl font-semibold">Calendar</h1>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+                className="p-1 rounded hover:bg-slate-100"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-sm font-medium">
+                {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </span>
+              <button
+                onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+                className="p-1 rounded hover:bg-slate-100"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <button 
-            className="group flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl border border-white/20 hover:bg-white/90 text-slate-700 font-medium transition-all duration-200 hover:scale-105 focus-ring"
-          >
-            <Download size={16} />
-            Export
-          </button>
-          <button 
-            className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-orange-600 to-red-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-semibold focus-ring"
-          >
-            <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
-            New Event
-          </button>
+
+          <div className="flex items-center gap-3">
+            <button 
+              className="group flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl border border-white/20 hover:bg-white/90 text-slate-700 font-medium transition-all duration-200 hover:scale-105 focus-ring"
+            >
+              <Download size={16} />
+              Export
+            </button>
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+            >
+              <Plus size={16} />
+              <span>{showCreateForm ? 'Cancel' : 'Add Event'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
-        {/* Enhanced Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 text-white shadow-lg">
-                <CalendarIcon className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
-            </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.totalEvents}</h3>
-            <p className="text-slate-600 text-sm font-medium">Total Events</p>
-            <div className="mt-2 text-xs text-slate-500">+2 this week</div>
-          </div>
-
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg">
-                <CheckCircle className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
-            </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.completedEvents}</h3>
-            <p className="text-slate-600 text-sm font-medium">Completed</p>
-            <div className="mt-2 text-xs text-slate-500">85% completion rate</div>
-          </div>
-
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
-                <Clock className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
-            </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.upcomingEvents}</h3>
-            <p className="text-slate-600 text-sm font-medium">Upcoming</p>
-            <div className="mt-2 text-xs text-slate-500">Next 7 days</div>
-          </div>
-
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg">
-                <Timer className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
-            </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.avgDuration}h</h3>
-            <p className="text-slate-600 text-sm font-medium">Avg Duration</p>
-            <div className="mt-2 text-xs text-slate-500">+0.5h from last week</div>
-          </div>
-        </div>
-
-        {/* Enhanced Search and Filters */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 animate-fade-in" style={{ animationDelay: '200ms' }}>
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search events, descriptions, or attendees..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white/50 backdrop-blur-sm"
-              />
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <button 
-                className="group flex items-center gap-2 px-4 py-3 border border-white/20 rounded-xl hover:bg-white/50 transition-all duration-200 hover:scale-105 focus-ring"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="w-4 h-4" />
-                Filters
-              </button>
-              
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setViewMode("week")}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
-                    viewMode === "week" 
-                      ? "bg-orange-100 text-orange-600" 
-                      : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-                  }`}
-                >
-                  <CalendarDays size={18} />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
-                    viewMode === "list" 
-                      ? "bg-orange-100 text-orange-600" 
-                      : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"
-                  }`}
-                >
-                  <List size={18} />
-                </button>
+      {/* Event Creation Form */}
+      {showCreateForm && (
+        <div className="bg-white border-b border-slate-200 p-6">
+          <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-8 animate-fade-in">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Create New Event</h2>
+                  <p className="text-slate-600">Fill in the details below to create a new calendar event.</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Advanced Filters */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-white/20 animate-fade-in">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <select
-                  value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value)}
-                  className="px-3 py-2 border border-white/20 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                >
-                  <option value="All">All Types</option>
-                  <option value="Meeting">Meeting</option>
-                  <option value="Presentation">Presentation</option>
-                  <option value="Standup">Standup</option>
-                  <option value="Review">Review</option>
-                  <option value="Planning">Planning</option>
-                  <option value="Retrospective">Retrospective</option>
-                </select>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Event Information */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Event Information</h3>
+                </div>
 
-                <select
-                  value={priorityFilter}
-                  onChange={(e) => setPriorityFilter(e.target.value)}
-                  className="px-3 py-2 border border-white/20 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                >
-                  <option value="All">All Priority</option>
-                  <option value="High">High</option>
-                  <option value="Medium">Medium</option>
-                  <option value="Low">Low</option>
-                </select>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Event Title *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Enter event title"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
 
-                <select className="px-3 py-2 border border-white/20 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-orange-500">
-                  <option>All Locations</option>
-                  <option>Conference Room A</option>
-                  <option>Virtual Meeting</option>
-                  <option>Team Room</option>
-                  <option>Development Lab</option>
-                </select>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Event Type *
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {eventTypes.map(type => (
+                          <button
+                            key={type.value}
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, type: type.value }))}
+                            className={`p-3 border rounded-lg flex flex-col items-center space-y-2 transition-colors ${
+                              formData.type === type.value
+                                ? "border-blue-500 bg-blue-50 text-blue-700"
+                                : "border-slate-200 hover:border-slate-300"
+                            }`}
+                          >
+                            <type.icon className="w-5 h-5" />
+                            <span className="text-sm font-medium">{type.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
 
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-                >
-                  <FilterX size={16} />
-                  Clear All
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Description
+                      </label>
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Describe the event details..."
+                        rows={4}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      />
+                    </div>
 
-        {/* Calendar Navigation */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigateWeek('prev')}
-                className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <h2 className="text-xl font-bold text-slate-900">
-                {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-              </h2>
-              <button
-                onClick={() => navigateWeek('next')}
-                className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-            <button
-              onClick={goToToday}
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-            >
-              Today
-            </button>
-          </div>
-
-          {/* Week View */}
-          <div className="grid grid-cols-7 gap-4">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
-              <div key={day} className="text-center">
-                <div className="text-sm font-medium text-slate-500 mb-2">{day}</div>
-                {weekDays.map((date, dateIndex) => {
-                  if (dateIndex === index) {
-                    const isToday = date.toISOString().split('T')[0] === today;
-                    const dayEvents = getEventsForDate(date);
-                    return (
-                      <div
-                        key={dateIndex}
-                        className={`relative min-h-[120px] p-2 rounded-lg border-2 transition-all duration-200 ${
-                          isToday 
-                            ? 'border-orange-500 bg-orange-50' 
-                            : 'border-white/20 bg-white/50'
-                        }`}
-                      >
-                        <div className={`text-sm font-medium mb-2 ${
-                          isToday ? 'text-orange-600' : 'text-slate-900'
-                        }`}>
-                          {date.getDate()}
-                        </div>
-                        <div className="space-y-1">
-                          {dayEvents.slice(0, 2).map((event) => (
-                            <div
-                              key={event.id}
-                              className={`text-xs p-1 rounded cursor-pointer transition-all duration-200 hover:scale-105 ${
-                                eventTypes[event.type as keyof typeof eventTypes]?.color || 'bg-slate-100 text-slate-700'
-                              }`}
-                              onClick={() => toggleEvent(event.id)}
-                            >
-                              {event.title}
-                            </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Project
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formData.project}
+                          onChange={(e) => setFormData(prev => ({ ...prev, project: e.target.value }))}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                        >
+                          {projects.map(project => (
+                            <option key={project} value={project}>{project}</option>
                           ))}
-                          {dayEvents.length > 2 && (
-                            <div className="text-xs text-slate-500 text-center">
-                              +{dayEvents.length - 2} more
-                            </div>
-                          )}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <BuildingIcon className="w-4 h-4 text-slate-400" />
                         </div>
                       </div>
-                    );
-                  }
-                  return null;
-                })}
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+
+              {/* Date and Time */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Date & Time</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Date *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <CalendarDays className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Time *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="time"
+                        value={formData.time}
+                        onChange={(e) => setFormData(prev => ({ ...prev, time: e.target.value }))}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Clock className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Duration
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.duration}
+                        onChange={(e) => setFormData(prev => ({ ...prev, duration: e.target.value }))}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                      >
+                        <option value="">Select Duration</option>
+                        <option value="30">30 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="90">1.5 hours</option>
+                        <option value="120">2 hours</option>
+                        <option value="180">3 hours</option>
+                        <option value="240">4 hours</option>
+                        <option value="480">All day</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Timer className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Attendees */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Attendees</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Select Attendees
+                    </label>
+                    <div className="space-y-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3">
+                      {attendees.map(attendee => (
+                        <div key={attendee} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded">
+                          <div className="flex items-center space-x-3">
+                            <input
+                              type="checkbox"
+                              checked={formData.attendees.includes(attendee)}
+                              onChange={() => toggleAttendee(attendee)}
+                              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                            />
+                            <span className="text-sm text-slate-700">{attendee}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Selected Attendees ({formData.attendees.length})
+                    </label>
+                    <div className="space-y-2">
+                      {formData.attendees.map(attendee => (
+                        <div key={attendee} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                              <User className="w-4 h-4 text-blue-600" />
+                            </div>
+                            <div className="text-sm font-medium text-slate-900">{attendee}</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => toggleAttendee(attendee)}
+                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Details */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Target className="w-4 h-4 text-yellow-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Additional Details</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Location
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.location}
+                        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                        placeholder="Enter location or meeting link"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <MapPinIcon className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Priority
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.priority}
+                        onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <AlertCircle className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Notes
+                  </label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    placeholder="Add any additional notes or special instructions..."
+                    rows={3}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Cancel</span>
+                </button>
+
+                <div className="flex items-center space-x-3">
+                  <button
+                    type="button"
+                    className="px-6 py-3 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center space-x-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save Draft</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center space-x-2"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>Create Event</span>
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
+      )}
 
-        {/* Events List */}
-        <div className="grid gap-6">
-          {filteredEvents.map((event, index) => {
-            const EventTypeIcon = eventTypes[event.type as keyof typeof eventTypes]?.icon || Clock;
+      {/* Calendar Grid */}
+      <div className="p-6">
+        {/* Day Headers */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div key={day} className="text-center text-xs font-medium text-slate-500 py-2">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Calendar Days */}
+        <div className="grid grid-cols-7 gap-1">
+          {/* Empty days at start */}
+          {emptyDays.map((_, index) => (
+            <div key={`empty-${index}`} className="h-24 bg-slate-50 rounded-lg" />
+          ))}
+          
+          {/* Actual days */}
+          {days.map(day => {
+            const dateString = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const events = getEventsForDate(dateString);
+            const isToday = new Date().toDateString() === new Date(currentDate.getFullYear(), currentDate.getMonth(), day).toDateString();
+            
             return (
               <div 
-                key={event.id} 
-                className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105 animate-fade-in"
-                style={{ animationDelay: `${300 + index * 100}ms` }}
+                key={day}
+                className={`h-24 border border-slate-200 rounded-lg p-1 cursor-pointer hover:bg-slate-50 transition-colors ${
+                  isToday ? 'bg-blue-50 border-blue-300' : ''
+                }`}
+                onClick={() => setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day))}
               >
-                {/* Event Header */}
-                <div className="p-6 border-b border-white/20">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className={`w-3 h-3 rounded-full ${colorVariants[event.color as keyof typeof colorVariants]}`}></div>
-                        <h3 className="text-lg font-bold text-slate-900 group-hover:text-orange-600 transition-colors">
-                          {event.title}
-                        </h3>
-                        {event.completed && (
-                          <CheckCircle className="w-5 h-5 text-emerald-500" />
-                        )}
-                      </div>
-                      <p className="text-sm text-slate-600 mb-3 line-clamp-2">
-                        {event.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                        <Heart size={16} />
-                      </button>
-                      <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                        <MoreHorizontal size={16} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Event Stats */}
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-slate-900">{event.duration}</div>
-                      <div className="text-xs text-slate-500">Duration</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-slate-900">{event.attendees.length}</div>
-                      <div className="text-xs text-slate-500">Attendees</div>
-                    </div>
-                  </div>
-
-                  {/* Event Meta */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${eventTypes[event.type as keyof typeof eventTypes]?.color}`}>
-                        <EventTypeIcon size={12} className="inline mr-1" />
-                        {event.type}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${priorityColors[event.priority as keyof typeof priorityColors]}`}>
-                        {event.priority}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <span className="flex items-center gap-1">
-                        <Bell size={12} />
-                        {event.notifications}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Paperclip size={12} />
-                        {event.attachments}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Event Details */}
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <Clock size={12} />
-                        {event.date} at {event.time}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin size={12} />
-                        {event.location}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-1">
-                        <Users size={12} />
-                        {event.attendees.length} people
-                      </span>
-                    </div>
-                  </div>
+                <div className="text-xs font-medium mb-1">
+                  {day}
                 </div>
-
-                {/* Event Actions */}
-                <div className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <button 
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-lg transition-all duration-200"
-                      onClick={() => toggleEvent(event.id)}
+                <div className="space-y-1">
+                  {events.slice(0, 2).map(event => (
+                    <div
+                      key={event.id}
+                      className={`text-xs px-1 py-0.5 rounded border ${getEventTypeColor(event.type)} flex items-center space-x-1`}
                     >
-                      <Layers size={14} />
-                      {expandedEvents.has(event.id) ? 'Hide' : 'Show'} Details
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                      <Edit size={14} />
-                    </button>
-                    <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                      <Share2 size={14} />
-                    </button>
-                    <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                      <ExternalLink size={14} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Expanded Details */}
-                {expandedEvents.has(event.id) && (
-                  <div className="px-6 pb-6 animate-fade-in">
-                    <div className="border-t border-white/20 pt-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <h4 className="font-semibold text-slate-900 mb-3">Event Details</h4>
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-slate-600">Recurring:</span>
-                              <span className="text-sm font-medium text-slate-900">{event.recurring}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-slate-600">Reminder:</span>
-                              <span className="text-sm font-medium text-slate-900">{event.reminder}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-slate-600">Notes:</span>
-                              <span className="text-sm font-medium text-slate-900">{event.notes}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-slate-900 mb-3">Attendees</h4>
-                          <div className="space-y-2">
-                            {event.attendees.map((attendee, attendeeIndex) => (
-                              <div key={attendeeIndex} className="flex items-center justify-between p-2 bg-slate-50/50 rounded-lg">
-                                <span className="text-sm text-slate-900">{attendee}</span>
-                                <div className="flex items-center gap-1">
-                                  <button 
-                                    className="p-1 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-                                    onClick={() => contactAttendee(attendee, 'email')}
-                                  >
-                                    <Mail size={12} />
-                                  </button>
-                                  <button 
-                                    className="p-1 rounded text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-                                    onClick={() => contactAttendee(attendee, 'message')}
-                                  >
-                                    <MessageSquare size={12} />
-                                  </button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+                      {getEventTypeIcon(event.type)}
+                      <span className="truncate">{event.title}</span>
                     </div>
-                  </div>
-                )}
+                  ))}
+                  {events.length > 2 && (
+                    <div className="text-xs text-slate-500 px-1">
+                      +{events.length - 2} more
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
-
-        {/* Empty State */}
-        {filteredEvents.length === 0 && (
-          <div className="text-center py-12 animate-fade-in">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-              <CalendarIcon className="w-8 h-8 text-slate-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-2">No events found</h3>
-            <p className="text-slate-600 mb-4">Try adjusting your search or filters</p>
-            <button 
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-              onClick={clearFilters}
-            >
-              Clear Filters
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Selected Date Events */}
+      {selectedDate && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">
+                  {selectedDate.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </h3>
+                <button
+                  onClick={() => setSelectedDate(null)}
+                  className="p-1 text-slate-400 hover:text-slate-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                {getEventsForDate(selectedDate.toISOString().split('T')[0]).map(event => (
+                  <div key={event.id} className="p-4 border border-slate-200 rounded-lg">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-slate-900">{event.title}</h4>
+                        <p className="text-sm text-slate-600 mt-1">{event.time}</p>
+                        {event.description && (
+                          <p className="text-sm text-slate-500 mt-2">{event.description}</p>
+                        )}
+                        {event.attendees && event.attendees.length > 0 && (
+                          <div className="mt-3">
+                            <p className="text-xs text-slate-500 mb-1">Attendees:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {event.attendees.map((attendee, index) => (
+                                <span key={index} className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
+                                  {attendee}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getEventTypeColor(event.type)}`}>
+                        {event.type}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {getEventsForDate(selectedDate.toISOString().split('T')[0]).length === 0 && (
+                  <div className="text-center py-8 text-slate-500">
+                    <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-400" />
+                    <p>No events scheduled for this date</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 

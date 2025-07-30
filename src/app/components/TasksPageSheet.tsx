@@ -1,201 +1,25 @@
-import { useState } from "react";
+"use client";
+
+import React, { useState } from "react";
 import { 
   X, 
-  CheckSquare, 
-  Plus, 
   Search, 
-  Filter, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Copy, 
+  Download, 
   MoreHorizontal,
-  Calendar,
-  User,
+  Users,
+  FileText,
   Target,
-  TrendingUp,
-  Edit,
-  Trash2,
-  Archive,
-  Copy,
-  Share2,
-  Download,
-  Eye,
+  BarChart3,
   Clock,
-  CheckCircle,
-  AlertCircle,
-  Star,
-  MessageSquare,
-  Tag,
-  GitBranch
+  Calendar,
+  CheckSquare,
+  Grid3X3
 } from "lucide-react";
-
-// Sample task data
-const initialTasks = [
-  {
-    id: 1,
-    name: "Implement User Authentication",
-    status: "Completed",
-    priority: "High",
-    assignee: "Sarah Johnson",
-    reporter: "Mike Chen",
-    storyPoints: 3,
-    story: "User Authentication System",
-    sprint: "Sprint 1 - Q1 2024",
-    epic: "User Management",
-    description: "Create login and registration forms with JWT token authentication",
-    acceptanceCriteria: [
-      "Login form validates credentials",
-      "Registration form creates new user",
-      "JWT tokens are generated and stored",
-      "Password hashing is implemented"
-    ],
-    created: "2024-01-01",
-    updated: "2024-01-05",
-    dueDate: "2024-01-10",
-    completedDate: "2024-01-05",
-    archived: false,
-    tags: ["Authentication", "Frontend", "Security"],
-    timeSpent: "16h",
-    timeEstimate: "12h",
-    comments: [
-      {
-        id: 1,
-        author: "Mike Chen",
-        content: "Great work on the authentication implementation!",
-        timestamp: "2024-01-05 16:30"
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "Design Dashboard Layout",
-    status: "In Progress",
-    priority: "High",
-    assignee: "Mike Chen",
-    reporter: "Lisa Chen",
-    storyPoints: 2,
-    story: "Dashboard Layout",
-    sprint: "Sprint 1 - Q1 2024",
-    epic: "User Interface",
-    description: "Create responsive dashboard layout with grid system and widgets",
-    acceptanceCriteria: [
-      "Dashboard is responsive on mobile and desktop",
-      "Grid system supports multiple layouts",
-      "Widgets can be resized and moved",
-      "Theme colors are consistent"
-    ],
-    created: "2024-01-02",
-    updated: "2024-01-12",
-    dueDate: "2024-01-15",
-    completedDate: null,
-    archived: false,
-    tags: ["Frontend", "UI/UX", "Dashboard"],
-    timeSpent: "8h",
-    timeEstimate: "10h",
-    comments: [
-      {
-        id: 2,
-        author: "Lisa Chen",
-        content: "The layout looks great! Can we add more widget options?",
-        timestamp: "2024-01-12 10:15"
-      },
-      {
-        id: 3,
-        author: "Mike Chen",
-        content: "Working on adding more widget types now.",
-        timestamp: "2024-01-12 14:20"
-      }
-    ]
-  },
-  {
-    id: 3,
-    name: "Setup Stripe Payment Gateway",
-    status: "In Progress",
-    priority: "High",
-    assignee: "David Kim",
-    reporter: "Alex Rodriguez",
-    storyPoints: 5,
-    story: "Payment Integration",
-    sprint: "Sprint 2 - Q1 2024",
-    epic: "E-commerce",
-    description: "Integrate Stripe payment gateway for secure online transactions",
-    acceptanceCriteria: [
-      "Stripe API keys are configured",
-      "Payment processing works for all card types",
-      "Webhook handling is implemented",
-      "Error handling is robust"
-    ],
-    created: "2024-01-05",
-    updated: "2024-01-13",
-    dueDate: "2024-01-20",
-    completedDate: null,
-    archived: false,
-    tags: ["Payment", "Stripe", "Backend"],
-    timeSpent: "12h",
-    timeEstimate: "16h",
-    comments: [
-      {
-        id: 4,
-        author: "Alex Rodriguez",
-        content: "Stripe integration is progressing well. Need to test with sandbox environment.",
-        timestamp: "2024-01-13 16:20"
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: "Create Mobile Navigation",
-    status: "To Do",
-    priority: "Medium",
-    assignee: "Alex Rodriguez",
-    reporter: "Emma Wilson",
-    storyPoints: 3,
-    story: "Mobile App Navigation",
-    sprint: "Sprint 2 - Q1 2024",
-    epic: "Mobile Development",
-    description: "Implement bottom navigation and gesture-based navigation for mobile app",
-    acceptanceCriteria: [
-      "Bottom navigation is smooth and responsive",
-      "Gesture navigation works intuitively",
-      "Navigation state is preserved",
-      "Accessibility features are implemented"
-    ],
-    created: "2024-01-08",
-    updated: "2024-01-08",
-    dueDate: "2024-01-25",
-    completedDate: null,
-    archived: false,
-    tags: ["Mobile", "Navigation", "UI/UX"],
-    timeSpent: "0h",
-    timeEstimate: "8h",
-    comments: []
-  },
-  {
-    id: 5,
-    name: "Build Analytics Charts",
-    status: "Planning",
-    priority: "Medium",
-    assignee: "Emma Wilson",
-    reporter: "James Brown",
-    storyPoints: 4,
-    story: "Data Analytics Dashboard",
-    sprint: "Sprint 3 - Q1 2024",
-    epic: "Analytics",
-    description: "Create interactive charts and data visualization components",
-    acceptanceCriteria: [
-      "Charts are responsive and interactive",
-      "Data updates in real-time",
-      "Export functionality works",
-      "Custom date ranges can be selected"
-    ],
-    created: "2024-01-10",
-    updated: "2024-01-10",
-    dueDate: "2024-02-10",
-    completedDate: null,
-    archived: false,
-    tags: ["Analytics", "Charts", "Frontend"],
-    timeSpent: "0h",
-    timeEstimate: "12h",
-    comments: []
-  }
-];
+import GridLayoutWrapper from "./GridLayoutWrapper";
 
 interface Task {
   id: number;
@@ -226,28 +50,136 @@ interface Task {
   }>;
 }
 
-export default function TasksPageSheet({ open, onClose, onOpenTab }: { 
+export default function TasksPageSheet({ open, onClose, onOpenTab, context }: { 
   open: boolean, 
   onClose: () => void,
-  onOpenTab?: (type: string, title?: string) => void 
+  onOpenTab?: (type: string, title?: string, context?: any) => void,
+  context?: { company: string }
 }) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: 1,
+      name: "Implement user authentication",
+      status: "In Progress",
+      priority: "High",
+      assignee: "John Doe",
+      reporter: "Jane Smith",
+      storyPoints: 8,
+      story: "User Management",
+      sprint: "Sprint 1",
+      epic: "Authentication System",
+      description: "Implement secure user authentication with JWT tokens and password hashing",
+      acceptanceCriteria: [
+        "Users can register with email and password",
+        "Users can login with valid credentials",
+        "Passwords are properly hashed",
+        "JWT tokens are generated and validated"
+      ],
+      created: "2024-01-15",
+      updated: "2024-01-20",
+      dueDate: "2024-02-01",
+      completedDate: null,
+      archived: false,
+      tags: ["authentication", "security", "backend"],
+      timeSpent: "12h",
+      timeEstimate: "16h",
+      comments: [
+        {
+          id: 1,
+          author: "John Doe",
+          content: "Started implementing JWT token generation",
+          timestamp: "2024-01-18T10:30:00Z"
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: "Design responsive dashboard",
+      status: "Done",
+      priority: "Medium",
+      assignee: "Alice Johnson",
+      reporter: "Bob Wilson",
+      storyPoints: 5,
+      story: "UI/UX Design",
+      sprint: "Sprint 1",
+      epic: "Dashboard Redesign",
+      description: "Create a responsive dashboard layout with modern design principles",
+      acceptanceCriteria: [
+        "Dashboard is responsive on all devices",
+        "Design follows material design principles",
+        "All widgets are properly aligned",
+        "Color scheme is consistent"
+      ],
+      created: "2024-01-10",
+      updated: "2024-01-25",
+      dueDate: "2024-01-30",
+      completedDate: "2024-01-25",
+      archived: false,
+      tags: ["design", "frontend", "responsive"],
+      timeSpent: "8h",
+      timeEstimate: "10h",
+      comments: [
+        {
+          id: 2,
+          author: "Alice Johnson",
+          content: "Completed responsive design implementation",
+          timestamp: "2024-01-25T14:20:00Z"
+        }
+      ]
+    },
+    {
+      id: 3,
+      name: "Fix API rate limiting",
+      status: "Review",
+      priority: "High",
+      assignee: "Mike Brown",
+      reporter: "Sarah Davis",
+      storyPoints: 3,
+      story: "API Optimization",
+      sprint: "Sprint 2",
+      epic: "Performance Improvements",
+      description: "Implement proper rate limiting for API endpoints to prevent abuse",
+      acceptanceCriteria: [
+        "Rate limiting is applied to all endpoints",
+        "Proper error responses are returned",
+        "Rate limits are configurable",
+        "Monitoring is in place"
+      ],
+      created: "2024-01-22",
+      updated: "2024-01-28",
+      dueDate: "2024-02-05",
+      completedDate: null,
+      archived: false,
+      tags: ["api", "security", "performance"],
+      timeSpent: "6h",
+      timeEstimate: "8h",
+      comments: [
+        {
+          id: 3,
+          author: "Mike Brown",
+          content: "Implemented basic rate limiting, ready for review",
+          timestamp: "2024-01-28T09:15:00Z"
+        }
+      ]
+    }
+  ]);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [priorityFilter, setPriorityFilter] = useState<string>("");
+  const [assigneeFilter, setAssigneeFilter] = useState<string>("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
-  const [expandedTasks, setExpandedTasks] = useState<number[]>([]);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isGridMode, setIsGridMode] = useState(false);
 
-  // Task actions
+  const defaultTaskLayout = [
+    { i: 'task-1', x: 0, y: 0, w: 6, h: 4 },
+    { i: 'task-2', x: 6, y: 0, w: 6, h: 4 },
+    { i: 'task-3', x: 0, y: 4, w: 6, h: 4 }
+  ];
+
   const deleteTask = (taskId: number) => {
-    setTasks(prev => prev.filter(task => task.id !== taskId));
-    setShowMoreMenu(null);
-  };
-
-  const archiveTask = (taskId: number) => {
-    setTasks(prev => prev.map(task => 
-      task.id === taskId ? { ...task, archived: true } : task
-    ));
+    setTasks(tasks.filter(task => task.id !== taskId));
     setShowMoreMenu(null);
   };
 
@@ -256,11 +188,12 @@ export default function TasksPageSheet({ open, onClose, onOpenTab }: {
       ...task,
       id: Math.max(...tasks.map(t => t.id)) + 1,
       name: `${task.name} (Copy)`,
-      status: "To Do",
+      created: new Date().toISOString().split('T')[0],
+      updated: new Date().toISOString().split('T')[0],
       completedDate: null,
-      timeSpent: "0h"
+      status: "To Do"
     };
-    setTasks(prev => [...prev, newTask]);
+    setTasks([...tasks, newTask]);
     setShowMoreMenu(null);
   };
 
@@ -270,463 +203,264 @@ export default function TasksPageSheet({ open, onClose, onOpenTab }: {
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${task.name}.json`;
+    link.download = `task-${task.id}-${task.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.json`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    setShowMoreMenu(null);
   };
 
-  const downloadTaskReport = (task: Task) => {
-    const report = `
-Task Report: ${task.name}
-Status: ${task.status}
-Priority: ${task.priority}
-Assignee: ${task.assignee}
-Reporter: ${task.reporter}
-Story: ${task.story}
-Sprint: ${task.sprint}
-Epic: ${task.epic}
-Story Points: ${task.storyPoints}
-Due Date: ${task.dueDate}
-Time Spent: ${task.timeSpent}
-Time Estimate: ${task.timeEstimate}
-
-Description: ${task.description}
-
-Acceptance Criteria:
-${task.acceptanceCriteria.map(criteria => `- ${criteria}`).join('\n')}
-
-Comments:
-${task.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${comment.content}`).join('\n')}
-    `;
-    const dataBlob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${task.name}-report.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  // Toggle expansion
-  const toggleTask = (taskId: number) => {
-    setExpandedTasks(prev => 
-      prev.includes(taskId) 
-        ? prev.filter(id => id !== taskId)
-        : [...prev, taskId]
-    );
-  };
-
-  // Clear filters
   const clearFilters = () => {
     setSearchTerm("");
-    setShowFilters(false);
+    setStatusFilter("");
+    setPriorityFilter("");
+    setAssigneeFilter("");
   };
 
-  const hasActiveFilters = searchTerm;
-
-  // Filter tasks
-  const filteredTasks = tasks.filter(task => 
-    !task.archived && (
-      task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.assignee.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.story.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.epic.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    )
-  );
-
-  // Analytics
-  const analytics = {
-    totalTasks: tasks.filter(t => !t.archived).length,
-    completedTasks: tasks.filter(t => !t.archived && t.status === "Completed").length,
-    inProgressTasks: tasks.filter(t => !t.archived && t.status === "In Progress").length,
-    totalStoryPoints: tasks.filter(t => !t.archived).reduce((sum, task) => sum + task.storyPoints, 0)
+  const handleCreateTask = () => {
+      const newTask: Task = {
+        id: Math.max(...tasks.map(t => t.id)) + 1,
+      name: "New Task",
+      status: "To Do",
+      priority: "Medium",
+      assignee: "Unassigned",
+      reporter: "Current User",
+      storyPoints: 3,
+      story: "General",
+      sprint: "Backlog",
+      epic: "General",
+      description: "Task description",
+      acceptanceCriteria: ["Criteria 1", "Criteria 2"],
+        created: new Date().toISOString().split('T')[0],
+        updated: new Date().toISOString().split('T')[0],
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        completedDate: null,
+        archived: false,
+      tags: ["new"],
+        timeSpent: "0h",
+      timeEstimate: "8h",
+        comments: []
+      };
+    setTasks([...tasks, newTask]);
+      setShowCreateForm(false);
   };
 
-  // Get status icon and color
-  const getStatusInfo = (status: string) => {
-    switch (status) {
-      case "In Progress":
-        return { icon: Clock, color: "text-blue-600", bg: "bg-blue-100" };
-      case "Completed":
-        return { icon: CheckCircle, color: "text-green-600", bg: "bg-green-100" };
-      case "To Do":
-        return { icon: AlertCircle, color: "text-yellow-600", bg: "bg-yellow-100" };
-      case "Planning":
-        return { icon: AlertCircle, color: "text-purple-600", bg: "bg-purple-100" };
-      default:
-        return { icon: Clock, color: "text-neutral-600", bg: "bg-neutral-100" };
-    }
-  };
+  const filteredTasks = tasks.filter(task => {
+    const matchesSearch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         task.assignee.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !statusFilter || task.status === statusFilter;
+    const matchesPriority = !priorityFilter || task.priority === priorityFilter;
+    const matchesAssignee = !assigneeFilter || task.assignee === assigneeFilter;
+    
+    return matchesSearch && matchesStatus && matchesPriority && matchesAssignee;
+  });
 
-  // Get priority color
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "High":
-        return "text-red-600 bg-red-100";
-      case "Medium":
-        return "text-yellow-600 bg-yellow-100";
-      case "Low":
-        return "text-green-600 bg-green-100";
-      default:
-        return "text-neutral-600 bg-neutral-100";
-    }
-  };
+  const statuses = [...new Set(tasks.map(task => task.status))];
+  const priorities = [...new Set(tasks.map(task => task.priority))];
+  const assignees = [...new Set(tasks.map(task => task.assignee))];
 
   if (!open) return null;
 
-  return (
-    <div className="w-full h-full bg-neutral-50">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-neutral-200">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-blue-50 text-blue-700 font-semibold">
-            <CheckSquare className="text-blue-500 mr-1" size={20} />
-            <span>Tasks</span>
-          </div>
-          <button onClick={onClose} className="ml-2 text-neutral-400 hover:text-red-500" aria-label="Close">
-            <X size={18} />
-          </button>
-        </div>
-        <button 
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={() => onOpenTab && onOpenTab("create-task", "Create Task")}
-        >
-          <Plus size={16} />
-          New Task
-        </button>
-      </div>
-
-      <div className="p-6">
-        {/* Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <CheckSquare className="w-6 h-6 text-blue-600" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalTasks}</h3>
-            <p className="text-neutral-600 text-sm">Total Tasks</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.completedTasks}</h3>
-            <p className="text-neutral-600 text-sm">Completed Tasks</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Clock className="w-6 h-6 text-purple-600" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.inProgressTasks}</h3>
-            <p className="text-neutral-600 text-sm">In Progress</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Star className="w-6 h-6 text-orange-600" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalStoryPoints}</h3>
-            <p className="text-neutral-600 text-sm">Total Story Points</p>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search tasks, assignees, or stories..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            <button 
-              className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="w-4 h-4" />
-              More Filters
-            </button>
-
-            {hasActiveFilters && (
-              <button 
-                className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-red-50 text-red-700 transition-colors"
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </button>
-            )}
-          </div>
-
-          {/* Advanced Filters */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-neutral-200">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Status</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Status</option>
-                    <option>To Do</option>
-                    <option>In Progress</option>
-                    <option>Completed</option>
-                    <option>Planning</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Priority</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Priorities</option>
-                    <option>High</option>
-                    <option>Medium</option>
-                    <option>Low</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Sort By</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>Name A-Z</option>
-                    <option>Story Points</option>
-                    <option>Due Date</option>
-                    <option>Created Date</option>
-                    <option>Assignee</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Tasks List */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h2 className="text-lg font-semibold text-neutral-900">All Tasks ({filteredTasks.length})</h2>
-          </div>
-          
-          <div className="divide-y divide-neutral-200">
-            {filteredTasks.map((task) => {
-              const StatusIcon = getStatusInfo(task.status).icon;
-              const statusColor = getStatusInfo(task.status).color;
-              const statusBg = getStatusInfo(task.status).bg;
-              
-              return (
-                <div key={task.id} className="p-6 hover:bg-neutral-50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <button
-                          onClick={() => toggleTask(task.id)}
-                          className="p-1 rounded hover:bg-neutral-100 transition-colors"
-                        >
-                          {expandedTasks.includes(task.id) ? (
-                            <span className="text-neutral-400">▼</span>
-                          ) : (
-                            <span className="text-neutral-400">▶</span>
-                          )}
-                        </button>
-                        <CheckSquare className="w-5 h-5 text-blue-500" />
-                        <h3 className="text-lg font-semibold text-neutral-900">{task.name}</h3>
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${statusBg} ${statusColor}`}>
+  const renderTaskCard = (task: Task) => (
+    <div key={task.id} className="bg-white rounded-lg border border-neutral-200 p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-3">
+            <div className={`w-3 h-3 rounded-full ${
+              task.priority === 'High' ? 'bg-red-500' :
+              task.priority === 'Medium' ? 'bg-yellow-500' :
+              'bg-green-500'
+            }`} />
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              task.status === 'Done' ? 'bg-green-100 text-green-700' :
+              task.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+              task.status === 'Review' ? 'bg-yellow-100 text-yellow-700' :
+              task.status === 'Blocked' ? 'bg-red-100 text-red-700' :
+              'bg-gray-100 text-gray-700'
+                        }`}>
                           {task.status}
-                        </div>
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                          {task.priority}
-                        </div>
+                        </span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              task.priority === 'High' ? 'bg-red-100 text-red-700' :
+              task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+              'bg-green-100 text-green-700'
+            }`}>
+              {task.priority}
+                        </span>
                       </div>
-                      
-                      <p className="text-neutral-600 mb-3">{task.description}</p>
-                      
-                      <div className="flex items-center gap-6 text-sm text-neutral-500 mb-4">
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4" />
-                          <span>Assignee: {task.assignee}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4" />
-                          <span>Reporter: {task.reporter}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Star className="w-4 h-4" />
-                          <span>{task.storyPoints} points</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>Due: {task.dueDate}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          <span>{task.timeSpent}/{task.timeEstimate}</span>
-                        </div>
-                      </div>
-
-                      {/* Tags */}
-                      <div className="flex items-center gap-2 mb-4">
-                        {task.tags.map((tag, index) => (
-                          <span key={index} className="px-2 py-1 bg-neutral-100 text-neutral-600 text-xs rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Story and Sprint */}
-                      <div className="flex items-center gap-4 text-sm text-neutral-500 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Tag className="w-4 h-4" />
-                          <span>Story: {task.story}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>Sprint: {task.sprint}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Tag className="w-4 h-4" />
-                          <span>Epic: {task.epic}</span>
-                        </div>
-                      </div>
-
-                      {/* Acceptance Criteria and Comments */}
-                      {expandedTasks.includes(task.id) && (
-                        <div className="ml-8 mt-4 space-y-4">
-                          {/* Acceptance Criteria */}
-                          <div>
-                            <h4 className="text-sm font-medium text-neutral-700 mb-2">Acceptance Criteria</h4>
-                            <div className="space-y-2">
-                              {task.acceptanceCriteria.map((criteria, index) => (
-                                <div key={index} className="flex items-start gap-2 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
-                                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                                  <span className="text-sm text-neutral-700">{criteria}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Comments */}
-                          <div>
-                            <h4 className="text-sm font-medium text-neutral-700 mb-2">Comments ({task.comments.length})</h4>
-                            <div className="space-y-3">
-                              {task.comments.map((comment) => (
-                                <div key={comment.id} className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <User className="w-4 h-4 text-neutral-400" />
-                                    <span className="text-sm font-medium text-neutral-800">{comment.author}</span>
-                                    <span className="text-xs text-neutral-500">{comment.timestamp}</span>
-                                  </div>
-                                  <p className="text-sm text-neutral-700">{comment.content}</p>
-                                </div>
-                              ))}
-                              {task.comments.length === 0 && (
-                                <p className="text-sm text-neutral-500 italic">No comments yet</p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-2 ml-4">
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        onClick={() => onOpenTab && onOpenTab("edit-task", `Edit: ${task.name}`)}
-                        title="Edit Task"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        onClick={() => downloadTaskReport(task)}
-                        title="Download Report"
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
-                        onClick={() => setShowMoreMenu(showMoreMenu === task.id ? null : task.id)}
-                      >
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
-                      
-                      {/* Task Actions Menu */}
-                      {showMoreMenu === task.id && (
-                        <div className="absolute right-0 top-12 z-10 bg-white border border-neutral-200 rounded shadow-lg min-w-[160px]">
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => onOpenTab && onOpenTab("edit-task", `Edit: ${task.name}`)}
-                          >
-                            <Edit className="w-4 h-4" />
-                            Edit Task
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => onOpenTab && onOpenTab("view-task", `View: ${task.name}`)}
-                          >
-                            <Eye className="w-4 h-4" />
-                            View Task
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => duplicateTask(task)}
-                          >
-                            <Copy className="w-4 h-4" />
-                            Duplicate Task
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => exportTask(task)}
-                          >
-                            <Share2 className="w-4 h-4" />
-                            Export Task
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-green-50 text-green-600 text-left"
-                            onClick={() => downloadTaskReport(task)}
-                          >
-                            <Download className="w-4 h-4" />
-                            Download Report
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-yellow-50 text-yellow-600 text-left"
-                            onClick={() => archiveTask(task.id)}
-                          >
-                            <Archive className="w-4 h-4" />
-                            Archive Task
-                          </button>
-                          <hr className="my-1" />
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-red-50 text-red-600 text-left"
-                            onClick={() => deleteTask(task.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete Task
-                          </button>
-                        </div>
-                      )}
+          
+          <h3 className="text-lg font-semibold text-neutral-900 mb-2">{task.name}</h3>
+                      <p className="text-sm text-neutral-600 mt-1">{task.description}</p>
                     </div>
                   </div>
+                  
+                  <div className="flex items-center gap-2 ml-4">
+                    <button 
+                      className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      onClick={() => onOpenTab && onOpenTab("edit-task", `Edit: ${task.name}`)}
+                      title="Edit Task"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button 
+                      className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                      onClick={() => setShowMoreMenu(showMoreMenu === task.id ? null : task.id)}
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                    
+                    {showMoreMenu === task.id && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-10">
+                        <button 
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-neutral-50 text-neutral-700 text-left"
+                          onClick={() => duplicateTask(task)}
+                        >
+                          <Copy className="w-4 h-4" />
+                          Duplicate Task
+                        </button>
+                        <button 
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-neutral-50 text-neutral-700 text-left"
+                          onClick={() => exportTask(task)}
+                        >
+                          <Download className="w-4 h-4" />
+                          Export Task
+                        </button>
+                        <hr className="my-1" />
+                        <button 
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-red-50 text-red-600 text-left"
+                          onClick={() => deleteTask(task.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Delete Task
+                        </button>
+                      </div>
+                    )}
                 </div>
-              );
-            })}
-          </div>
 
-          {filteredTasks.length === 0 && (
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{task.assignee}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{task.story}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{task.sprint}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{task.storyPoints} points</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{task.timeSpent}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">Due {task.dueDate}</span>
+                  </div>
+                </div>
+              </div>
+  );
+
+  const renderGridTask = (task: Task) => (
+    <div key={`task-${task.id}`} className="h-full">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 h-full hover:shadow-md transition-shadow">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${
+              task.priority === 'High' ? 'bg-red-500' :
+              task.priority === 'Medium' ? 'bg-yellow-500' :
+              'bg-green-500'
+            }`} />
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              task.status === 'Done' ? 'bg-green-100 text-green-700' :
+              task.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+              task.status === 'Review' ? 'bg-yellow-100 text-yellow-700' :
+              task.status === 'Blocked' ? 'bg-red-100 text-red-700' :
+              'bg-gray-100 text-gray-700'
+            }`}>
+              {task.status}
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => onOpenTab && onOpenTab("edit-task", `Edit: ${task.name}`, task)}
+              className="p-1 text-gray-400 hover:text-gray-600 rounded"
+            >
+              <Edit size={14} />
+            </button>
+            <button
+              onClick={() => duplicateTask(task)}
+              className="p-1 text-gray-400 hover:text-gray-600 rounded"
+            >
+              <Copy size={14} />
+            </button>
+            <button
+              onClick={() => deleteTask(task.id)}
+              className="p-1 text-red-400 hover:text-red-600 rounded"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        </div>
+        
+        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{task.name}</h3>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-3">{task.description}</p>
+        
+        <div className="space-y-2 mb-3">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <Users size={12} />
+            <span>{task.assignee}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <Calendar size={12} />
+            <span>Due {task.dueDate}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <Clock size={12} />
+            <span>{task.timeEstimate}</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-gray-500">Story:</span>
+            <span className="text-xs font-medium text-gray-700">{task.story}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-gray-500">Points:</span>
+            <span className="text-xs font-medium text-gray-700">{task.storyPoints}</span>
+          </div>
+        </div>
+        
+        {task.tags && task.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-3">
+            {task.tags.slice(0, 3).map((tag: string, index: number) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+            {task.tags.length > 3 && (
+              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                +{task.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderNoTasksFound = () => (
             <div className="p-12 text-center">
               <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckSquare className="w-8 h-8 text-neutral-400" />
@@ -735,12 +469,138 @@ ${task.comments.map(comment => `[${comment.timestamp}] ${comment.author}: ${comm
               <p className="text-neutral-600 mb-4">Try adjusting your search or create a new task.</p>
               <button 
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={() => onOpenTab && onOpenTab("create-task", "Create Task")}
+                onClick={() => setShowCreateForm(true)}
               >
                 Create Your First Task
               </button>
+    </div>
+  );
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-neutral-200">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold text-neutral-900">Tasks</h2>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsGridMode(!isGridMode)}
+                className={`p-2 rounded-lg transition-colors ${
+                  isGridMode 
+                    ? 'bg-blue-100 text-blue-600' 
+                    : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                }`}
+                title="Toggle Grid View"
+              >
+                <Grid3X3 size={20} />
+              </button>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full flex flex-col">
+            {/* Filters */}
+            <div className="p-6 border-b border-neutral-200">
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="flex-1 min-w-64">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
+                    <input
+                      type="text"
+                      placeholder="Search tasks..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Statuses</option>
+                  {statuses.map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
+                
+                <select
+                  value={priorityFilter}
+                  onChange={(e) => setPriorityFilter(e.target.value)}
+                  className="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Priorities</option>
+                  {priorities.map(priority => (
+                    <option key={priority} value={priority}>{priority}</option>
+                  ))}
+                </select>
+                
+                <select
+                  value={assigneeFilter}
+                  onChange={(e) => setAssigneeFilter(e.target.value)}
+                  className="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">All Assignees</option>
+                  {assignees.map(assignee => (
+                    <option key={assignee} value={assignee}>{assignee}</option>
+                  ))}
+                </select>
+                
+                <button
+                  onClick={clearFilters}
+                  className="px-4 py-2 text-neutral-600 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-colors"
+                >
+                  Clear Filters
+                </button>
+                
+                <button
+                  onClick={() => setShowCreateForm(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                  <Plus size={20} />
+                  Create Task
+                </button>
+              </div>
+            </div>
+
+            {/* Tasks List */}
+            <div className="flex-1 overflow-auto p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-neutral-900">
+                  All Tasks ({filteredTasks.length})
+                </h3>
+              </div>
+
+              {filteredTasks.length === 0 ? (
+                renderNoTasksFound()
+              ) : isGridMode ? (
+                <GridLayoutWrapper
+                  title="Tasks Grid"
+                  compact={true}
+                  defaultLayout={defaultTaskLayout}
+                  storageKey={`tasks-grid-${context?.company || 'default'}`}
+                  className="mb-4"
+                >
+                  {filteredTasks.map(renderGridTask)}
+                </GridLayoutWrapper>
+              ) : (
+                <div className="space-y-4">
+                  {filteredTasks.map(renderTaskCard)}
             </div>
           )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

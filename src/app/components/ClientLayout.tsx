@@ -1,8 +1,10 @@
 "use client";
+import React, { useState } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Sidebar from "./Sidebar";
 import ContextSidebar from "./ContextSidebar";
-import { useState } from "react";
+import SnapLayoutManager from "./SnapLayoutManager";
+import GridLayoutManager from "./GridLayoutManager";
 
 interface Project {
   name: string;
@@ -40,6 +42,10 @@ import CreateProjectPage from "./CreateProjectPage";
 import CreateTaskPage from "./CreateTaskPage";
 import CreateTeamPage from "./CreateTeamPage";
 import CreateSprintPage from "./CreateSprintPage";
+import CreateDepartmentPage from "./CreateDepartmentPage";
+import CreateStoryPage from "./CreateStoryPage";
+import GridDashboard from "./GridDashboard";
+import GridTasksPage from "./GridTasksPage";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,10 +67,15 @@ const SHEET_COMPONENTS: Record<string, any> = {
   sprints: SprintsPage,
   stories: StoriesPage,
   tasks: TasksPageSheet,
+  "company-teams": TeamsPageSheet,
+  "company-tasks": TasksPage,
+  "company-projects": ProjectsPage,
   "create-project": CreateProjectPage,
   "create-task": CreateTaskPage,
   "create-team": CreateTeamPage,
   "create-sprint": CreateSprintPage,
+  "create-department": CreateDepartmentPage,
+  "create-story": CreateStoryPage,
   "edit-project": CreateProjectPage,
   "edit-task": CreateTaskPage,
   "edit-team": CreateTeamPage,
@@ -80,11 +91,13 @@ const SHEET_COMPONENTS: Record<string, any> = {
 export default function ClientLayout() {
   // Set Dashboard as the default open tab
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [openTabs, setOpenTabs] = useState<{ type: string; key: string; title: string; component: React.ComponentType<any>; project?: Project }[]>([
+  const [openTabs, setOpenTabs] = useState<{ type: string; key: string; title: string; component: React.ComponentType<any>; project?: Project; context?: any }[]>([
     { type: "dashboard", key: `dashboard-${Date.now()}`, title: "Dashboard", component: DashboardPage }
   ]);
   const [activeTabIdx, setActiveTabIdx] = useState(0);
   const [pinnedTabs, setPinnedTabs] = useState<Set<string>>(new Set());
+  const [isGridMode, setIsGridMode] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<any>(null);
 
   // Map sidebar index to tab type and title
   const sidebarTabMap = [
@@ -95,33 +108,39 @@ export default function ClientLayout() {
     { type: "companies", title: "Companies", component: CompaniesPage },
     { type: "calendar", title: "Calendar", component: CalendarPage },
     { type: "reports", title: "Reports", component: ReportsPage },
+    { type: "grid-dashboard", title: "Grid Dashboard", component: GridDashboard },
     { type: "settings", title: "Settings", component: SettingsPage },
     { type: "notifications", title: "Notifications", component: NotificationsPage },
   ];
 
   // Handlers to open new tabs
-  const openTab = (type: string, title?: string) => {
+  const openTab = (type: string, context?: Record<string, unknown>) => {
     setOpenTabs((prev) => {
-      // Prevent duplicate tabs of the same type (optional, or allow multiple)
-      if (prev.some((tab) => tab.type === type)) {
-        const idx = prev.findIndex((tab) => tab.type === type);
+      // Create a unique key that includes context to allow multiple tabs of same type
+      const uniqueKey = context ? `${type}-${JSON.stringify(context)}-${Date.now()}` : `${type}-${Date.now()}`;
+      
+      // Check if tab with same type and context already exists
+      if (prev.some((tab) => tab.type === type && tab.context?.company === context?.company)) {
+        const idx = prev.findIndex((tab) => tab.type === type && tab.context?.company === context?.company);
         setActiveTabIdx(idx);
         return prev;
       }
       
-      // Find the component from sidebarTabMap or SHEET_COMPONENTS
+      // Find the component from SHEET_COMPONENTS first, then sidebarTabMap
       let component;
-      let tabTitle = title;
+      let tabTitle = type.charAt(0).toUpperCase() + type.slice(1);
       
-      // Check if it's a main sidebar tab
-      const sidebarTab = sidebarTabMap.find(tab => tab.type === type);
-      if (sidebarTab) {
-        component = sidebarTab.component;
-        tabTitle = tabTitle || sidebarTab.title;
-      } else {
-        // Check if it's a sheet component
+      // Check if it's a sheet component first (for company-specific types)
+      if (SHEET_COMPONENTS[type]) {
         component = SHEET_COMPONENTS[type];
-        tabTitle = tabTitle || type.charAt(0).toUpperCase() + type.slice(1);
+        tabTitle = type.charAt(0).toUpperCase() + type.slice(1);
+      } else {
+        // Check if it's a main sidebar tab
+        const sidebarTab = sidebarTabMap.find(tab => tab.type === type);
+        if (sidebarTab) {
+          component = sidebarTab.component;
+          tabTitle = sidebarTab.title;
+        }
       }
       
       if (!component) {
@@ -130,7 +149,7 @@ export default function ClientLayout() {
       }
       
       // Add new tab at the end and set as active
-      const newTabs = [...prev, { type, key: `${type}-${Date.now()}`, title: tabTitle, component }];
+      const newTabs = [...prev, { type, key: uniqueKey, title: tabTitle || type, component, context }];
       setActiveTabIdx(newTabs.length - 1);
       return newTabs;
     });
@@ -249,6 +268,30 @@ export default function ClientLayout() {
     });
   };
 
+  const handleSidebarDragStart = (e: React.DragEvent, item: Record<string, unknown>) => {
+    setDraggedItem(item);
+    e.dataTransfer.setData('application/json', JSON.stringify(item));
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const handleTabDragStart = (e: React.DragEvent, tab: Record<string, unknown>) => {
+    setDraggedItem({
+      type: tab.type,
+      label: tab.title,
+      component: tab.component,
+      project: tab.project,
+      context: tab.context
+    });
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      type: tab.type,
+      label: tab.title,
+      component: tab.component,
+      project: tab.project,
+      context: tab.context
+    }));
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
   // Map tab type to sidebar index
   const sidebarIndexMap: Record<string, number> = {
     dashboard: 0,
@@ -258,8 +301,18 @@ export default function ClientLayout() {
     companies: 4,
     calendar: 5,
     reports: 6,
-    settings: 7,
-    notifications: 8,
+    "grid-dashboard": 7,
+    settings: 8,
+    notifications: 9,
+    // Add missing types that are opened from the sidebar
+    project: 1, // Maps to Projects tab
+    departments: 4, // Maps to Companies tab (since departments are in companies)
+    sprints: 4, // Maps to Companies tab (since sprints are in companies)
+    stories: 4, // Maps to Companies tab (since stories are in companies)
+    // Company-specific types - keep sidebar on Companies tab
+    "company-teams": 4, // Maps to Companies tab
+    "company-tasks": 4, // Maps to Companies tab
+    "company-projects": 4, // Maps to Companies tab
   };
   const sidebarActiveTab = sidebarIndexMap[openTabs[activeTabIdx]?.type] ?? 0;
 
@@ -269,36 +322,28 @@ export default function ClientLayout() {
       <Sidebar
         activeTab={sidebarActiveTab}
         onNavClick={onSidebarNavClick}
+        onToggleGridMode={() => setIsGridMode(!isGridMode)}
+        isGridMode={isGridMode}
+        onDragStart={handleSidebarDragStart}
       />
-      {/* Show ContextSidebar only when Companies tab is active */}
-      {sidebarActiveTab === 4 && (
+      {/* Show ContextSidebar for all tabs */}
+      {(sidebarActiveTab === 1 || sidebarActiveTab === 2 || sidebarActiveTab === 3 || sidebarActiveTab === 4 || sidebarActiveTab === 5 || sidebarActiveTab === 6) && (
         <ContextSidebar
           activeTab={sidebarActiveTab}
-          onAddProject={() => openTab("project", "Projects")}
-          onAddDepartments={() => openTab("departments", "Departments")}
-          onAddTeams={() => openTab("teams", "Teams")}
-          onAddSprints={() => openTab("sprints", "Sprints")}
-          onAddStories={() => openTab("stories", "Stories")}
-          onAddTasks={() => openTab("tasks", "Tasks")}
-          onOpenCompanyProjects={onOpenCompanyProjects}
-        />
-      )}
-      {/* Show ContextSidebar when Projects tab is active */}
-      {sidebarActiveTab === 1 && (
-        <ContextSidebar
-          activeTab={sidebarActiveTab}
-          onAddProject={() => openTab("project", "Projects")}
-          onAddDepartments={() => openTab("departments", "Departments")}
-          onAddTeams={() => openTab("teams", "Teams")}
-          onAddSprints={() => openTab("sprints", "Sprints")}
-          onAddStories={() => openTab("stories", "Stories")}
-          onAddTasks={() => openTab("tasks", "Tasks")}
+          onAddProject={() => openTab("company-projects", "Company Projects", { company: "whapi project management" })}
+          onAddDepartments={() => openTab("departments", "Company Departments", { company: "whapi project management" })}
+          onAddTeams={() => openTab("company-teams", "Company Teams", { company: "whapi project management" })}
+          onAddSprints={() => openTab("sprints", "Company Sprints", { company: "whapi project management" })}
+          onAddStories={() => openTab("stories", "Company Stories", { company: "whapi project management" })}
+          onAddTasks={() => openTab("company-tasks", "Company Tasks", { company: "whapi project management" })}
           onOpenCompanyProjects={onOpenCompanyProjects}
         />
       )}
       <main className="flex-1 min-w-0 bg-background flex flex-col">
         {/* Tab Bar Container */}
-        <div className="flex items-center bg-white border-b border-neutral-200 h-10">
+        <div className={`flex items-center bg-white border-b border-neutral-200 h-10 ${
+          isGridMode ? 'border-blue-200 bg-blue-50' : ''
+        }`}>
           {/* Pinned Tabs (fixed, always visible) */}
           <div className="flex items-center gap-0 pl-2">
             {openTabs.filter(tab => pinnedTabs.has(tab.key)).map((tab) => {
@@ -309,21 +354,27 @@ export default function ClientLayout() {
                   key={tab.key}
                   className={`group flex items-center h-10 px-4 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max select-none
                     ${isActive ? "font-bold text-neutral-900 bg-white" : "font-normal text-neutral-700 bg-white hover:bg-neutral-100"}
+                    ${isGridMode ? "cursor-grab active:cursor-grabbing" : ""}
                   `}
                   onClick={() => setActiveTabIdx(globalIdx)}
+                  draggable={isGridMode}
+                  onDragStart={(e) => handleTabDragStart(e, tab)}
                   style={{ 
                     borderRadius: 0,
                     borderBottom: isActive ? '4px solid #2563eb' : '2px solid transparent'
                   }}
                 >
-                  <span className="truncate max-w-[120px]">{tab.title}</span>
+                  <span className="truncate max-w-[120px] text-sm">{tab.title}</span>
+                  {isGridMode && (
+                    <div className="ml-1 w-1 h-1 bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  )}
                   {/* Pin Button - Always visible for pinned, gold color */}
                   <button
                     onClick={e => { e.stopPropagation(); togglePinTab(tab.key); }}
                     className="ml-1 p-1 rounded transition-colors text-yellow-400 hover:text-yellow-500"
                     aria-label="Pin tab"
                   >
-                    <Pin size={14} className={pinnedTabs.has(tab.key) ? "fill-current" : ""} />
+                    <Pin size={12} className={pinnedTabs.has(tab.key) ? "fill-current" : ""} />
                   </button>
                   {/* Close Button */}
                   <button
@@ -331,7 +382,7 @@ export default function ClientLayout() {
                     className="ml-1 p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
                     aria-label="Close tab"
                   >
-                    <X size={14} />
+                    <X size={12} />
                   </button>
                 </div>
               );
@@ -348,21 +399,27 @@ export default function ClientLayout() {
                   key={tab.key}
                   className={`group flex items-center h-10 px-4 border-r border-neutral-200 cursor-pointer transition-all whitespace-nowrap min-w-max select-none
                     ${isActive ? "font-bold text-neutral-900 bg-white" : "font-normal text-neutral-700 bg-white hover:bg-neutral-100"}
+                    ${isGridMode ? "cursor-grab active:cursor-grabbing" : ""}
                   `}
                   onClick={() => setActiveTabIdx(globalIdx)}
+                  draggable={isGridMode}
+                  onDragStart={(e) => handleTabDragStart(e, tab)}
                   style={{ 
                     borderRadius: 0,
                     borderBottom: isActive ? '4px solid #2563eb' : '2px solid transparent'
                   }}
                 >
-                  <span className="truncate max-w-[120px]">{tab.title}</span>
+                  <span className="truncate max-w-[120px] text-sm">{tab.title}</span>
+                  {isGridMode && (
+                    <div className="ml-1 w-1 h-1 bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                  )}
                   {/* Pin Button - Show on hover */}
                   <button
                     onClick={e => { e.stopPropagation(); togglePinTab(tab.key); }}
                     className="ml-1 p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 opacity-0 group-hover:opacity-100"
                     aria-label="Pin tab"
                   >
-                    <Pin size={14} />
+                    <Pin size={12} />
                   </button>
                   {/* Close Button */}
                   <button
@@ -370,7 +427,7 @@ export default function ClientLayout() {
                     className="ml-1 p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
                     aria-label="Close tab"
                   >
-                    <X size={14} />
+                    <X size={12} />
                   </button>
                 </div>
               );
@@ -384,26 +441,42 @@ export default function ClientLayout() {
               className="p-1 rounded transition-colors text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
               aria-label="New tab"
             >
-              <Plus size={16} />
+              <Plus size={14} />
             </button>
+            {isGridMode && (
+              <div className="ml-2 px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+                Drag to Grid
+              </div>
+            )}
           </div>
         </div>
 
         {/* Main Content Area */}
         <div className="flex-1 overflow-auto">
-          {openTabs[activeTabIdx] && (() => {
-            const TabComponent = openTabs[activeTabIdx].component;
-            return (
-              <div className="h-full">
-                <TabComponent
-                  open={true}
-                  onClose={() => closeTab(activeTabIdx)}
-                  onOpenTab={openTab}
-                  project={openTabs[activeTabIdx].project}
-                />
-              </div>
-            );
-          })()}
+          {isGridMode ? (
+            <GridLayoutManager 
+              onOpenTab={openTab} 
+              draggedItem={draggedItem}
+              onDropItem={(item) => setDraggedItem(null)}
+            />
+          ) : (
+            <SnapLayoutManager onOpenTab={openTab}>
+              {openTabs[activeTabIdx] && (() => {
+                const TabComponent = openTabs[activeTabIdx].component;
+                return (
+                  <div className="h-full">
+                    <TabComponent
+                      open={true}
+                      onClose={() => closeTab(activeTabIdx)}
+                      onOpenTab={openTab}
+                      project={openTabs[activeTabIdx].project}
+                      context={openTabs[activeTabIdx].context}
+                    />
+                  </div>
+                );
+              })()}
+            </SnapLayoutManager>
+          )}
         </div>
       </main>
     </div>

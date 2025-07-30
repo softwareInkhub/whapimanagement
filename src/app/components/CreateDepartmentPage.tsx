@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import CreateSprintModal from "./CreateSprintModal";
+import CreateDepartmentModal from "./CreateDepartmentModal";
 
-export default function CreateSprintPage({ onClose }: { onClose?: () => void }) {
+export default function CreateDepartmentPage({ onClose }: { onClose?: () => void }) {
   const [showModal, setShowModal] = useState(true);
 
   const handleClose = () => {
@@ -9,25 +9,24 @@ export default function CreateSprintPage({ onClose }: { onClose?: () => void }) 
     onClose?.();
   };
 
-  const handleCreate = (sprint: {
+  const handleCreate = (department: {
     name: string;
     description: string;
-    project: string;
-    status: string;
-    priority: string;
+    company: string;
+    location: string;
+    manager: string;
+    budget: string;
     startDate: string;
-    endDate: string;
-    velocity: string;
     teamMembers: string[];
   }) => {
-    console.log("Creating sprint:", sprint);
-    // Here you would typically save the sprint to your state or API
+    console.log("Creating department:", department);
+    // Here you would typically save the department to your state or API
     handleClose();
   };
 
   return (
     <div className="w-full h-full bg-neutral-50 flex items-center justify-center">
-      <CreateSprintModal
+      <CreateDepartmentModal
         open={showModal}
         onClose={handleClose}
         onCreate={handleCreate}

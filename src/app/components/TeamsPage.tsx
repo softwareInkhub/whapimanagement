@@ -59,7 +59,16 @@ import {
   Globe,
   MapPin,
   Building,
-  Briefcase
+  Briefcase,
+  X,
+  Save,
+  ArrowLeft,
+  ChevronDown,
+  User,
+  Tag,
+  AlertCircle,
+  Calendar,
+  CheckSquare
 } from "lucide-react";
 import CreateTeamModal from "./CreateTeamModal";
 
@@ -197,14 +206,79 @@ interface Team {
   lastActivity: string;
 }
 
-export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, title?: string) => void }) {
+const members = [
+  "Sarah Johnson",
+  "Mike Chen", 
+  "Alex Rodriguez",
+  "Emily Davis",
+  "David Wilson",
+  "Lisa Thompson",
+  "James Brown",
+  "Maria Garcia",
+  "Emma Wilson",
+  "David Kim",
+  "Anna Lee",
+  "Tom Anderson"
+];
+
+const projects = [
+  "Whapi Project Management",
+  "E-commerce Platform", 
+  "Client Portal",
+  "Mobile App Development",
+  "API Integration"
+];
+
+const roles = [
+  "Team Lead",
+  "Senior Developer", 
+  "Developer",
+  "UI/UX Designer",
+  "Product Manager",
+  "QA Engineer",
+  "DevOps Engineer",
+  "Data Analyst"
+];
+
+const tags = [
+  "Frontend", "Backend", "Design", "Mobile", "DevOps", 
+  "QA", "Marketing", "Sales", "Support", "Research"
+];
+
+export default function TeamsPage({ onOpenTab, context }: { onOpenTab?: (type: string, title?: string, context?: any) => void; context?: { company: string } }) {
   const [teams, setTeams] = useState<Team[]>(initialTeams);
   const [searchTerm, setSearchTerm] = useState("");
   const [projectFilter, setProjectFilter] = useState("All");
-  const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showFilters, setShowFilters] = useState(false);
   const [expandedTeams, setExpandedTeams] = useState<Set<number>>(new Set());
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showNewProject, setShowNewProject] = useState(false);
+  const [newProject, setNewProject] = useState("");
+
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    project: context?.company || projects[0],
+    members: [] as string[],
+    roles: {} as Record<string, string>,
+    budget: "",
+    startDate: "",
+    tags: [] as string[],
+    whatsappGroupId: "",
+    whatsappGroupName: "",
+    goals: "",
+    notes: ""
+  });
+
+  const whatsappGroups = [
+    { id: "1", name: "Development Team" },
+    { id: "2", name: "Design Team" },
+    { id: "3", name: "Marketing Team" },
+    { id: "4", name: "Sales Team" },
+    { id: "5", name: "Support Team" }
+  ];
 
   const handleCreateTeam = async (team: { 
     name: string; 
@@ -260,7 +334,8 @@ export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, ti
     avgPerformance: Array.isArray(teams) && teams.length > 0 ? Math.round(teams.reduce((sum, team) => sum + (typeof team.performance === 'number' ? team.performance : 0), 0) / teams.length) : 0,
     avgVelocity: Array.isArray(teams) && teams.length > 0 ? Math.round(teams.reduce((sum, team) => sum + (typeof team.velocity === 'number' ? team.velocity : 0), 0) / teams.length) : 0,
     totalTasks: Array.isArray(teams) ? teams.reduce((sum, team) => sum + (typeof team.totalTasks === 'number' ? team.totalTasks : 0), 0) : 0,
-    completedTasks: Array.isArray(teams) ? teams.reduce((sum, team) => sum + (typeof team.tasksCompleted === 'number' ? team.tasksCompleted : 0), 0) : 0
+    completedTasks: Array.isArray(teams) ? teams.reduce((sum, team) => sum + (typeof team.tasksCompleted === 'number' ? team.tasksCompleted : 0), 0) : 0,
+    totalBudget: Array.isArray(teams) ? teams.reduce((sum, team) => sum + (typeof team.budget === 'string' ? parseFloat(team.budget.replace('$', '').replace(',', '')) : 0), 0) : 0
   };
 
   const deleteTeam = (teamId: number) => {
@@ -331,6 +406,90 @@ export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, ti
     return matchesSearch && matchesProject;
   });
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Creating team:", formData);
+    
+    // Create new team object
+    const newTeam = {
+      id: Date.now(), // Generate unique ID
+      name: formData.name,
+      description: formData.description,
+      project: formData.project,
+      members: formData.members.map((member, index) => ({
+        id: index + 1,
+        name: member,
+        role: formData.roles[member] || "Member",
+        avatar: member.split(' ').map(n => n[0]).join(''),
+        email: `${member.toLowerCase().replace(' ', '.')}@company.com`,
+        status: "Online",
+        phone: "+1-555-0000",
+        skills: ["General"],
+        experience: "1 year",
+        projects: 1
+      })),
+      tasksCompleted: 0,
+      totalTasks: 0,
+      performance: 0,
+      velocity: 0,
+      health: "good",
+      budget: formData.budget || "$0",
+      startDate: formData.startDate || new Date().toISOString().split('T')[0],
+      archived: false,
+      tags: formData.tags,
+      achievements: [],
+      lastActivity: "Just now"
+    };
+
+    // Add the new team to the teams array
+    setTeams(prevTeams => [newTeam, ...prevTeams]);
+    
+    // Reset form and hide it
+    setShowCreateForm(false);
+    setFormData({
+      name: "",
+      description: "",
+      project: context?.company || projects[0],
+      members: [],
+      roles: {},
+      budget: "",
+      startDate: "",
+      tags: [],
+      whatsappGroupId: "",
+      whatsappGroupName: "",
+      goals: "",
+      notes: ""
+    });
+  };
+
+  const toggleMember = (member: string) => {
+    setFormData(prev => ({
+      ...prev,
+      members: prev.members.includes(member) 
+        ? prev.members.filter(m => m !== member)
+        : [...prev.members, member]
+    }));
+  };
+
+  const toggleTag = (tag: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tag) 
+        ? prev.tags.filter(t => t !== tag)
+        : [...prev.tags, tag]
+    }));
+  };
+
+  const updateMemberRole = (member: string, role: string) => {
+    setFormData(prev => ({
+      ...prev,
+      roles: {
+        ...prev.roles,
+        [member]: role
+      }
+    }));
+  };
+
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30">
       {/* Enhanced Header */}
@@ -338,8 +497,13 @@ export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, ti
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-600 text-white font-semibold shadow-lg">
             <Users className="text-white mr-1" size={20} />
-            <span>Teams</span>
+            <span>{context?.company ? `${context.company} Teams` : 'Teams'}</span>
           </div>
+          {context?.company && (
+            <div className="text-sm text-slate-600">
+              Managing teams for {context.company}
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <button 
@@ -349,64 +513,418 @@ export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, ti
             Export
           </button>
           <button 
+            onClick={() => setShowCreateForm(!showCreateForm)}
             className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-semibold focus-ring"
-            onClick={() => setShowCreateModal(true)}
           >
             <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
-            New Team
+            {showCreateForm ? 'Cancel' : 'New Team'}
           </button>
         </div>
       </div>
 
       <div className="p-6 space-y-6">
+        {/* Team Creation Form */}
+        {showCreateForm && (
+          <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-8 animate-fade-in">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Create New Team</h2>
+                  <p className="text-slate-600">Fill in the details below to create a new team.</p>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Team Information */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Users className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Team Information</h3>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Team Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Enter team name"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Project *
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formData.project}
+                          onChange={(e) => setFormData(prev => ({ ...prev, project: e.target.value }))}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                          required
+                        >
+                          {projects.map(project => (
+                            <option key={project} value={project}>{project}</option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <Building className="w-4 h-4 text-slate-400" />
+                        </div>
+                      </div>
+                      {showNewProject && (
+                        <div className="mt-2">
+                          <input
+                            type="text"
+                            value={newProject}
+                            onChange={(e) => setNewProject(e.target.value)}
+                            placeholder="Enter new project name"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                          />
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setShowNewProject(!showNewProject)}
+                        className="text-sm text-blue-600 hover:text-blue-700 mt-1"
+                      >
+                        {showNewProject ? "Cancel" : "+ Add New Project"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Description
+                      </label>
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Describe the team's purpose, responsibilities, and objectives..."
+                        rows={4}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Budget
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={formData.budget}
+                          onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
+                          placeholder="e.g., $50,000"
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <DollarSign className="w-4 h-4 text-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Team Members */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <UserPlus className="w-4 h-4 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Team Members</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Select Members
+                    </label>
+                    <div className="space-y-2 max-h-48 overflow-y-auto border border-slate-200 rounded-lg p-3">
+                      {members.map(member => (
+                        <div key={member} className="flex items-center justify-between p-2 hover:bg-slate-50 rounded">
+                          <div className="flex items-center space-x-3">
+                            <input
+                              type="checkbox"
+                              checked={formData.members.includes(member)}
+                              onChange={() => toggleMember(member)}
+                              className="w-4 h-4 text-green-600 rounded focus:ring-green-500"
+                            />
+                            <span className="text-sm text-slate-700">{member}</span>
+                          </div>
+                          {formData.members.includes(member) && (
+                            <select
+                              value={formData.roles[member] || ""}
+                              onChange={(e) => updateMemberRole(member, e.target.value)}
+                              className="text-xs border border-slate-200 rounded px-2 py-1"
+                            >
+                              <option value="">Select Role</option>
+                              {roles.map(role => (
+                                <option key={role} value={role}>{role}</option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Selected Members ({formData.members.length})
+                    </label>
+                    <div className="space-y-2">
+                      {formData.members.map(member => (
+                        <div key={member} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                              <User className="w-4 h-4 text-purple-600" />
+                            </div>
+                          <div>
+                            <div className="text-sm font-medium text-slate-900">{member}</div>
+                            <div className="text-xs text-slate-500">
+                              {formData.roles[member] || "No role assigned"}
+                            </div>
+                          </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => toggleMember(member)}
+                            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Team Details */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Target className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Team Details</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Start Date *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="date"
+                        value={formData.startDate}
+                        onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <CalendarDays className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      WhatsApp Group
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.whatsappGroupId}
+                        onChange={(e) => {
+                          const group = whatsappGroups.find(g => g.id === e.target.value);
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            whatsappGroupId: e.target.value,
+                            whatsappGroupName: group?.name || ""
+                          }));
+                        }}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                      >
+                        <option value="">Select WhatsApp Group</option>
+                        {whatsappGroups.map(group => (
+                          <option key={group.id} value={group.id}>{group.name}</option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <MessageSquare className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <Tag className="w-4 h-4 text-indigo-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Tags</h3>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {tags.map(tag => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        formData.tags.includes(tag)
+                          ? "bg-blue-100 text-blue-700 border border-blue-200"
+                          : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Goals and Notes */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Target className="w-4 h-4 text-yellow-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Goals & Notes</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Team Goals
+                    </label>
+                    <textarea
+                      value={formData.goals}
+                      onChange={(e) => setFormData(prev => ({ ...prev, goals: e.target.value }))}
+                      placeholder="Define the team's key objectives and goals..."
+                      rows={4}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Additional Notes
+                    </label>
+                    <textarea
+                      value={formData.notes}
+                      onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                      placeholder="Add any additional notes or special requirements..."
+                      rows={4}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Cancel</span>
+                </button>
+
+                <div className="flex items-center space-x-3">
+                  <button
+                    type="button"
+                    className="px-6 py-3 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center space-x-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save Draft</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold flex items-center space-x-2"
+                  >
+                    <Users className="w-4 h-4" />
+                    <span>Create Team</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        )}
+
         {/* Enhanced Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-lg">
-                <Users className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 animate-fade-in">
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-purple-50 rounded-md flex items-center justify-center mr-3">
+              <Users className="w-3 h-3 text-purple-600" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.totalTeams}</h3>
-            <p className="text-slate-600 text-sm font-medium">Total Teams</p>
-            <div className="mt-2 text-xs text-slate-500">+1 this month</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-slate-900">{analytics.totalTeams}</h3>
+              <p className="text-xs text-slate-500">Total Teams</p>
+            </div>
+            <div className="flex items-center gap-1 ml-2">
+              <TrendingUp className="w-3 h-3 text-emerald-500" />
+              <span className="text-xs text-slate-400">+1</span>
+            </div>
           </div>
 
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
-                <UserPlus className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-blue-50 rounded-md flex items-center justify-center mr-3">
+              <UserPlus className="w-3 h-3 text-blue-600" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.totalMembers}</h3>
-            <p className="text-slate-600 text-sm font-medium">Team Members</p>
-            <div className="mt-2 text-xs text-slate-500">+3 this week</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-slate-900">{analytics.totalMembers}</h3>
+              <p className="text-xs text-slate-500">Team Members</p>
+            </div>
+            <div className="flex items-center gap-1 ml-2">
+              <TrendingUp className="w-3 h-3 text-emerald-500" />
+              <span className="text-xs text-slate-400">+3</span>
+            </div>
           </div>
 
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg">
-                <Award className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-green-50 rounded-md flex items-center justify-center mr-3">
+              <Award className="w-3 h-3 text-green-600" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.avgPerformance}%</h3>
-            <p className="text-slate-600 text-sm font-medium">Avg Performance</p>
-            <div className="mt-2 text-xs text-slate-500">+5% from last month</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-slate-900">{analytics.avgPerformance}%</h3>
+              <p className="text-xs text-slate-500">Avg Performance</p>
+            </div>
+            <div className="flex items-center gap-1 ml-2">
+              <TrendingUp className="w-3 h-3 text-emerald-500" />
+              <span className="text-xs text-slate-400">+5%</span>
+            </div>
           </div>
 
-          <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 text-white shadow-lg">
-                <Target className="w-6 h-6" />
-              </div>
-              <TrendingUp className="w-5 h-5 text-emerald-500" />
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-orange-50 rounded-md flex items-center justify-center mr-3">
+              <Trophy className="w-3 h-3 text-orange-600" />
             </div>
-            <h3 className="text-3xl font-bold text-slate-900 mb-1">{analytics.avgVelocity}</h3>
-            <p className="text-slate-600 text-sm font-medium">Avg Velocity</p>
-            <div className="mt-2 text-xs text-slate-500">+8% from last sprint</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-slate-900">{analytics.totalBudget}</h3>
+              <p className="text-xs text-slate-500">Total Budget</p>
+            </div>
+            <div className="flex items-center gap-1 ml-2">
+              <TrendingUp className="w-3 h-3 text-emerald-500" />
+              <span className="text-xs text-slate-400">+12%</span>
+            </div>
           </div>
         </div>
 
@@ -458,70 +976,71 @@ export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, ti
             </div>
           </div>
 
-          {/* Advanced Filters */}
+          {/* Filters Panel */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-white/20 animate-fade-in">
+            <div className="mt-4 pt-4 border-t border-white/20 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <select
-                  value={projectFilter}
-                  onChange={(e) => setProjectFilter(e.target.value)}
-                  className="px-3 py-2 border border-white/20 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="All">All Projects</option>
-                  <option value="Whapi Project Management">Whapi Project Management</option>
-                  <option value="Client Portal">Client Portal</option>
-                  <option value="Analytics Platform">Analytics Platform</option>
-                </select>
-
-                <select className="px-3 py-2 border border-white/20 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
-                  <option>All Performance</option>
-                  <option>Excellent (90%+)</option>
-                  <option>Good (80-89%)</option>
-                  <option>Average (70-79%)</option>
-                  <option>Below Average (&lt;70%)</option>
-                </select>
-
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
-                >
-                  <FilterX size={16} />
-                  Clear All
-                </button>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Project</label>
+                  <select
+                    value={projectFilter}
+                    onChange={(e) => setProjectFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/50 backdrop-blur-sm"
+                  >
+                    <option value="All">All Projects</option>
+                    <option value="Whapi Project Management">Whapi Project Management</option>
+                    <option value="E-commerce Platform">E-commerce Platform</option>
+                    <option value="Client Portal">Client Portal</option>
+                    <option value="Mobile App Development">Mobile App Development</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Team Health</label>
+                  <select className="w-full px-3 py-2 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white/50 backdrop-blur-sm">
+                    <option value="All">All Health</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="good">Good</option>
+                    <option value="fair">Fair</option>
+                    <option value="poor">Poor</option>
+                  </select>
+                </div>
+                
+                <div className="flex items-end">
+                  <button
+                    onClick={clearFilters}
+                    className="w-full px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <FilterX className="w-4 h-4" />
+                    Clear Filters
+                  </button>
+                </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Teams Grid/List */}
-        <div className={`grid gap-6 ${
-          viewMode === "grid" 
-            ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3" 
-            : "grid-cols-1"
-        }`}>
-          {filteredTeams.map((team, index) => (
-            <div 
-              key={team.id} 
-              className="group bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl border border-white/20 transition-all duration-300 hover:scale-105 animate-fade-in"
-              style={{ animationDelay: `${300 + index * 100}ms` }}
-            >
-              {/* Team Header */}
-              <div className="p-6 border-b border-white/20">
+        {/* Team Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 animate-fade-in" style={{ animationDelay: '400ms' }}>
+          {filteredTeams.map((team) => (
+            <div key={team.id} className="bg-white rounded-xl shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-200 group">
+              <div className="p-6">
+                {/* Team Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition-colors">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2 group-hover:text-purple-600 transition-colors">
                       {team.name}
                     </h3>
-                    <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                    <p className="text-sm text-slate-600 line-clamp-2">
                       {team.description}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                      <Heart size={16} />
+                  <div className="flex items-center gap-2 ml-4">
+                    <button className="p-1 text-slate-400 hover:text-red-500 transition-colors">
+                      <Heart className="w-4 h-4" />
                     </button>
-                    <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                      <MoreHorizontal size={16} />
+                    <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                      <MoreHorizontal className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -529,159 +1048,109 @@ export default function TeamsPage({ onOpenTab }: { onOpenTab?: (type: string, ti
                 {/* Team Stats */}
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-900">{typeof team.performance === 'number' ? team.performance : 0}%</div>
-                    <div className="text-xs text-slate-500">Performance</div>
+                    <div className="text-2xl font-bold text-slate-900">{team.members.length}</div>
+                    <div className="text-xs text-slate-500">Members</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-slate-900">{typeof team.velocity === 'number' ? team.velocity : 0}</div>
-                    <div className="text-xs text-slate-500">Velocity</div>
+                    <div className="text-2xl font-bold text-slate-900">{team.performance}%</div>
+                    <div className="text-xs text-slate-500">Performance</div>
                   </div>
                 </div>
 
                 {/* Progress Bar */}
                 <div className="w-full bg-slate-200 rounded-full h-2 mb-4">
                   <div 
-                    className="h-full bg-gradient-to-r from-purple-500 to-pink-600 rounded-full transition-all duration-1000 ease-out"
-                    style={{ width: `${(typeof team.tasksCompleted === 'number' ? team.tasksCompleted : 0) / (typeof team.totalTasks === 'number' ? team.totalTasks : 0) * 100}%` }}
+                    className="bg-gradient-to-r from-purple-500 to-pink-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(team.tasksCompleted / team.totalTasks) * 100}%` }}
                   ></div>
                 </div>
 
-                {/* Team Meta */}
+                {/* Team Details */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${healthColors[team.health as keyof typeof healthColors]}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      team.health === 'excellent' ? 'bg-green-100 text-green-700' :
+                      team.health === 'good' ? 'bg-blue-100 text-blue-700' :
+                      team.health === 'fair' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
                       {team.health}
                     </span>
-                    <span className="text-xs text-slate-500">
-                      {typeof team.tasksCompleted === 'number' ? team.tasksCompleted : 0}/{typeof team.totalTasks === 'number' ? team.totalTasks : 0} tasks
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                      {team.budget}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
-                    <span className="flex items-center gap-1">
-                      <Users size={12} />
-                      {Array.isArray(team.members) ? team.members.length : 0} members
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock size={12} />
-                      {team.lastActivity}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Team Tags */}
-                <div className="flex items-center gap-2 mb-4">
-                  {Array.isArray(team.tags) ? team.tags.slice(0, 3).map((tag, tagIndex) => (
-                    <span key={tagIndex} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-full">
-                      {tag}
-                    </span>
-                  )) : null}
-                  {Array.isArray(team.tags) && team.tags.length > 3 && (
-                    <span className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-full">
-                      +{Array.isArray(team.tags) ? team.tags.length - 3 : 0}
-                    </span>
-                  )}
-                </div>
-
-                {/* Project Info */}
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span className="flex items-center gap-1">
-                    <Briefcase size={12} />
-                    {team.project}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <DollarSign size={12} />
-                    {team.budget}
-                  </span>
-                </div>
-              </div>
-
-              {/* Team Actions */}
-              <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <button 
-                    className="flex items-center gap-2 px-3 py-2 text-sm text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all duration-200"
-                    onClick={() => toggleTeam(team.id)}
-                  >
-                    <Layers size={14} />
-                    {expandedTeams.has(team.id) ? 'Hide' : 'Show'} Members
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                    <Edit size={14} />
-                  </button>
-                  <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                    <Share2 size={14} />
-                  </button>
-                  <button className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200">
-                    <ExternalLink size={14} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Expanded Members */}
-              {expandedTeams.has(team.id) && (
-                <div className="px-6 pb-6 animate-fade-in">
-                  <div className="border-t border-white/20 pt-4">
-                    <h4 className="font-semibold text-slate-900 mb-3">Team Members</h4>
-                    <div className="space-y-3">
-                      {Array.isArray(team.members) ? team.members.map((member) => (
-                        <div key={member.id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="relative">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 text-white text-sm font-semibold flex items-center justify-center">
-                                {member.avatar}
-                              </div>
-                              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${statusColors[member.status as keyof typeof statusColors]}`}></div>
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-medium text-slate-900">{member.name}</div>
-                              <div className="text-sm text-slate-600">{member.role}</div>
-                              <div className="text-xs text-slate-500">{member.experience} • {member.projects} projects</div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button 
-                              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-                              onClick={() => contactMember(member, 'email')}
-                            >
-                              <Mail size={14} />
-                            </button>
-                            <button 
-                              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
-                              onClick={() => contactMember(member, 'message')}
-                            >
-                              <MessageSquare size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      )) : null}
+                  <div className="flex items-center gap-3 text-slate-400">
+                    <div className="flex items-center gap-1">
+                      <MessageSquare className="w-3 h-3" />
+                      <span className="text-xs">{team.tasksCompleted}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-3 h-3" />
+                      <span className="text-xs">{team.totalTasks}</span>
                     </div>
                   </div>
                 </div>
-              )}
+
+                {/* Project and Date */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Building className="w-4 h-4 text-slate-400" />
+                    <span className="text-sm text-slate-700">{team.project}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-slate-400" />
+                    <span className="text-sm text-slate-700">{team.startDate}</span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between">
+                  <button className="text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors">
+                    View Team
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                    <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
         {/* Empty State */}
         {filteredTeams.length === 0 && (
-          <div className="text-center py-12 animate-fade-in">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Users className="w-8 h-8 text-slate-400" />
             </div>
             <h3 className="text-lg font-semibold text-slate-900 mb-2">No teams found</h3>
-            <p className="text-slate-600 mb-4">Try adjusting your search or filters</p>
+            <p className="text-slate-600 mb-4">Try adjusting your search or create a new team.</p>
             <button 
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              onClick={clearFilters}
+              onClick={() => setShowCreateForm(true)}
+              className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold flex items-center gap-2 mx-auto"
             >
-              Clear Filters
+              <Plus className="w-4 h-4" />
+              Create First Team
             </button>
           </div>
         )}
       </div>
-      <CreateTeamModal open={showCreateModal} onClose={() => setShowCreateModal(false)} onCreate={handleCreateTeam} />
+
+      {/* Keep the existing modal for backward compatibility */}
+      <CreateTeamModal
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreate={handleCreateTeam}
+      />
     </div>
   );
 } 

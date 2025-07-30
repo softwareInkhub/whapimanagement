@@ -1,25 +1,28 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { 
-  X, 
   Calendar, 
-  Plus, 
+  Clock, 
+  CheckCircle, 
+  AlertCircle, 
+  MoreHorizontal, 
+  Edit, 
+  Trash2, 
+  Archive, 
+  Copy, 
+  Download, 
   Search, 
   Filter, 
-  MoreHorizontal,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Edit,
-  Trash2,
-  Archive,
-  Copy,
-  Share2,
-  Download,
-  Eye,
+  X, 
+  Plus,
+  ChevronDown,
+  ChevronRight,
   TrendingUp,
+  BarChart3,
+  DollarSign,
   Target,
-  Users,
-  Zap
+  Zap,
+  Flag,
+  Users
 } from "lucide-react";
 
 // Sample sprint data
@@ -298,6 +301,20 @@ export default function SprintsPage({ open, onClose, onOpenTab }: {
   const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
   const [expandedSprints, setExpandedSprints] = useState<number[]>([]);
   const [selectedSprint, setSelectedSprint] = useState<Sprint | null>(null);
+  
+  // Form states
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    project: "",
+    status: "",
+    priority: "",
+    startDate: "",
+    endDate: "",
+    velocity: "",
+    teamMembers: [] as string[]
+  });
 
   // Sprint actions
   const deleteSprint = (sprintId: number) => {
@@ -406,6 +423,55 @@ ${sprint.stories.map(story => `- ${story.name} (${story.status}) - ${story.assig
     }
   };
 
+  const handleCreateSprint = () => {
+    if (formData.name && formData.project) {
+      const newSprint: Sprint = {
+        id: Math.max(...sprints.map(s => s.id)) + 1,
+        name: formData.name,
+        project: formData.project,
+        status: formData.status || "Planning",
+        priority: formData.priority || "Medium",
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        velocity: formData.velocity || "0",
+        description: formData.description,
+        created: new Date().toISOString().split('T')[0],
+        lastActivity: "Just now",
+        archived: false,
+        tasks: [],
+        stories: []
+      };
+      
+      setSprints(prev => [...prev, newSprint]);
+      setShowCreateForm(false);
+      setFormData({
+        name: "",
+        description: "",
+        project: "",
+        status: "",
+        priority: "",
+        startDate: "",
+        endDate: "",
+        velocity: "",
+        teamMembers: []
+      });
+    }
+  };
+
+  const toggleMember = (member: string) => {
+    setFormData(prev => ({
+      ...prev,
+      teamMembers: prev.teamMembers.includes(member) 
+        ? prev.teamMembers.filter(m => m !== member)
+        : [...prev.teamMembers, member]
+    }));
+  };
+
+  const availableMembers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller", "Grace Lee", "Henry Brown"];
+  const projects = ["Whapi Project Management", "E-commerce Platform", "Client Portal", "Mobile App Development", "API Integration"];
+  const statuses = ["Planning", "Active", "Completed", "On Hold"];
+  const priorities = ["Low", "Medium", "High", "Critical"];
+
   if (!open) return null;
 
   return (
@@ -423,322 +489,407 @@ ${sprint.stories.map(story => `- ${story.name} (${story.status}) - ${story.assig
         </div>
         <button 
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={() => onOpenTab && onOpenTab("create-sprint", "Create Sprint")}
+          onClick={() => setShowCreateForm(!showCreateForm)}
         >
           <Plus size={16} />
-          New Sprint
+          {showCreateForm ? 'Cancel' : 'New Sprint'}
         </button>
       </div>
 
       <div className="p-6">
+        {/* Create Form */}
+        {showCreateForm && (
+          <div className="mb-6 bg-white rounded-xl shadow-lg border border-neutral-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-neutral-900">Create New Sprint</h3>
+              <button 
+                onClick={() => setShowCreateForm(false)}
+                className="text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Sprint Information */}
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center">
+                  <Zap className="w-3 h-3 text-pink-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Sprint Information</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Sprint Name *</label>
+                  <input 
+                    value={formData.name} 
+                    onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                    placeholder="Enter sprint name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Project *</label>
+                  <select
+                    value={formData.project}
+                    onChange={e => setFormData(prev => ({ ...prev, project: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select a project</option>
+                    {projects.map(project => (
+                      <option key={project} value={project}>{project}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1">Description</label>
+                <textarea 
+                  value={formData.description} 
+                  onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))} 
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all resize-none"
+                  rows={2}
+                  placeholder="Describe the sprint goals and objectives..."
+                />
+              </div>
+
+              {/* Sprint Details */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Target className="w-3 h-3 text-green-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Sprint Details</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={e => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select status</option>
+                    {statuses.map(status => (
+                      <option key={status} value={status}>{status}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Priority</label>
+                  <select
+                    value={formData.priority}
+                    onChange={e => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select priority</option>
+                    {priorities.map(priority => (
+                      <option key={priority} value={priority}>{priority}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Velocity</label>
+                  <input
+                    value={formData.velocity}
+                    onChange={e => setFormData(prev => ({ ...prev, velocity: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                    placeholder="e.g., 20 story points"
+                  />
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-3 h-3 text-orange-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Timeline</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Start Date</label>
+                  <input 
+                    type="date"
+                    value={formData.startDate} 
+                    onChange={e => setFormData(prev => ({ ...prev, startDate: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-neutral-50/50 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">End Date</label>
+                  <input 
+                    type="date"
+                    value={formData.endDate} 
+                    onChange={e => setFormData(prev => ({ ...prev, endDate: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-neutral-50/50 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Team Members */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-3 h-3 text-blue-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Team Members</h4>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">Sprint Team</label>
+                <div className="flex flex-wrap gap-1">
+                  {availableMembers.map(member => (
+                    <button
+                      key={member}
+                      type="button"
+                      onClick={() => toggleMember(member)}
+                      className={`px-2 py-1 rounded-md border text-xs font-medium transition-all ${
+                        formData.teamMembers.includes(member) 
+                          ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
+                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:border-neutral-300'
+                      }`}
+                    >
+                      {member}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="flex-1 px-3 py-2 border border-neutral-200 rounded-lg text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleCreateSprint}
+                  disabled={!formData.name || !formData.project}
+                  className="flex-1 px-3 py-2 bg-pink-600 text-white rounded-lg text-xs font-medium hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  Create Sprint
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Total Sprints</p>
+                <p className="text-2xl font-bold text-neutral-900">{analytics.totalSprints}</p>
+              </div>
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Zap className="w-6 h-6 text-blue-600" />
+                <Calendar className="w-5 h-5 text-blue-600" />
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalSprints}</h3>
-            <p className="text-neutral-600 text-sm">Total Sprints</p>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+15% from last month</span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Active Sprints</p>
+                <p className="text-2xl font-bold text-neutral-900">{analytics.activeSprints}</p>
+              </div>
               <div className="p-2 bg-green-100 rounded-lg">
-                <Clock className="w-6 h-6 text-green-600" />
+                <Clock className="w-5 h-5 text-green-600" />
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.activeSprints}</h3>
-            <p className="text-neutral-600 text-sm">Active Sprints</p>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+8% from last month</span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Completed Sprints</p>
+                <p className="text-2xl font-bold text-neutral-900">{analytics.completedSprints}</p>
+              </div>
               <div className="p-2 bg-purple-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-purple-600" />
+                <CheckCircle className="w-5 h-5 text-purple-600" />
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.completedSprints}</h3>
-            <p className="text-neutral-600 text-sm">Completed Sprints</p>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+12% from last month</span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Target className="w-6 h-6 text-orange-600" />
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Avg Velocity</p>
+                <p className="text-2xl font-bold text-neutral-900">{analytics.avgVelocity}</p>
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <BarChart3 className="w-5 h-5 text-orange-600" />
+              </div>
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.avgVelocity}%</h3>
-            <p className="text-neutral-600 text-sm">Avg Velocity</p>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+5% from last month</span>
+            </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search sprints, teams, or status..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            <button 
-              className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="w-4 h-4" />
-              More Filters
-            </button>
-
-            {hasActiveFilters && (
-              <button 
-                className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-red-50 text-red-700 transition-colors"
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </button>
-            )}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search sprints, projects, or status..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
           </div>
-
-          {/* Advanced Filters */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-neutral-200">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Status</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Status</option>
-                    <option>In Progress</option>
-                    <option>Completed</option>
-                    <option>Planning</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Team</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Teams</option>
-                    <option>Frontend Development</option>
-                    <option>Backend Development</option>
-                    <option>UI/UX Design</option>
-                    <option>Quality Assurance</option>
-                    <option>Product Strategy</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Sort By</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>Name A-Z</option>
-                    <option>Start Date</option>
-                    <option>End Date</option>
-                    <option>Highest Velocity</option>
-                    <option>Most Tasks</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+              showFilters 
+                ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
+            }`}
+          >
+            <Filter className="w-4 h-4" />
+            More Filters
+          </button>
         </div>
 
         {/* Sprints List */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h2 className="text-lg font-semibold text-neutral-900">All Sprints ({filteredSprints.length})</h2>
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-neutral-900">
+              All Sprints ({filteredSprints.length})
+            </h3>
           </div>
-          
-          <div className="divide-y divide-neutral-200">
-            {filteredSprints.map((sprint) => {
-              const StatusIcon = getStatusInfo(sprint.status).icon;
-              const statusColor = getStatusInfo(sprint.status).color;
-              const statusBg = getStatusInfo(sprint.status).bg;
-              
-              return (
-                <div key={sprint.id} className="p-6 hover:bg-neutral-50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <button
-                          onClick={() => toggleSprint(sprint.id)}
-                          className="p-1 rounded hover:bg-neutral-100 transition-colors"
-                        >
-                          {expandedSprints.includes(sprint.id) ? (
-                            <span className="text-neutral-400">▼</span>
-                          ) : (
-                            <span className="text-neutral-400">▶</span>
-                          )}
-                        </button>
-                        <Calendar className="w-5 h-5 text-blue-500" />
-                        <h3 className="text-lg font-semibold text-neutral-900">{sprint.name}</h3>
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${statusBg} ${statusColor}`}>
-                          {sprint.status}
-                        </div>
-                      </div>
-                      
-                      <p className="text-neutral-600 mb-3">{sprint.description}</p>
-                      
-                      <div className="flex items-center gap-6 text-sm text-neutral-500 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4" />
-                          <span>{sprint.team}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          <span>{sprint.startDate} - {sprint.endDate}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Target className="w-4 h-4" />
-                          <span>{sprint.completed}/{sprint.tasks} tasks</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4" />
-                          <span>{sprint.velocity}% velocity</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4" />
-                          <span>Created {sprint.created}</span>
-                        </div>
-                      </div>
 
-                      {/* Progress Bar */}
-                      <div className="mb-4">
-                        <div className="flex justify-between text-sm text-neutral-600 mb-1">
-                          <span>Progress</span>
-                          <span>{sprint.completed}/{sprint.tasks} ({sprint.velocity}%)</span>
-                        </div>
-                        <div className="w-full bg-neutral-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${sprint.velocity}%` }}
-                          ></div>
-                        </div>
-                      </div>
-
-                      {/* Stories */}
-                      {expandedSprints.includes(sprint.id) && (
-                        <div className="ml-8 mt-4 space-y-3">
-                          <h4 className="text-sm font-medium text-neutral-700 mb-3">Stories ({sprint.stories.length})</h4>
-                          {sprint.stories.map((story) => (
-                            <div key={story.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-3 h-3 rounded-full ${
-                                  story.priority === "High" ? "bg-red-500" :
-                                  story.priority === "Medium" ? "bg-yellow-500" : "bg-green-500"
-                                }`}></div>
-                                <div>
-                                  <h5 className="font-medium text-neutral-800 text-sm">{story.name}</h5>
-                                  <p className="text-xs text-neutral-600">Assignee: {story.assignee} • {story.storyPoints} points</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-4">
-                                <div className="text-center">
-                                  <p className="text-xs font-medium">{story.completed}/{story.tasks}</p>
-                                  <p className="text-xs text-neutral-500">Tasks</p>
-                                </div>
-                                <div className={`px-2 py-1 rounded text-xs font-medium ${
-                                  story.status === "Completed" ? "bg-green-100 text-green-700" :
-                                  story.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                                  "bg-neutral-100 text-neutral-700"
-                                }`}>
-                                  {story.status}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+          <div className="space-y-4">
+            {filteredSprints.map((sprint) => (
+              <div
+                key={sprint.id}
+                className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => toggleSprint(sprint.id)}
+                      className="text-neutral-400 hover:text-neutral-600"
+                    >
+                      {expandedSprints.includes(sprint.id) ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
                       )}
+                    </button>
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <Calendar className="w-4 h-4 text-blue-600" />
                     </div>
-
-                    <div className="flex items-center gap-2 ml-4">
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        onClick={() => onOpenTab && onOpenTab("edit-sprint", `Edit: ${sprint.name}`)}
-                        title="Edit Sprint"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        onClick={() => downloadSprintReport(sprint)}
-                        title="Download Report"
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
-                        onClick={() => setShowMoreMenu(showMoreMenu === sprint.id ? null : sprint.id)}
-                      >
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
-                      
-                      {/* Sprint Actions Menu */}
-                      {showMoreMenu === sprint.id && (
-                        <div className="absolute right-0 top-12 z-10 bg-white border border-neutral-200 rounded shadow-lg min-w-[160px]">
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => onOpenTab && onOpenTab("edit-sprint", `Edit: ${sprint.name}`)}
-                          >
-                            <Edit className="w-4 h-4" />
-                            Edit Sprint
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => onOpenTab && onOpenTab("view-sprint", `View: ${sprint.name}`)}
-                          >
-                            <Eye className="w-4 h-4" />
-                            View Sprint
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => duplicateSprint(sprint)}
-                          >
-                            <Copy className="w-4 h-4" />
-                            Duplicate Sprint
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                            onClick={() => exportSprint(sprint)}
-                          >
-                            <Share2 className="w-4 h-4" />
-                            Export Sprint
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-green-50 text-green-600 text-left"
-                            onClick={() => downloadSprintReport(sprint)}
-                          >
-                            <Download className="w-4 h-4" />
-                            Download Report
-                          </button>
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-yellow-50 text-yellow-600 text-left"
-                            onClick={() => archiveSprint(sprint.id)}
-                          >
-                            <Archive className="w-4 h-4" />
-                            Archive Sprint
-                          </button>
-                          <hr className="my-1" />
-                          <button 
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-red-50 text-red-600 text-left"
-                            onClick={() => deleteSprint(sprint.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            Delete Sprint
-                          </button>
-                        </div>
-                      )}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold text-neutral-900">{sprint.name}</h4>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          sprint.status === "Active" ? "bg-green-100 text-green-700" :
+                          sprint.status === "Completed" ? "bg-purple-100 text-purple-700" :
+                          sprint.status === "Planning" ? "bg-yellow-100 text-yellow-700" :
+                          "bg-neutral-100 text-neutral-700"
+                        }`}>
+                          {sprint.status}
+                        </span>
+                      </div>
+                      <p className="text-sm text-neutral-600 mt-1">{sprint.description}</p>
                     </div>
                   </div>
+                  
+                  <div className="flex items-center gap-2 ml-4">
+                    <button 
+                      className="p-2 text-neutral-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      onClick={() => onOpenTab && onOpenTab("edit-sprint", `Edit: ${sprint.name}`)}
+                      title="Edit Sprint"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button 
+                      className="p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
+                      onClick={() => setShowMoreMenu(showMoreMenu === sprint.id ? null : sprint.id)}
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                    
+                    {/* Sprint Actions Menu */}
+                    {showMoreMenu === sprint.id && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-10">
+                        <button 
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-neutral-50 text-neutral-700 text-left"
+                          onClick={() => duplicateSprint(sprint)}
+                        >
+                          <Copy className="w-4 h-4" />
+                          Duplicate Sprint
+                        </button>
+                        <button 
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-neutral-50 text-neutral-700 text-left"
+                          onClick={() => exportSprint(sprint)}
+                        >
+                          <Download className="w-4 h-4" />
+                          Export Sprint
+                        </button>
+                        <hr className="my-1" />
+                        <button 
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-red-50 text-red-600 text-left"
+                          onClick={() => deleteSprint(sprint.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Delete Sprint
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              );
-            })}
+
+                {/* Sprint Details */}
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{sprint.project}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Flag className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{sprint.priority}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{sprint.startDate} - {sprint.endDate}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{sprint.velocity} velocity</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">Created {sprint.created}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           {filteredSprints.length === 0 && (
@@ -750,7 +901,7 @@ ${sprint.stories.map(story => `- ${story.name} (${story.status}) - ${story.assig
               <p className="text-neutral-600 mb-4">Try adjusting your search or create a new sprint.</p>
               <button 
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={() => onOpenTab && onOpenTab("create-sprint", "Create Sprint")}
+                onClick={() => setShowCreateForm(true)}
               >
                 Create Your First Sprint
               </button>

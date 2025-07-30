@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import CreateSprintModal from "./CreateSprintModal";
+import CreateStoryModal from "./CreateStoryModal";
 
-export default function CreateSprintPage({ onClose }: { onClose?: () => void }) {
+export default function CreateStoryPage({ onClose }: { onClose?: () => void }) {
   const [showModal, setShowModal] = useState(true);
 
   const handleClose = () => {
@@ -9,25 +9,28 @@ export default function CreateSprintPage({ onClose }: { onClose?: () => void }) 
     onClose?.();
   };
 
-  const handleCreate = (sprint: {
-    name: string;
+  const handleCreate = (story: {
+    title: string;
     description: string;
     project: string;
+    sprint: string;
     status: string;
     priority: string;
+    storyPoints: string;
+    assignee: string;
     startDate: string;
-    endDate: string;
-    velocity: string;
+    dueDate: string;
+    acceptanceCriteria: string[];
     teamMembers: string[];
   }) => {
-    console.log("Creating sprint:", sprint);
-    // Here you would typically save the sprint to your state or API
+    console.log("Creating story:", story);
+    // Here you would typically save the story to your state or API
     handleClose();
   };
 
   return (
     <div className="w-full h-full bg-neutral-50 flex items-center justify-center">
-      <CreateSprintModal
+      <CreateStoryModal
         open={showModal}
         onClose={handleClose}
         onCreate={handleCreate}

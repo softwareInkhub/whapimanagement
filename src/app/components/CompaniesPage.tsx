@@ -1,7 +1,35 @@
 import { useState } from "react";
 import {
-  Building2, Building, ChevronRight, ChevronDown, Plus, Users, User, FolderKanban, Calendar, BarChart3, Settings, Search, MoreHorizontal, TrendingUp, Clock, CheckCircle, Mail, Phone, MapPin, Globe, Edit, Eye, Download, BookOpen, CheckSquare, Star, FilterX, Grid3X3, List, Heart, ExternalLink, GitCommit, DollarSign, UserCheck, Timer, Flag, Layers, Zap, SortAsc, Square, Play, Pause, StopCircle, RotateCcw, LineChart, Crown, Shield, Trophy, Medal, Users2, UserX, UserCheck2, UserMinus, UserPlus2, Briefcase, Video, MessageSquare, AlertCircle, Info, Award, Paperclip, FileText, BarChart, PieChart, ScatterChart, AreaChart, Gauge, Target, TrendingDown, Activity, Filter, Share2, Archive, Copy, Trash2, ArrowUpRight, ArrowDownRight, Minus
+  Building2, Building, ChevronRight, ChevronDown, Plus, Users, User, FolderKanban, Calendar, BarChart3, Settings, Search, MoreHorizontal, TrendingUp, Clock, CheckCircle, Mail, Phone, MapPin, Globe, Edit, Eye, Download, BookOpen, CheckSquare, Star, FilterX, Grid3X3, List, Heart, ExternalLink, GitCommit, DollarSign, UserCheck, Timer, Flag, Layers, Zap, SortAsc, Square, Play, Pause, StopCircle, RotateCcw, LineChart, Crown, Shield, Trophy, Medal, Users2, UserX, UserCheck2, UserMinus, UserPlus2, Briefcase, Video, MessageSquare, AlertCircle, Info, Award, Paperclip, FileText, BarChart, PieChart, ScatterChart, AreaChart, Gauge, Target, TrendingDown, Activity, Filter, Share2, Archive, Copy, Trash2, ArrowUpRight, ArrowDownRight, Minus, X, Save, ArrowLeft, Tag, AlertCircle as AlertCircleIcon, Calendar as CalendarIcon, Target as TargetIcon, MessageSquare as MessageSquareIcon, CheckSquare as CheckSquareIcon, UserPlus, FileText as FileTextIcon, Bell, Star as StarIcon, Eye as EyeIcon, Share2 as Share2Icon, Download as DownloadIcon, FilterX as FilterXIcon, Grid3X3 as Grid3X3Icon, List as ListIcon, Heart as HeartIcon, ExternalLink as ExternalLinkIcon, GitCommit as GitCommitIcon, DollarSign as DollarSignIcon, UserCheck as UserCheckIcon, Timer as TimerIcon, Flag as FlagIcon, Layers as LayersIcon, Zap as ZapIcon, TrendingDown as TrendingDownIcon, SortAsc as SortAscIcon, Square as SquareIcon, Play as PlayIcon, Pause as PauseIcon, StopCircle as StopCircleIcon, RotateCcw as RotateCcwIcon, LineChart as LineChartIcon, Crown as CrownIcon, Shield as ShieldIcon, Trophy as TrophyIcon, Medal as MedalIcon, Users2 as Users2Icon, UserX as UserXIcon, UserCheck2 as UserCheck2Icon, UserMinus as UserMinusIcon, UserPlus2 as UserPlus2Icon, Briefcase as BriefcaseIcon, Video as VideoIcon, MessageSquare as MessageSquareIcon2, AlertCircle as AlertCircleIcon2, Info as InfoIcon, Award as AwardIcon, Paperclip as PaperclipIcon, FileText as FileTextIcon2, BarChart as BarChartIcon, PieChart as PieChartIcon, ScatterChart as ScatterChartIcon, AreaChart as AreaChartIcon, Gauge as GaugeIcon, Target as TargetIcon2, TrendingDown as TrendingDownIcon2, Activity as ActivityIcon, Filter as FilterIcon, Share2 as Share2Icon2, Archive as ArchiveIcon, Copy as CopyIcon, Trash2 as Trash2Icon, ArrowUpRight as ArrowUpRightIcon, ArrowDownRight as ArrowDownRightIcon, Minus as MinusIcon
 } from "lucide-react";
+
+const companyTypes = [
+  "Technology",
+  "Research", 
+  "Consulting",
+  "Manufacturing",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Retail",
+  "Media",
+  "Transportation"
+];
+
+const industries = [
+  "Software Development",
+  "IT Services",
+  "R&D",
+  "Consulting",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Media",
+  "Transportation"
+];
+
+const priorities = ["Low", "Medium", "High", "Critical"];
 
 export default function CompaniesPage() {
   const [selectedCompany, setSelectedCompany] = useState(1);
@@ -17,6 +45,30 @@ export default function CompaniesPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    type: companyTypes[0],
+    industry: industries[0],
+    status: "Active",
+    founded: "",
+    employees: "",
+    location: "",
+    website: "",
+    email: "",
+    phone: "",
+    revenue: "",
+    priority: priorities[1],
+    tags: [] as string[],
+    notes: ""
+  });
+
+  const availableTags = [
+    "AI", "Enterprise", "SaaS", "Cloud", "Startup", 
+    "Innovation", "Research", "Consulting", "Manufacturing", "Healthcare"
+  ];
 
   const [companies, setCompanies] = useState([
     {
@@ -547,6 +599,79 @@ Members: ${company.members}
     </div>
   );
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Creating company:", formData);
+    
+    // Create new company object
+    const newCompany = {
+      id: Date.now(), // Generate unique ID
+      name: formData.name,
+      description: formData.description,
+      status: formData.status,
+      type: formData.type,
+      industry: formData.industry,
+      founded: formData.founded,
+      employees: formData.employees ? parseInt(formData.employees) : 0,
+      location: formData.location,
+      website: formData.website,
+      email: formData.email,
+      phone: formData.phone,
+      revenue: formData.revenue,
+      growth: "+0%",
+      lastActivity: "Just now",
+      tags: formData.tags,
+      archived: false,
+      priority: formData.priority,
+      health: "good",
+      velocity: 0,
+      satisfaction: 0,
+      engagement: 0,
+      retention: 0,
+      totalProjects: 0,
+      activeProjects: 0,
+      completedProjects: 0,
+      totalTeams: 0,
+      members: 0,
+      projects: [],
+      teams: [],
+      departments: [],
+      sprints: []
+    };
+
+    // Add the new company to the companies array
+    setCompanies(prevCompanies => [newCompany, ...prevCompanies]);
+    
+    // Reset form and hide it
+    setShowCreateForm(false);
+    setFormData({
+      name: "",
+      description: "",
+      type: companyTypes[0],
+      industry: industries[0],
+      status: "Active",
+      founded: "",
+      employees: "",
+      location: "",
+      website: "",
+      email: "",
+      phone: "",
+      revenue: "",
+      priority: priorities[1],
+      tags: [],
+      notes: ""
+    });
+  };
+
+  const toggleTag = (tag: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tag) 
+        ? prev.tags.filter(t => t !== tag)
+        : [...prev.tags, tag]
+    }));
+  };
+
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30">
       {/* Enhanced Header */}
@@ -564,16 +689,393 @@ Members: ${company.members}
             <Download size={16} />
             Export All
           </button>
-                  <button
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
             className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 font-semibold focus-ring"
           >
             <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
-            New Company
+            {showCreateForm ? 'Cancel' : 'New Company'}
+          </button>
+        </div>
+      </div>
+
+      <div className="p-6 space-y-6">
+        {/* Company Creation Form */}
+        {showCreateForm && (
+          <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-8 animate-fade-in">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Create New Company</h2>
+                  <p className="text-slate-600">Fill in the details below to create a new company.</p>
+                </div>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Company Information */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Building2 className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Company Information</h3>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Company Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        placeholder="Enter company name"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Company Type *
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formData.type}
+                          onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                          required
+                        >
+                          {companyTypes.map(type => (
+                            <option key={type} value={type}>{type}</option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <Briefcase className="w-4 h-4 text-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Industry *
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formData.industry}
+                          onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                          required
+                        >
+                          {industries.map(industry => (
+                            <option key={industry} value={industry}>{industry}</option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <Building className="w-4 h-4 text-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Description
+                      </label>
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Describe the company's business, mission, and key activities..."
+                        rows={4}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Status *
+                      </label>
+                      <div className="relative">
+                        <select
+                          value={formData.status}
+                          onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                          required
+                        >
+                          <option value="Active">Active</option>
+                          <option value="Inactive">Inactive</option>
+                          <option value="Pending">Pending</option>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <CheckCircle className="w-4 h-4 text-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Company Details */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Info className="w-4 h-4 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Company Details</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Founded Year
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={formData.founded}
+                        onChange={(e) => setFormData(prev => ({ ...prev, founded: e.target.value }))}
+                        placeholder="e.g., 2020"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Number of Employees
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={formData.employees}
+                        onChange={(e) => setFormData(prev => ({ ...prev, employees: e.target.value }))}
+                        placeholder="e.g., 150"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Users className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Revenue
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.revenue}
+                        onChange={(e) => setFormData(prev => ({ ...prev, revenue: e.target.value }))}
+                        placeholder="e.g., $2.5M"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <DollarSign className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <MessageSquare className="w-4 h-4 text-purple-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Contact Information</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Location
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.location}
+                        onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                        placeholder="e.g., San Francisco, CA"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <MapPin className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Website
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="url"
+                        value={formData.website}
+                        onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                        placeholder="https://company.com"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Globe className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Email
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        placeholder="contact@company.com"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Mail className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Phone
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        placeholder="+1 (555) 123-4567"
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <Phone className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <Tag className="w-4 h-4 text-indigo-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Tags</h3>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {availableTags.map(tag => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        formData.tags.includes(tag)
+                          ? "bg-blue-100 text-blue-700 border border-blue-200"
+                          : "bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Additional Details */}
+              <div className="space-y-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-yellow-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900">Additional Details</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Priority
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.priority}
+                        onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                      >
+                        {priorities.map(priority => (
+                          <option key={priority} value={priority}>{priority}</option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <AlertCircle className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Notes
+                    </label>
+                    <textarea
+                      value={formData.notes}
+                      onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                      placeholder="Add any additional notes or special requirements..."
+                      rows={3}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors flex items-center space-x-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Cancel</span>
+                </button>
+
+                <div className="flex items-center space-x-3">
+                  <button
+                    type="button"
+                    className="px-6 py-3 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center space-x-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save Draft</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center space-x-2"
+                  >
+                    <Building2 className="w-4 h-4" />
+                    <span>Create Company</span>
                   </button>
                 </div>
               </div>
-              
-      <div className="p-6 space-y-6">
+            </form>
+          </div>
+        )}
+
         {/* Enhanced Search and Filters */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 animate-fade-in" style={{ animationDelay: '200ms' }}>
           <div className="flex flex-col lg:flex-row gap-4">
@@ -586,16 +1088,16 @@ Members: ${company.members}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/50 backdrop-blur-sm"
               />
-              </div>
-              
-                        <div className="flex items-center gap-3">
-                          <button
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <button
                 className="group flex items-center gap-2 px-4 py-3 border border-white/20 rounded-xl hover:bg-white/50 transition-all duration-200 hover:scale-105 focus-ring"
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <Filter className="w-4 h-4" />
                 Filters
-                          </button>
+              </button>
               
               <div className="flex items-center gap-2">
                 <button
@@ -607,7 +1109,7 @@ Members: ${company.members}
                   }`}
                 >
                   <Grid3X3 size={18} />
-            </button>
+                </button>
                 <button
                   onClick={() => setViewMode("list")}
                   className={`p-2 rounded-lg transition-all duration-200 ${
@@ -617,10 +1119,10 @@ Members: ${company.members}
                   }`}
                 >
                   <List size={18} />
-            </button>
-          </div>
-        </div>
+                </button>
+              </div>
             </div>
+          </div>
 
           {/* Advanced Filters */}
           {showFilters && (
@@ -636,7 +1138,7 @@ Members: ${company.members}
                   <option value="Research">Research</option>
                   <option value="Consulting">Consulting</option>
                   <option value="Manufacturing">Manufacturing</option>
-            </select>
+                </select>
 
                 <select
                   value={statusFilter}
@@ -647,7 +1149,7 @@ Members: ${company.members}
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                   <option value="Pending">Pending</option>
-            </select>
+                </select>
 
                 <select className="px-3 py-2 border border-white/20 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option>All Industries</option>
@@ -663,43 +1165,43 @@ Members: ${company.members}
                 >
                   <FilterX size={16} />
                   Clear All
-                  </button>
-                  </div>
-                </div>
+                </button>
+              </div>
+            </div>
           )}
         </div>
 
-          {/* View Tabs */}
+        {/* View Tabs */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-white/20">
           <div className="flex space-x-1">
-              {[
-                { id: "overview", label: "Overview", icon: BarChart3 },
-                { id: "projects", label: "Projects", icon: FolderKanban },
-                { id: "teams", label: "Teams", icon: Users },
+            {[
+              { id: "overview", label: "Overview", icon: BarChart3 },
+              { id: "projects", label: "Projects", icon: FolderKanban },
+              { id: "teams", label: "Teams", icon: Users },
               { id: "departments", label: "Departments", icon: Building },
               { id: "sprints", label: "Sprints", icon: Calendar }
-              ].map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setView(tab.id)}
+            ].map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setView(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      view === tab.id
+                    view === tab.id
                       ? "bg-blue-100 text-blue-600 shadow-sm"
                       : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                    }`}
-                  >
+                  }`}
+                >
                   <Icon size={16} />
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </div>
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
+        </div>
 
-          {/* Content */}
-          {view === "overview" && renderOverview()}
+        {/* Content */}
+        {view === "overview" && renderOverview()}
         {view === "projects" && <div className="text-center py-12 text-slate-600">Projects view coming soon...</div>}
         {view === "teams" && <div className="text-center py-12 text-slate-600">Teams view coming soon...</div>}
         {view === "departments" && <div className="text-center py-12 text-slate-600">Departments view coming soon...</div>}

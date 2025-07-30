@@ -1,40 +1,50 @@
 import React, { useState } from "react";
-import { X, ChevronDown, Plus, Zap, Target, Calendar, Users, Flag } from "lucide-react";
+import { X, ChevronDown, Plus, BookOpen, Target, Calendar, Users, FileText, CheckSquare } from "lucide-react";
 
-interface CreateSprintModalProps {
+interface CreateStoryModalProps {
   open: boolean;
   onClose: () => void;
-  onCreate?: (sprint: {
-    name: string;
+  onCreate?: (story: {
+    title: string;
     description: string;
     project: string;
+    sprint: string;
     status: string;
     priority: string;
+    storyPoints: string;
+    assignee: string;
     startDate: string;
-    endDate: string;
-    velocity: string;
+    dueDate: string;
+    acceptanceCriteria: string[];
     teamMembers: string[];
   }) => void;
 }
 
 const projects = ["Whapi Project Management", "E-commerce Platform", "Client Portal", "Mobile App Development", "API Integration"];
-const statuses = ["Planning", "Active", "Completed", "On Hold"];
+const sprints = ["Sprint 1", "Sprint 2", "Sprint 3", "Sprint 4", "Sprint 5"];
+const statuses = ["To Do", "In Progress", "Review", "Done", "Blocked"];
 const priorities = ["Low", "Medium", "High", "Critical"];
+const assignees = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller"];
 const availableMembers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller", "Grace Lee", "Henry Brown"];
 
-export default function CreateSprintModal({ open, onClose, onCreate }: CreateSprintModalProps) {
-  const [name, setName] = useState("");
+export default function CreateStoryModal({ open, onClose, onCreate }: CreateStoryModalProps) {
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [project, setProject] = useState("");
+  const [sprint, setSprint] = useState("");
   const [status, setStatus] = useState(statuses[0]);
   const [priority, setPriority] = useState(priorities[1]);
+  const [storyPoints, setStoryPoints] = useState("");
+  const [assignee, setAssignee] = useState("");
   const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [velocity, setVelocity] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [acceptanceCriteria, setAcceptanceCriteria] = useState<string[]>([""]);
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+  const [showSprintDropdown, setShowSprintDropdown] = useState(false);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const [showPriorityDropdown, setShowPriorityDropdown] = useState(false);
+  const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
   
   // New project modal states
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
@@ -49,18 +59,35 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
     );
   };
 
+  const addAcceptanceCriteria = () => {
+    setAcceptanceCriteria(prev => [...prev, ""]);
+  };
+
+  const updateAcceptanceCriteria = (index: number, value: string) => {
+    setAcceptanceCriteria(prev => 
+      prev.map((criteria, i) => i === index ? value : criteria)
+    );
+  };
+
+  const removeAcceptanceCriteria = (index: number) => {
+    setAcceptanceCriteria(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && project && onCreate) {
+    if (title && project && onCreate) {
       onCreate({
-        name,
+        title,
         description,
         project,
+        sprint,
         status,
         priority,
+        storyPoints,
+        assignee,
         startDate,
-        endDate,
-        velocity,
+        dueDate,
+        acceptanceCriteria: acceptanceCriteria.filter(criteria => criteria.trim() !== ""),
         teamMembers: selectedMembers
       });
     }
@@ -88,7 +115,7 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xs mx-4 relative max-h-[80vh] overflow-y-auto border border-gray-200/50">
           <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-5 py-3 rounded-t-2xl">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-gray-900">Create New Sprint</h2>
+              <h2 className="text-base font-semibold text-gray-900">Create New Story</h2>
               <button 
                 onClick={onClose} 
                 className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
@@ -99,21 +126,21 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
           </div>
         
           <form className="p-5 space-y-3" onSubmit={handleSubmit}>
-            {/* Sprint Information */}
+            {/* Story Information */}
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center">
-                <Zap className="w-3 h-3 text-pink-600" />
+              <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-3 h-3 text-orange-600" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-900">Sprint Information</h3>
+              <h3 className="text-sm font-semibold text-gray-900">Story Information</h3>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Sprint Name *</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Story Title *</label>
               <input 
-                value={name} 
-                onChange={e => setName(e.target.value)} 
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
-                placeholder="Enter sprint name"
+                value={title} 
+                onChange={e => setTitle(e.target.value)} 
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
+                placeholder="Enter story title"
                 required
               />
             </div>
@@ -123,9 +150,9 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
               <textarea 
                 value={description} 
                 onChange={e => setDescription(e.target.value)} 
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all resize-none"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all resize-none"
                 rows={2}
-                placeholder="Describe the sprint goals and objectives..."
+                placeholder="Describe the user story and requirements..."
               />
             </div>
 
@@ -135,7 +162,7 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
                 <button
                   type="button"
                   onClick={() => setShowNewProjectModal(true)}
-                  className="flex items-center gap-1 text-xs text-pink-600 hover:text-pink-700 font-medium transition-colors"
+                  className="flex items-center gap-1 text-xs text-orange-600 hover:text-orange-700 font-medium transition-colors"
                 >
                   <Plus size={12} />
                   Add New
@@ -145,7 +172,7 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
                 <button
                   type="button"
                   onClick={() => setShowProjectDropdown(!showProjectDropdown)}
-                  className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all"
+                  className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                 >
                   <span className={project ? "text-gray-900 text-xs" : "text-gray-400 text-xs"}>
                     {project || "Select a project"}
@@ -172,12 +199,45 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
               </div>
             </div>
 
-            {/* Sprint Details */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Sprint</label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowSprintDropdown(!showSprintDropdown)}
+                  className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                >
+                  <span className={sprint ? "text-gray-900 text-xs" : "text-gray-400 text-xs"}>
+                    {sprint || "Select a sprint"}
+                  </span>
+                  <ChevronDown size={12} className="text-gray-400" />
+                </button>
+                {showSprintDropdown && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-28 overflow-y-auto">
+                    {sprints.map((sprintOption) => (
+                      <button
+                        key={sprintOption}
+                        type="button"
+                        onClick={() => {
+                          setSprint(sprintOption);
+                          setShowSprintDropdown(false);
+                        }}
+                        className="w-full text-left px-3 py-2 hover:bg-gray-50 text-xs transition-colors"
+                      >
+                        {sprintOption}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Story Details */}
             <div className="flex items-center space-x-2 mb-4 mt-6">
               <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
                 <Target className="w-3 h-3 text-green-600" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-900">Sprint Details</h3>
+              <h3 className="text-sm font-semibold text-gray-900">Story Details</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -244,58 +304,130 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">Velocity (Story Points)</label>
-              <input
-                value={velocity}
-                onChange={e => setVelocity(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
-                placeholder="e.g., 30"
-              />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Story Points</label>
+                <input
+                  value={storyPoints}
+                  onChange={e => setStoryPoints(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
+                  placeholder="e.g., 5"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Assignee</label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowAssigneeDropdown(!showAssigneeDropdown)}
+                    className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                  >
+                    <span className={assignee ? "text-gray-900 text-xs" : "text-gray-400 text-xs"}>
+                      {assignee || "Select assignee"}
+                    </span>
+                    <ChevronDown size={12} className="text-gray-400" />
+                  </button>
+                  {showAssigneeDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-28 overflow-y-auto">
+                      {assignees.map((assigneeOption) => (
+                        <button
+                          key={assigneeOption}
+                          type="button"
+                          onClick={() => {
+                            setAssignee(assigneeOption);
+                            setShowAssigneeDropdown(false);
+                          }}
+                          className="w-full text-left px-3 py-2 hover:bg-gray-50 text-xs transition-colors"
+                        >
+                          {assigneeOption}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Timeline */}
             <div className="flex items-center space-x-2 mb-4 mt-6">
-              <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Calendar className="w-3 h-3 text-orange-600" />
+              <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Calendar className="w-3 h-3 text-blue-600" />
               </div>
               <h3 className="text-sm font-semibold text-gray-900">Timeline</h3>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Start Date *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Start Date</label>
                 <input 
                   type="date"
                   value={startDate} 
                   onChange={e => setStartDate(e.target.value)} 
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50/50 transition-all"
-                  required
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 transition-all"
                 />
               </div>
               
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">End Date *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Due Date</label>
                 <input 
                   type="date"
-                  value={endDate} 
-                  onChange={e => setEndDate(e.target.value)} 
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50/50 transition-all"
-                  required
+                  value={dueDate} 
+                  onChange={e => setDueDate(e.target.value)} 
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 transition-all"
                 />
               </div>
             </div>
 
+            {/* Acceptance Criteria */}
+            <div className="flex items-center space-x-2 mb-4 mt-6">
+              <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                <CheckSquare className="w-3 h-3 text-purple-600" />
+              </div>
+              <h3 className="text-sm font-semibold text-gray-900">Acceptance Criteria</h3>
+            </div>
+
+            <div className="space-y-2">
+              {acceptanceCriteria.map((criteria, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={criteria}
+                    onChange={(e) => updateAcceptanceCriteria(index, e.target.value)}
+                    placeholder={`Acceptance criteria ${index + 1}`}
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
+                  />
+                  {acceptanceCriteria.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeAcceptanceCriteria(index)}
+                      className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addAcceptanceCriteria}
+                className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              >
+                <Plus size={12} />
+                Add Criteria
+              </button>
+            </div>
+
             {/* Team Members */}
             <div className="flex items-center space-x-2 mb-4 mt-6">
-              <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-3 h-3 text-blue-600" />
+              <div className="w-6 h-6 bg-indigo-100 rounded-lg flex items-center justify-center">
+                <Users className="w-3 h-3 text-indigo-600" />
               </div>
               <h3 className="text-sm font-semibold text-gray-900">Team Members</h3>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">Sprint Team</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">Story Team</label>
               <div className="flex flex-wrap gap-1">
                 {availableMembers.map(member => (
                   <button
@@ -324,8 +456,8 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
               </button>
               <button 
                 type="submit" 
-                disabled={!name || !project}
-                className="flex-1 px-3 py-2 bg-pink-600 text-white rounded-lg text-xs font-medium hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                disabled={!title || !project}
+                className="flex-1 px-3 py-2 bg-orange-600 text-white rounded-lg text-xs font-medium hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
               >
                 Create
               </button>
@@ -356,7 +488,7 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
                 <input
                   value={newProjectName}
                   onChange={e => setNewProjectName(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
                   placeholder="Enter project name"
                   required
                 />
@@ -367,7 +499,7 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
                 <textarea
                   value={newProjectDescription}
                   onChange={e => setNewProjectDescription(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all resize-none"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all resize-none"
                   rows={2}
                   placeholder="Brief project description..."
                 />
@@ -385,7 +517,7 @@ export default function CreateSprintModal({ open, onClose, onCreate }: CreateSpr
                   type="button"
                   onClick={handleCreateNewProject}
                   disabled={!newProjectName.trim()}
-                  className="flex-1 px-3 py-2 bg-pink-600 text-white rounded-lg text-xs font-medium hover:bg-pink-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                  className="flex-1 px-3 py-2 bg-orange-600 text-white rounded-lg text-xs font-medium hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                 >
                   Add Project
                 </button>

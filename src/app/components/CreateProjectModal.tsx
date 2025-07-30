@@ -42,9 +42,9 @@ export default function CreateProjectModal({ open, onClose, onCreate }: CreatePr
   const [newCompanyDescription, setNewCompanyDescription] = useState("");
 
   const toggleMember = (member: string) => {
-    setSelectedMembers(prev =>
-      prev.includes(member)
-        ? prev.filter(m => m !== member)
+    setSelectedMembers(prev => 
+      prev.includes(member) 
+        ? prev.filter(m => m !== member) 
         : [...prev, member]
     );
   };
@@ -95,32 +95,32 @@ export default function CreateProjectModal({ open, onClose, onCreate }: CreatePr
                 className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
               >
                 <X size={16} />
-              </button>
+        </button>
             </div>
           </div>
-          
+        
           <form className="p-5 space-y-3" onSubmit={handleSubmit}>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Project Name *</label>
-              <input
-                value={name}
-                onChange={e => setName(e.target.value)}
+              <input 
+                value={name} 
+                onChange={e => setName(e.target.value)} 
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all"
                 placeholder="Enter project name"
                 required
               />
             </div>
-
+            
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                value={description}
-                onChange={e => setDescription(e.target.value)}
+              <textarea 
+                value={description} 
+                onChange={e => setDescription(e.target.value)} 
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 placeholder:text-gray-400 transition-all resize-none"
                 rows={2}
                 placeholder="Brief description..."
               />
-            </div>
+          </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
@@ -166,90 +166,90 @@ export default function CreateProjectModal({ open, onClose, onCreate }: CreatePr
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <div>
+            <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                     className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  >
+                >
                     <span className="text-gray-900 text-xs">{status}</span>
                     <ChevronDown size={12} className="text-gray-400" />
-                  </button>
-                  {showStatusDropdown && (
+                </button>
+                {showStatusDropdown && (
                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-28 overflow-y-auto">
-                      {statuses.map((statusOption) => (
-                        <button
-                          key={statusOption}
-                          type="button"
-                          onClick={() => {
-                            setStatus(statusOption);
-                            setShowStatusDropdown(false);
-                          }}
+                    {statuses.map((statusOption) => (
+                      <button
+                        key={statusOption}
+                        type="button"
+                        onClick={() => {
+                          setStatus(statusOption);
+                          setShowStatusDropdown(false);
+                        }}
                           className="w-full text-left px-3 py-2 hover:bg-gray-50 text-xs transition-colors"
-                        >
-                          {statusOption}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+                      >
+                        {statusOption}
+                      </button>
+                    ))}
+                  </div>
+                )}
+            </div>
+          </div>
 
-              <div>
+            <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Priority</label>
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
                     className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  >
+                >
                     <span className="text-gray-900 text-xs">{priority}</span>
                     <ChevronDown size={12} className="text-gray-400" />
-                  </button>
-                  {showPriorityDropdown && (
+                </button>
+                {showPriorityDropdown && (
                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-28 overflow-y-auto">
-                      {priorities.map((priorityOption) => (
-                        <button
-                          key={priorityOption}
-                          type="button"
-                          onClick={() => {
-                            setPriority(priorityOption);
-                            setShowPriorityDropdown(false);
-                          }}
+                    {priorities.map((priorityOption) => (
+                      <button
+                        key={priorityOption}
+                        type="button"
+                        onClick={() => {
+                          setPriority(priorityOption);
+                          setShowPriorityDropdown(false);
+                        }}
                           className="w-full text-left px-3 py-2 hover:bg-gray-50 text-xs transition-colors"
-                        >
-                          {priorityOption}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      >
+                        {priorityOption}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
+          </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <div>
+            <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Start Date</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={e => setStartDate(e.target.value)}
+              <input 
+                type="date"
+                value={startDate} 
+                onChange={e => setStartDate(e.target.value)} 
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">End Date</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={e => setEndDate(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 transition-all"
-                />
-              </div>
+              />
             </div>
+            
+            <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">End Date</label>
+              <input 
+                type="date"
+                value={endDate} 
+                onChange={e => setEndDate(e.target.value)} 
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50/50 transition-all"
+              />
+            </div>
+          </div>
 
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">Budget</label>
@@ -261,45 +261,45 @@ export default function CreateProjectModal({ open, onClose, onCreate }: CreatePr
               />
             </div>
 
-            <div>
+          <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">Team Members</label>
               <div className="flex flex-wrap gap-1">
-                {availableMembers.map(member => (
-                  <button
-                    key={member}
-                    type="button"
-                    onClick={() => toggleMember(member)}
+              {availableMembers.map(member => (
+                <button
+                  key={member}
+                  type="button"
+                  onClick={() => toggleMember(member)}
                     className={`px-2 py-1 rounded-md border text-xs font-medium transition-all ${
-                      selectedMembers.includes(member)
+                    selectedMembers.includes(member) 
                         ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
                         : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100 hover:border-gray-300'
-                    }`}
-                  >
-                    {member}
-                  </button>
-                ))}
-              </div>
+                  }`}
+                >
+                  {member}
+                </button>
+              ))}
             </div>
+          </div>
 
             <div className="flex gap-2 pt-3">
-              <button
-                type="button"
-                onClick={onClose}
+            <button 
+              type="button"
+              onClick={onClose}
                 className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit" 
                 disabled={!name || !company}
                 className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-              >
+            >
                 Create
-              </button>
-            </div>
-          </form>
-        </div>
+            </button>
+          </div>
+        </form>
       </div>
+    </div>
 
       {/* New Company Modal */}
       {showNewCompanyModal && (

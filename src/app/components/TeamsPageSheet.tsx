@@ -1,25 +1,29 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { 
-  X, 
   Users, 
-  Plus, 
+  Calendar, 
+  MapPin, 
+  Mail, 
+  Phone, 
+  MoreHorizontal, 
+  Edit, 
+  Trash2, 
+  Archive, 
+  Copy, 
+  Download, 
   Search, 
   Filter, 
-  MoreHorizontal,
-  User,
-  Edit,
-  Trash2,
-  Archive,
-  Copy,
-  Share2,
-  Mail,
-  Phone,
-  MessageSquare,
-  Calendar,
+  X, 
+  Plus,
+  ChevronDown,
+  ChevronRight,
   TrendingUp,
+  BarChart3,
+  DollarSign,
   Target,
+  MessageSquare,
   Award,
-  Settings
+  Share2
 } from "lucide-react";
 
 // Sample team data
@@ -229,10 +233,11 @@ interface Team {
   }>;
 }
 
-export default function TeamsPageSheet({ open, onClose, onOpenTab }: { 
+export default function TeamsPageSheet({ open, onClose, onOpenTab, context }: { 
   open: boolean, 
   onClose: () => void,
-  onOpenTab?: (type: string, title?: string) => void 
+  onOpenTab?: (type: string, title?: string, context?: any) => void,
+  context?: { company: string }
 }) {
   const [teams, setTeams] = useState<Team[]>(initialTeams);
   const [searchTerm, setSearchTerm] = useState("");
@@ -240,6 +245,20 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
   const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
   const [expandedTeams, setExpandedTeams] = useState<number[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  
+  // Form states
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    department: "",
+    company: "",
+    manager: "",
+    whatsappGroupId: "",
+    whatsappGroupName: "",
+    startDate: "",
+    teamMembers: [] as string[]
+  });
 
   // Team actions
   const deleteTeam = (teamId: number) => {
@@ -326,6 +345,61 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
     avgPerformance: Math.round(teams.filter(t => !t.archived).reduce((sum, team) => sum + team.performance, 0) / teams.filter(t => !t.archived).length)
   };
 
+  const handleCreateTeam = () => {
+    if (formData.name && formData.department) {
+      const newTeam: Team = {
+        id: Math.max(...teams.map(t => t.id)) + 1,
+        name: formData.name,
+        lead: formData.manager || "Unassigned", // Assuming lead is manager for new teams
+        members: formData.teamMembers.length,
+        projects: 0,
+        performance: 0, // Placeholder, will be calculated
+        department: formData.department,
+        status: "Active",
+        description: formData.description,
+        created: new Date().toISOString().split('T')[0],
+        lastActivity: "Just now",
+        archived: false,
+        subteams: []
+      };
+      
+      setTeams(prev => [...prev, newTeam]);
+      setShowCreateForm(false);
+      setFormData({
+        name: "",
+        description: "",
+        department: "",
+        company: "",
+        manager: "",
+        whatsappGroupId: "",
+        whatsappGroupName: "",
+        startDate: "",
+        teamMembers: []
+      });
+    }
+  };
+
+  const toggleMember = (member: string) => {
+    setFormData(prev => ({
+      ...prev,
+      teamMembers: prev.teamMembers.includes(member) 
+        ? prev.teamMembers.filter(m => m !== member)
+        : [...prev.teamMembers, member]
+    }));
+  };
+
+  const availableMembers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller", "Grace Lee", "Henry Brown"];
+  const departments = ["Engineering", "Design", "Marketing", "Sales", "Product", "Operations"];
+  const companies = ["Whapi Corp", "Inkhub", "Acme Corp", "Globex Inc."];
+  const managers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen"];
+  const whatsappGroups = [
+    { id: "1", name: "Development Team" },
+    { id: "2", name: "Design Team" },
+    { id: "3", name: "Marketing Team" },
+    { id: "4", name: "Sales Team" },
+    { id: "5", name: "Product Team" }
+  ];
+
   if (!open) return null;
 
   return (
@@ -335,7 +409,7 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 rounded-t-lg bg-blue-50 text-blue-700 font-semibold">
             <Users className="text-blue-500 mr-1" size={20} />
-            <span>Teams</span>
+            <span>{context?.company ? `${context.company} Teams` : 'Teams'}</span>
           </div>
           <button onClick={onClose} className="ml-2 text-neutral-400 hover:text-red-500" aria-label="Close">
             <X size={18} />
@@ -343,14 +417,199 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
         </div>
         <button 
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={() => onOpenTab && onOpenTab("create-team", "Create Team")}
+          onClick={() => setShowCreateForm(!showCreateForm)}
         >
           <Plus size={16} />
-          New Team
+          {showCreateForm ? 'Cancel' : 'New Team'}
         </button>
       </div>
 
       <div className="p-6">
+        {/* Create Form */}
+        {showCreateForm && (
+          <div className="mb-6 bg-white rounded-xl shadow-lg border border-neutral-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-neutral-900">Create New Team</h3>
+              <button 
+                onClick={() => setShowCreateForm(false)}
+                className="text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Team Information */}
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-3 h-3 text-blue-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Team Information</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Team Name *</label>
+                  <input 
+                    value={formData.name} 
+                    onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                    placeholder="Enter team name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Department *</label>
+                  <select
+                    value={formData.department}
+                    onChange={e => setFormData(prev => ({ ...prev, department: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select a department</option>
+                    {departments.map(department => (
+                      <option key={department} value={department}>{department}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1">Description</label>
+                <textarea 
+                  value={formData.description} 
+                  onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))} 
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all resize-none"
+                  rows={2}
+                  placeholder="Describe the team's role and responsibilities..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1">Company</label>
+                <select
+                  value={formData.company}
+                  onChange={e => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-neutral-50/50"
+                >
+                  <option value="">Select a company</option>
+                  {companies.map(company => (
+                    <option key={company} value={company}>{company}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Team Details */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Target className="w-3 h-3 text-green-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Team Details</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Manager</label>
+                  <select
+                    value={formData.manager}
+                    onChange={e => setFormData(prev => ({ ...prev, manager: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select manager</option>
+                    {managers.map(manager => (
+                      <option key={manager} value={manager}>{manager}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">WhatsApp Group</label>
+                  <select
+                    value={formData.whatsappGroupId}
+                    onChange={e => {
+                      const group = whatsappGroups.find(g => g.id === e.target.value);
+                      setFormData(prev => ({ 
+                        ...prev, 
+                        whatsappGroupId: e.target.value,
+                        whatsappGroupName: group?.name || ""
+                      }));
+                    }}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select a WhatsApp group</option>
+                    {whatsappGroups.map(group => (
+                      <option key={group.id} value={group.id}>{group.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-3 h-3 text-orange-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Timeline</h4>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1">Start Date</label>
+                <input 
+                  type="date"
+                  value={formData.startDate} 
+                  onChange={e => setFormData(prev => ({ ...prev, startDate: e.target.value }))} 
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-neutral-50/50 transition-all"
+                />
+              </div>
+
+              {/* Team Members */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-3 h-3 text-purple-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Team Members</h4>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">Team Members</label>
+                <div className="flex flex-wrap gap-1">
+                  {availableMembers.map(member => (
+                    <button
+                      key={member}
+                      type="button"
+                      onClick={() => toggleMember(member)}
+                      className={`px-2 py-1 rounded-md border text-xs font-medium transition-all ${
+                        formData.teamMembers.includes(member) 
+                          ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
+                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:border-neutral-300'
+                      }`}
+                    >
+                      {member}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="flex-1 px-3 py-2 border border-neutral-200 rounded-lg text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleCreateTeam}
+                  disabled={!formData.name || !formData.department}
+                  className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  Create Team
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Analytics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
@@ -360,18 +619,18 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalTeams}</h3>
+            <h3 className="text-xl font-bold text-neutral-900 mb-1">{analytics.totalTeams}</h3>
             <p className="text-neutral-600 text-sm">Total Teams</p>
           </div>
 
           <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-green-100 rounded-lg">
-                <User className="w-6 h-6 text-green-600" />
+                <Users className="w-6 h-6 text-green-600" />
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalMembers}</h3>
+            <h3 className="text-xl font-bold text-neutral-900 mb-1">{analytics.totalMembers}</h3>
             <p className="text-neutral-600 text-sm">Total Members</p>
           </div>
 
@@ -382,7 +641,7 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalProjects}</h3>
+            <h3 className="text-xl font-bold text-neutral-900 mb-1">{analytics.totalProjects}</h3>
             <p className="text-neutral-600 text-sm">Total Projects</p>
           </div>
 
@@ -393,7 +652,7 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
               </div>
               <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.avgPerformance}%</h3>
+            <h3 className="text-xl font-bold text-neutral-900 mb-1">{analytics.avgPerformance}%</h3>
             <p className="text-neutral-600 text-sm">Avg Performance</p>
           </div>
         </div>
@@ -506,7 +765,7 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
                     
                     <div className="flex items-center gap-6 text-sm text-neutral-500 mb-4">
                       <div className="flex items-center gap-2">
-                        <User className="w-4 h-4" />
+                        <Users className="w-4 h-4" />
                         <span>Lead: {team.lead}</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -559,7 +818,7 @@ export default function TeamsPageSheet({ open, onClose, onOpenTab }: {
                         {team.subteams.map((subteam) => (
                           <div key={subteam.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200">
                             <div className="flex items-center gap-3">
-                              <User className="w-4 h-4 text-blue-400" />
+                              <Users className="w-4 h-4 text-blue-400" />
                               <div>
                                 <h5 className="font-medium text-neutral-800 text-sm">{subteam.name}</h5>
                                 <p className="text-xs text-neutral-600">Lead: {subteam.lead} • {subteam.focus}</p>

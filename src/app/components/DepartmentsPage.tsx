@@ -1,31 +1,70 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { 
-  X, 
   Briefcase, 
-  Plus, 
-  Search, 
-  Filter, 
+  Building, 
+  Users, 
+  Calendar, 
+  MapPin, 
+  Mail, 
+  Phone, 
   MoreHorizontal,
-  Users,
-  Building,
   Edit,
   Trash2,
   Archive,
   Copy,
-  Share2,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
+  Download, 
+  Search, 
+  Filter, 
+  X, 
+  Plus,
+  ChevronDown,
+  ChevronRight,
   TrendingUp,
-  UserPlus,
-  Settings
+  BarChart3,
+  DollarSign,
+  Target
 } from "lucide-react";
 
 // Sample department data
 const initialDepartments = [
   {
     id: 1,
+    name: "HR",
+    manager: "Jennifer Davis",
+    members: 6,
+    projects: 2,
+    budget: "$400K",
+    status: "Active",
+    location: "San Francisco",
+    email: "hr@company.com",
+    phone: "+1-555-0105",
+    description: "HR operations and talent management",
+    created: "2024-01-05",
+    lastActivity: "5 hours ago",
+    archived: false,
+    subdepartments: [
+      {
+        id: 1,
+        name: "Talent Acquisition",
+        manager: "Jennifer Davis",
+        members: 3,
+        projects: 1,
+        budget: "$200K",
+        status: "Active"
+      },
+      {
+        id: 2,
+        name: "Employee Experience",
+        manager: "Tom Anderson",
+        members: 3,
+        projects: 1,
+        budget: "$200K",
+        status: "Active"
+      }
+    ]
+  },
+  {
+    id: 2,
     name: "Engineering",
     manager: "Sarah Johnson",
     members: 45,
@@ -41,7 +80,7 @@ const initialDepartments = [
     archived: false,
     subdepartments: [
       {
-        id: 1,
+        id: 3,
         name: "Frontend Engineering",
         manager: "Mike Chen",
         members: 18,
@@ -50,7 +89,7 @@ const initialDepartments = [
         status: "Active"
       },
       {
-        id: 2,
+        id: 4,
         name: "Backend Engineering",
         manager: "David Kim",
         members: 15,
@@ -59,7 +98,7 @@ const initialDepartments = [
         status: "Active"
       },
       {
-        id: 3,
+        id: 5,
         name: "DevOps & Infrastructure",
         manager: "Emma Wilson",
         members: 8,
@@ -68,57 +107,12 @@ const initialDepartments = [
         status: "Active"
       },
       {
-        id: 4,
+        id: 6,
         name: "Quality Assurance",
         manager: "Alex Rodriguez",
         members: 4,
         projects: 1,
         budget: "$100K",
-        status: "Active"
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: "Product",
-    manager: "Lisa Chen",
-    members: 12,
-    projects: 6,
-    budget: "$800K",
-    status: "Active",
-    location: "New York",
-    email: "product@company.com",
-    phone: "+1-555-0102",
-    description: "Product strategy and management",
-    created: "2024-01-20",
-    lastActivity: "1 hour ago",
-    archived: false,
-    subdepartments: [
-      {
-        id: 5,
-        name: "Product Strategy",
-        manager: "Lisa Chen",
-        members: 4,
-        projects: 3,
-        budget: "$300K",
-        status: "Active"
-      },
-      {
-        id: 6,
-        name: "Product Operations",
-        manager: "James Brown",
-        members: 4,
-        projects: 3,
-        budget: "$300K",
-        status: "Active"
-      },
-      {
-        id: 7,
-        name: "User Research",
-        manager: "Maria Garcia",
-        members: 4,
-        projects: 2,
-        budget: "$200K",
         status: "Active"
       }
     ]
@@ -140,7 +134,7 @@ const initialDepartments = [
     archived: false,
     subdepartments: [
       {
-        id: 8,
+        id: 7,
         name: "UI/UX Design",
         manager: "Alex Rodriguez",
         members: 5,
@@ -149,90 +143,9 @@ const initialDepartments = [
         status: "Active"
       },
       {
-        id: 9,
+        id: 8,
         name: "Visual Design",
         manager: "Rachel Green",
-        members: 3,
-        projects: 1,
-        budget: "$200K",
-        status: "Active"
-      }
-    ]
-  },
-  {
-    id: 4,
-    name: "Marketing",
-    manager: "John Smith",
-    members: 15,
-    projects: 3,
-    budget: "$900K",
-    status: "Active",
-    location: "New York",
-    email: "marketing@company.com",
-    phone: "+1-555-0104",
-    description: "Digital marketing and brand management",
-    created: "2024-01-10",
-    lastActivity: "3 hours ago",
-    archived: false,
-    subdepartments: [
-      {
-        id: 10,
-        name: "Digital Marketing",
-        manager: "John Smith",
-        members: 8,
-        projects: 2,
-        budget: "$500K",
-        status: "Active"
-      },
-      {
-        id: 11,
-        name: "Content Marketing",
-        manager: "Rachel Green",
-        members: 4,
-        projects: 1,
-        budget: "$250K",
-        status: "Active"
-      },
-      {
-        id: 12,
-        name: "Growth Marketing",
-        manager: "Chris Lee",
-        members: 3,
-        projects: 1,
-        budget: "$150K",
-        status: "Active"
-      }
-    ]
-  },
-  {
-    id: 5,
-    name: "Human Resources",
-    manager: "Jennifer Davis",
-    members: 6,
-    projects: 2,
-    budget: "$400K",
-    status: "Active",
-    location: "San Francisco",
-    email: "hr@company.com",
-    phone: "+1-555-0105",
-    description: "HR operations and talent management",
-    created: "2024-01-05",
-    lastActivity: "5 hours ago",
-    archived: false,
-    subdepartments: [
-      {
-        id: 13,
-        name: "Talent Acquisition",
-        manager: "Jennifer Davis",
-        members: 3,
-        projects: 1,
-        budget: "$200K",
-        status: "Active"
-      },
-      {
-        id: 14,
-        name: "Employee Experience",
-        manager: "Tom Anderson",
         members: 3,
         projects: 1,
         budget: "$200K",
@@ -279,6 +192,19 @@ export default function DepartmentsPage({ open, onClose, onOpenTab }: {
   const [showMoreMenu, setShowMoreMenu] = useState<number | null>(null);
   const [expandedDepartments, setExpandedDepartments] = useState<number[]>([]);
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+  
+  // Form states
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    company: "",
+    location: "",
+    manager: "",
+    budget: "",
+    startDate: "",
+    teamMembers: [] as string[]
+  });
 
   // Department actions
   const deleteDepartment = (deptId: number) => {
@@ -368,6 +294,55 @@ export default function DepartmentsPage({ open, onClose, onOpenTab }: {
     }, 0)
   };
 
+  const handleCreateDepartment = () => {
+    if (formData.name && formData.company) {
+      const newDepartment: Department = {
+        id: Math.max(...departments.map(d => d.id)) + 1,
+        name: formData.name,
+        manager: formData.manager || "Unassigned",
+        members: formData.teamMembers.length,
+        projects: 0,
+        budget: formData.budget || "$0",
+        status: "Active",
+        location: formData.location || "Remote",
+        email: `${formData.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
+        phone: "+1 (555) 123-4567",
+        description: formData.description,
+        created: new Date().toISOString().split('T')[0],
+        lastActivity: "Just now",
+        archived: false,
+        subdepartments: []
+      };
+      
+      setDepartments(prev => [...prev, newDepartment]);
+      setShowCreateForm(false);
+      setFormData({
+        name: "",
+        description: "",
+        company: "",
+        location: "",
+        manager: "",
+        budget: "",
+        startDate: "",
+        teamMembers: []
+      });
+    }
+  };
+
+  const toggleMember = (member: string) => {
+    setFormData(prev => ({
+      ...prev,
+      teamMembers: prev.teamMembers.includes(member) 
+        ? prev.teamMembers.filter(m => m !== member)
+        : [...prev.teamMembers, member]
+    }));
+  };
+
+  const availableMembers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen", "Frank Miller", "Grace Lee", "Henry Brown"];
+  const companies = ["Whapi Corp", "Inkhub", "Acme Corp", "Globex Inc."];
+  const locations = ["New York", "San Francisco", "London", "Berlin", "Tokyo", "Remote"];
+  const managers = ["Alice Johnson", "Bob Smith", "Charlie Davis", "Diana Wilson", "Emma Chen"];
+
   if (!open) return null;
 
   return (
@@ -385,64 +360,257 @@ export default function DepartmentsPage({ open, onClose, onOpenTab }: {
         </div>
         <button 
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={() => onOpenTab && onOpenTab("create-department", "Create Department")}
+          onClick={() => setShowCreateForm(!showCreateForm)}
         >
           <Plus size={16} />
-          New Department
+          {showCreateForm ? 'Cancel' : 'New Department'}
         </button>
       </div>
 
       <div className="p-6">
+        {/* Create Form */}
+        {showCreateForm && (
+          <div className="mb-6 bg-white rounded-xl shadow-lg border border-neutral-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-neutral-900">Create New Department</h3>
+              <button 
+                onClick={() => setShowCreateForm(false)}
+                className="text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Department Information */}
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Building className="w-3 h-3 text-purple-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Department Information</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Department Name *</label>
+                  <input 
+                    value={formData.name} 
+                    onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))} 
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                    placeholder="Enter department name"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Company *</label>
+                  <select
+                    value={formData.company}
+                    onChange={e => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select a company</option>
+                    {companies.map(company => (
+                      <option key={company} value={company}>{company}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1">Description</label>
+                <textarea 
+                  value={formData.description} 
+                  onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))} 
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all resize-none"
+                  rows={2}
+                  placeholder="Describe the department's role and responsibilities..."
+                />
+              </div>
+
+              {/* Department Details */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-3 h-3 text-green-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Department Details</h4>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Location</label>
+                  <select
+                    value={formData.location}
+                    onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select location</option>
+                    {locations.map(location => (
+                      <option key={location} value={location}>{location}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Manager</label>
+                  <select
+                    value={formData.manager}
+                    onChange={e => setFormData(prev => ({ ...prev, manager: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50"
+                  >
+                    <option value="">Select manager</option>
+                    {managers.map(manager => (
+                      <option key={manager} value={manager}>{manager}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-neutral-700 mb-1">Budget</label>
+                  <input
+                    value={formData.budget}
+                    onChange={e => setFormData(prev => ({ ...prev, budget: e.target.value }))}
+                    className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-neutral-50/50 placeholder:text-neutral-400 transition-all"
+                    placeholder="e.g., $500,000"
+                  />
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-3 h-3 text-orange-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Timeline</h4>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1">Start Date</label>
+                <input 
+                  type="date"
+                  value={formData.startDate} 
+                  onChange={e => setFormData(prev => ({ ...prev, startDate: e.target.value }))} 
+                  className="w-full border border-neutral-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-neutral-50/50 transition-all"
+                />
+              </div>
+
+              {/* Team Members */}
+              <div className="flex items-center space-x-2 mb-4 mt-6">
+                <div className="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-3 h-3 text-blue-600" />
+                </div>
+                <h4 className="text-sm font-semibold text-neutral-900">Team Members</h4>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-700 mb-1.5">Department Members</label>
+                <div className="flex flex-wrap gap-1">
+                  {availableMembers.map(member => (
+                    <button
+                      key={member}
+                      type="button"
+                      onClick={() => toggleMember(member)}
+                      className={`px-2 py-1 rounded-md border text-xs font-medium transition-all ${
+                        formData.teamMembers.includes(member) 
+                          ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
+                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100 hover:border-neutral-300'
+                      }`}
+                    >
+                      {member}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <button 
+                  type="button"
+                  onClick={() => setShowCreateForm(false)}
+                  className="flex-1 px-3 py-2 border border-neutral-200 rounded-lg text-xs font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleCreateDepartment}
+                  disabled={!formData.name || !formData.company}
+                  className="flex-1 px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                >
+                  Create Department
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Building className="w-6 h-6 text-blue-600" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Total Departments</p>
+                <p className="text-2xl font-bold text-neutral-900">{analytics.totalDepartments}</p>
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalDepartments}</h3>
-            <p className="text-neutral-600 text-sm">Total Departments</p>
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
               <div className="p-2 bg-green-100 rounded-lg">
-                <UserPlus className="w-6 h-6 text-green-600" />
+                <Building className="w-5 h-5 text-green-600" />
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalMembers}</h3>
-            <p className="text-neutral-600 text-sm">Total Members</p>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+12% from last month</span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Total Members</p>
+                <p className="text-2xl font-bold text-neutral-900">{analytics.totalMembers}</p>
+              </div>
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Users className="w-5 h-5 text-blue-600" />
+              </div>
+            </div>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+8% from last month</span>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Total Projects</p>
+                <p className="text-2xl font-bold text-neutral-900">{analytics.totalProjects}</p>
+              </div>
               <div className="p-2 bg-purple-100 rounded-lg">
-                <Briefcase className="w-6 h-6 text-purple-600" />
+                <Briefcase className="w-5 h-5 text-purple-600" />
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">{analytics.totalProjects}</h3>
-            <p className="text-neutral-600 text-sm">Total Projects</p>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+15% from last month</span>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-orange-600" />
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-neutral-600">Total Budget</p>
+                <p className="text-2xl font-bold text-neutral-900">${(analytics.totalBudget / 1000000).toFixed(1)}M</p>
               </div>
-              <TrendingUp className="w-5 h-5 text-green-500" />
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <DollarSign className="w-5 h-5 text-orange-600" />
+              </div>
             </div>
-            <h3 className="text-2xl font-bold text-neutral-900 mb-1">${analytics.totalBudget}M</h3>
-            <p className="text-neutral-600 text-sm">Total Budget</p>
+            <div className="flex items-center mt-2">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-xs text-green-600">+5% from last month</span>
+            </div>
           </div>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex items-center gap-4 mb-6">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
               <input
@@ -453,181 +621,57 @@ export default function DepartmentsPage({ open, onClose, onOpenTab }: {
                 className="w-full pl-10 pr-4 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
             <button 
-              className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
               onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+              showFilters 
+                ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                : 'bg-white border-neutral-200 text-neutral-700 hover:bg-neutral-50'
+            }`}
             >
               <Filter className="w-4 h-4" />
               More Filters
             </button>
-
-            {hasActiveFilters && (
-              <button 
-                className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg hover:bg-red-50 text-red-700 transition-colors"
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </button>
-            )}
-          </div>
-
-          {/* Advanced Filters */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-neutral-200">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Status</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Status</option>
-                    <option>Active</option>
-                    <option>Inactive</option>
-                    <option>Planning</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Location</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>All Locations</option>
-                    <option>San Francisco</option>
-                    <option>New York</option>
-                    <option>Remote</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">Sort By</label>
-                  <select className="w-full px-3 py-2 border border-neutral-200 rounded-lg">
-                    <option>Name A-Z</option>
-                    <option>Most Members</option>
-                    <option>Most Projects</option>
-                    <option>Highest Budget</option>
-                    <option>Recently Created</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Departments List */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-neutral-200">
-            <h2 className="text-lg font-semibold text-neutral-900">All Departments ({filteredDepartments.length})</h2>
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-neutral-900">
+              All Departments ({filteredDepartments.length})
+            </h3>
           </div>
           
-          <div className="divide-y divide-neutral-200">
+          <div className="space-y-4">
             {filteredDepartments.map((dept) => (
-              <div key={dept.id} className="p-6 hover:bg-neutral-50 transition-colors">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+              <div
+                key={dept.id}
+                className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                       <button
                         onClick={() => toggleDepartment(dept.id)}
-                        className="p-1 rounded hover:bg-neutral-100 transition-colors"
+                      className="text-neutral-400 hover:text-neutral-600"
                       >
                         {expandedDepartments.includes(dept.id) ? (
-                          <span className="text-neutral-400">▼</span>
+                        <ChevronDown className="w-4 h-4" />
                         ) : (
-                          <span className="text-neutral-400">▶</span>
+                        <ChevronRight className="w-4 h-4" />
                         )}
                       </button>
-                      <Building className="w-5 h-5 text-blue-500" />
-                      <h3 className="text-lg font-semibold text-neutral-900">{dept.name}</h3>
-                      <div className={`px-2 py-1 rounded text-xs font-medium ${
-                        dept.status === "Active" ? "bg-green-100 text-green-700" : 
-                        dept.status === "Planning" ? "bg-yellow-100 text-yellow-700" : 
-                        "bg-neutral-100 text-neutral-700"
-                      }`}>
-                        {dept.status}
-                      </div>
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <Building className="w-4 h-4 text-blue-600" />
                     </div>
-                    
-                    <p className="text-neutral-600 mb-3">{dept.description}</p>
-                    
-                    <div className="flex items-center gap-6 text-sm text-neutral-500 mb-4">
+                    <div>
                       <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        <span>{dept.members} members</span>
+                        <h4 className="font-semibold text-neutral-900">{dept.name}</h4>
+                        <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                          {dept.status}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Briefcase className="w-4 h-4" />
-                        <span>{dept.projects} projects</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4" />
-                        <span>{dept.budget}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>{dept.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>Created {dept.created}</span>
-                      </div>
+                      <p className="text-sm text-neutral-600 mt-1">{dept.description}</p>
                     </div>
-
-                    {/* Contact Actions */}
-                    <div className="flex items-center gap-2 mb-4">
-                      <button 
-                        className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition-colors"
-                        onClick={() => contactDepartment(dept, 'email')}
-                      >
-                        <Mail className="w-3 h-3" />
-                        Email
-                      </button>
-                      <button 
-                        className="flex items-center gap-1 px-3 py-1 text-sm bg-green-50 text-green-700 rounded hover:bg-green-100 transition-colors"
-                        onClick={() => contactDepartment(dept, 'phone')}
-                      >
-                        <Phone className="w-3 h-3" />
-                        Call
-                      </button>
-                      <button 
-                        className="flex items-center gap-1 px-3 py-1 text-sm bg-purple-50 text-purple-700 rounded hover:bg-purple-100 transition-colors"
-                        onClick={() => contactDepartment(dept, 'location')}
-                      >
-                        <MapPin className="w-3 h-3" />
-                        Location
-                      </button>
-                    </div>
-
-                    {/* Sub-departments */}
-                    {expandedDepartments.includes(dept.id) && (
-                      <div className="ml-8 mt-4 space-y-3">
-                        <h4 className="text-sm font-medium text-neutral-700 mb-3">Sub-departments ({dept.subdepartments.length})</h4>
-                        {dept.subdepartments.map((subdept) => (
-                          <div key={subdept.id} className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200">
-                            <div className="flex items-center gap-3">
-                              <Building className="w-4 h-4 text-blue-400" />
-                              <div>
-                                <h5 className="font-medium text-neutral-800 text-sm">{subdept.name}</h5>
-                                <p className="text-xs text-neutral-600">Manager: {subdept.manager}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <div className="text-center">
-                                <p className="text-xs font-medium">{subdept.members}</p>
-                                <p className="text-xs text-neutral-500">Members</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-xs font-medium">{subdept.projects}</p>
-                                <p className="text-xs text-neutral-500">Projects</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-xs font-medium">{subdept.budget}</p>
-                                <p className="text-xs text-neutral-500">Budget</p>
-                              </div>
-                              <div className={`px-2 py-1 rounded text-xs font-medium ${
-                                subdept.status === "Active" ? "bg-green-100 text-green-700" : "bg-neutral-100 text-neutral-700"
-                              }`}>
-                                {subdept.status}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   <div className="flex items-center gap-2 ml-4">
@@ -647,34 +691,20 @@ export default function DepartmentsPage({ open, onClose, onOpenTab }: {
                     
                     {/* Department Actions Menu */}
                     {showMoreMenu === dept.id && (
-                      <div className="absolute right-0 top-12 z-10 bg-white border border-neutral-200 rounded shadow-lg min-w-[160px]">
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-10">
                         <button 
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
-                          onClick={() => onOpenTab && onOpenTab("edit-department", `Edit: ${dept.name}`)}
-                        >
-                          <Edit className="w-4 h-4" />
-                          Edit Department
-                        </button>
-                        <button 
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-neutral-50 text-neutral-700 text-left"
                           onClick={() => duplicateDepartment(dept)}
                         >
                           <Copy className="w-4 h-4" />
                           Duplicate Department
                         </button>
                         <button 
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-blue-50 text-left"
+                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-neutral-50 text-neutral-700 text-left"
                           onClick={() => exportDepartment(dept)}
                         >
-                          <Share2 className="w-4 h-4" />
+                          <Download className="w-4 h-4" />
                           Export Department
-                        </button>
-                        <button 
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-yellow-50 text-yellow-600 text-left"
-                          onClick={() => archiveDepartment(dept.id)}
-                        >
-                          <Archive className="w-4 h-4" />
-                          Archive Department
                         </button>
                         <hr className="my-1" />
                         <button 
@@ -687,6 +717,55 @@ export default function DepartmentsPage({ open, onClose, onOpenTab }: {
                       </div>
                     )}
                   </div>
+                </div>
+
+                {/* Department Details */}
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{dept.members} members</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{dept.projects} projects</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{dept.budget}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">{dept.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-neutral-400" />
+                    <span className="text-neutral-600">Created {dept.created}</span>
+                  </div>
+                </div>
+
+                {/* Contact Actions */}
+                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-neutral-100">
+                  <button 
+                    className="flex items-center gap-1 px-3 py-1 text-xs text-neutral-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                    onClick={() => contactDepartment(dept, 'email')}
+                  >
+                    <Mail className="w-3 h-3" />
+                    Email
+                  </button>
+                  <button 
+                    className="flex items-center gap-1 px-3 py-1 text-xs text-neutral-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+                    onClick={() => contactDepartment(dept, 'phone')}
+                  >
+                    <Phone className="w-3 h-3" />
+                    Call
+                  </button>
+                  <button 
+                    className="flex items-center gap-1 px-3 py-1 text-xs text-neutral-600 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors"
+                    onClick={() => contactDepartment(dept, 'location')}
+                  >
+                    <MapPin className="w-3 h-3" />
+                    Location
+                  </button>
                 </div>
               </div>
             ))}
@@ -701,7 +780,7 @@ export default function DepartmentsPage({ open, onClose, onOpenTab }: {
               <p className="text-neutral-600 mb-4">Try adjusting your search or create a new department.</p>
               <button 
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                onClick={() => onOpenTab && onOpenTab("create-department", "Create Department")}
+                onClick={() => setShowCreateForm(true)}
               >
                 Create Your First Department
               </button>

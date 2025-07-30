@@ -329,32 +329,32 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
     budget: string;
     teamMembers: string[];
   }) => {
-    try {
-      const newProject: Project = {
+      try {
+        const newProject: Project = {
         name: projectData.name,
         description: projectData.description,
         status: projectData.status,
         members: projectData.teamMembers,
-        tasks: [],
-        sprints: [],
-        progress: 0,
+          tasks: [],
+          sprints: [],
+          progress: 0,
         startDate: projectData.startDate,
         endDate: projectData.endDate,
         company: projectData.company,
-        archived: false
-      };
-      
-      setCompanies(prev => prev.map(company => 
+          archived: false
+        };
+        
+        setCompanies(prev => prev.map(company => 
         company.name === projectData.company 
-          ? { ...company, projects: [...company.projects, newProject] }
-          : company
-      ));
-      
-      setShowCreateForm(false);
+            ? { ...company, projects: [...company.projects, newProject] }
+            : company
+        ));
+        
+        setShowCreateForm(false);
       console.log('Project created successfully:', newProject);
-    } catch (error) {
-      console.error('Error creating project:', error);
-    }
+      } catch (error) {
+        console.error('Error creating project:', error);
+      }
   };
 
   const handleCreateNewCompany = () => {
@@ -401,10 +401,10 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
             <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
               <BarChart2 className="w-6 h-6" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Projects Analytics</h1>
+        <div>
+              <h1 className="text-xl font-bold text-slate-900">Projects Analytics</h1>
               <p className="text-slate-600 mt-1">Analytics and insights for your projects</p>
-            </div>
+        </div>
           </div>
           
           <div className="flex items-center gap-3">
@@ -413,35 +413,35 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
             >
               <Download size={16} />
               Export All
-            </button>
+          </button>
             <button 
               className="flex items-center gap-3 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200 font-semibold"
               onClick={() => setShowCreateForm(true)}
             >
               <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
-              New Project
-            </button>
+            New Project
+          </button>
           </div>
         </div>
       </div>
 
       <div className="p-8 space-y-6">
         {/* Professional Inline Create Project Form */}
-        {showCreateForm && (
+      {showCreateForm && (
           <div className="bg-white border border-slate-200 rounded-xl shadow-lg p-8 mb-8">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 mb-1">Create New Project</h2>
                 <p className="text-slate-500 text-sm">Fill in the details below to create a new project</p>
               </div>
-              <button
-                onClick={cancelCreate}
+            <button 
+              onClick={cancelCreate}
                 className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
+            >
+              <X size={20} />
+            </button>
+          </div>
+          
             <form onSubmit={(e) => {
               e.preventDefault();
               handleCreateProject({
@@ -466,46 +466,46 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+              <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">Project Name *</label>
-                    <input
-                      value={projectName}
-                      onChange={e => setProjectName(e.target.value)}
+                <input 
+                  value={projectName} 
+                  onChange={e => setProjectName(e.target.value)} 
                       className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="Enter project name"
-                      required
-                    />
-                  </div>
-
-                  <div>
+                  placeholder="Enter project name"
+                  required
+                />
+              </div>
+              
+              <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">Company *</label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowCompanyDropdown(!showCompanyDropdown)}
                         className="w-full px-4 py-3 border border-slate-300 rounded-lg flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      >
+                  >
                         <span className={selectedCompany ? "text-slate-900" : "text-slate-500"}>
-                          {selectedCompany || "Select a company"}
-                        </span>
+                      {selectedCompany || "Select a company"}
+                    </span>
                         <ChevronDown size={16} className="text-slate-400" />
-                      </button>
-
-                      {showCompanyDropdown && (
+                  </button>
+                  
+                  {showCompanyDropdown && (
                         <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                           {companies.map((company) => (
-                            <button
+                        <button
                               key={company.name}
-                              type="button"
-                              onClick={() => {
+                          type="button"
+                          onClick={() => {
                                 setSelectedCompany(company.name);
-                                setShowCompanyDropdown(false);
-                              }}
+                            setShowCompanyDropdown(false);
+                          }}
                               className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm transition-colors"
-                            >
+                        >
                               {company.name}
-                            </button>
-                          ))}
+                        </button>
+                      ))}
                           <div className="border-t border-slate-200">
                             <button
                               type="button"
@@ -515,8 +515,8 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                               + Add New Company
                             </button>
                           </div>
-                        </div>
-                      )}
+                    </div>
+                  )}
 
                       {/* Inline New Company Form */}
                       {showNewCompanyModal && (
@@ -573,10 +573,10 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                         </div>
                       )}
                     </div>
-                  </div>
                 </div>
+              </div>
 
-                <div>
+              <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
                   <textarea
                     value={projectDescription}
@@ -600,79 +600,79 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                         className="w-full px-4 py-3 border border-slate-300 rounded-lg flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      >
+                  >
                         <span className="text-slate-900">{projectStatus}</span>
                         <ChevronDown size={16} className="text-slate-400" />
-                      </button>
-
-                      {showStatusDropdown && (
+                  </button>
+                  
+                  {showStatusDropdown && (
                         <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                           {statuses.map((statusOption) => (
-                            <button
-                              key={statusOption}
-                              type="button"
-                              onClick={() => {
-                                setProjectStatus(statusOption);
-                                setShowStatusDropdown(false);
-                              }}
+                        <button
+                          key={statusOption}
+                          type="button"
+                          onClick={() => {
+                            setProjectStatus(statusOption);
+                            setShowStatusDropdown(false);
+                          }}
                               className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm transition-colors"
-                            >
-                              {statusOption}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                        >
+                          {statusOption}
+                        </button>
+                      ))}
                     </div>
-                  </div>
+                  )}
+              </div>
+            </div>
 
-                  <div>
+              <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">Priority</label>
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
                         className="w-full px-4 py-3 border border-slate-300 rounded-lg flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      >
+                  >
                         <span className="text-slate-900">{projectPriority}</span>
                         <ChevronDown size={16} className="text-slate-400" />
-                      </button>
-
-                      {showPriorityDropdown && (
+                  </button>
+                  
+                  {showPriorityDropdown && (
                         <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                           {priorities.map((priorityOption) => (
-                            <button
-                              key={priorityOption}
-                              type="button"
-                              onClick={() => {
-                                setProjectPriority(priorityOption);
-                                setShowPriorityDropdown(false);
-                              }}
+                        <button
+                          key={priorityOption}
+                          type="button"
+                          onClick={() => {
+                            setProjectPriority(priorityOption);
+                            setShowPriorityDropdown(false);
+                          }}
                               className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm transition-colors"
-                            >
-                              {priorityOption}
-                            </button>
-                          ))}
-                        </div>
-                      )}
+                        >
+                          {priorityOption}
+                        </button>
+                      ))}
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">Budget</label>
-                    <input
-                      value={budget}
-                      onChange={e => setBudget(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="e.g., $50,000"
-                    />
-                  </div>
+                  )}
                 </div>
               </div>
+
+              <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Budget</label>
+                <input 
+                  value={budget} 
+                  onChange={e => setBudget(e.target.value)} 
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="e.g., $50,000"
+                />
+                  </div>
+              </div>
+            </div>
 
               {/* Timeline Section */}
               <div className="space-y-6">
@@ -684,29 +684,29 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+              <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">Start Date *</label>
-                    <input
-                      type="date"
-                      value={startDate}
-                      onChange={e => setStartDate(e.target.value)}
+                <input 
+                  type="date"
+                  value={startDate} 
+                  onChange={e => setStartDate(e.target.value)} 
                       className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">End Date *</label>
-                    <input
-                      type="date"
-                      value={endDate}
-                      onChange={e => setEndDate(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      required
-                    />
-                  </div>
-                </div>
+                />
               </div>
+              
+              <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">End Date *</label>
+                <input 
+                  type="date"
+                  value={endDate} 
+                  onChange={e => setEndDate(e.target.value)} 
+                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      required
+                />
+                  </div>
+              </div>
+            </div>
 
               {/* Team Members Section */}
               <div className="space-y-6">
@@ -717,16 +717,16 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                   <h3 className="text-lg font-semibold text-slate-900">Team Members</h3>
                 </div>
 
-                <div>
+            <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-3">Assign Team Members</label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {availableMembers.map(member => (
-                      <button
-                        key={member}
-                        type="button"
-                        onClick={() => toggleMember(member)}
+                  <button
+                    key={member}
+                    type="button"
+                    onClick={() => toggleMember(member)}
                         className={`p-3 rounded-lg border-2 transition-all ${
-                          selectedMembers.includes(member)
+                      selectedMembers.includes(member) 
                             ? 'border-blue-500 bg-blue-50 text-blue-700'
                             : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50'
                         }`}
@@ -737,80 +737,72 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                           </div>
                           <span className="text-sm font-medium">{member}</span>
                         </div>
-                      </button>
-                    ))}
+                  </button>
+                ))}
                   </div>
-                </div>
               </div>
+            </div>
 
               {/* Action Buttons */}
               <div className="flex items-center justify-between pt-6 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={cancelCreate}
+              <button 
+                type="button"
+                onClick={cancelCreate}
                   className="px-6 py-3 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={!projectName || !selectedCompany}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                disabled={!projectName || !selectedCompany} 
                   className="px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-                >
-                  Create Project
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+              >
+                Create Project
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
         {/* Analytics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Total Projects</p>
-                <p className="text-2xl font-bold text-slate-900">{allProjects.length}</p>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <FolderKanban className="w-6 h-6 text-blue-600" />
-              </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-blue-50 rounded-md flex items-center justify-center mr-3">
+              <FolderKanban className="w-3 h-3 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Total Projects</p>
+              <p className="text-lg font-semibold text-slate-900">{allProjects.length}</p>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Active Projects</p>
-                <p className="text-2xl font-bold text-slate-900">{allProjects.filter(p => p.status === "Active").length}</p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-green-600" />
-              </div>
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-green-50 rounded-md flex items-center justify-center mr-3">
+              <TrendingUp className="w-3 h-3 text-green-600" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Active Projects</p>
+              <p className="text-lg font-semibold text-slate-900">{allProjects.filter(p => p.status === "Active").length}</p>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Completed</p>
-                <p className="text-2xl font-bold text-slate-900">{allProjects.filter(p => p.status === "Completed").length}</p>
-              </div>
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-purple-600" />
-              </div>
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-purple-50 rounded-md flex items-center justify-center mr-3">
+              <CheckCircle className="w-3 h-3 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Completed</p>
+              <p className="text-lg font-semibold text-slate-900">{allProjects.filter(p => p.status === "Completed").length}</p>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-slate-600">Avg Progress</p>
-                <p className="text-2xl font-bold text-slate-900">{Math.round(allProjects.reduce((sum, p) => sum + p.progress, 0) / allProjects.length)}%</p>
-              </div>
-              <div className="p-3 bg-orange-100 rounded-lg">
-                <BarChart2 className="w-6 h-6 text-orange-600" />
-              </div>
+          <div className="bg-white rounded-md border border-slate-200 p-2.5 h-20 flex items-center">
+            <div className="w-6 h-6 bg-orange-50 rounded-md flex items-center justify-center mr-3">
+              <BarChart2 className="w-3 h-3 text-orange-600" />
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Avg Progress</p>
+              <p className="text-lg font-semibold text-slate-900">{Math.round(allProjects.reduce((sum, p) => sum + p.progress, 0) / allProjects.length)}%</p>
             </div>
           </div>
         </div>
@@ -841,26 +833,26 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                 >
                   <Filter size={16} />
                   Filters
-                </button>
+        </button>
                 
-                <div className="relative">
-                  <button
+        <div className="relative">
+          <button 
                     onClick={() => setShowSortDropdown(!showSortDropdown)}
                     className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all"
-                  >
+          >
                     <SortAsc size={16} />
                     Sort
                     <ChevronDown size={16} />
-                  </button>
-                  
-                  {showSortDropdown && (
+          </button>
+          
+          {showSortDropdown && (
                     <div className="absolute right-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg min-w-[160px] z-10">
-                      <button
+                <button 
                         onClick={() => { setSort("name"); setShowSortDropdown(false); }}
                         className="block w-full text-left px-4 py-3 hover:bg-slate-50 text-sm"
                       >
                         Name {sort === "name" && (sortAsc ? "↑" : "↓")}
-                      </button>
+                </button>
                       <button
                         onClick={() => { setSort("status"); setShowSortDropdown(false); }}
                         className="block w-full text-left px-4 py-3 hover:bg-slate-50 text-sm"
@@ -873,12 +865,12 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                       >
                         Progress {sort === "progress" && (sortAsc ? "↑" : "↓")}
                       </button>
-                    </div>
-                  )}
+            </div>
+          )}
                 </div>
               </div>
-            </div>
-            
+        </div>
+
             <div className="flex items-center gap-3">
               <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-all">
                 <Archive size={16} />
@@ -888,10 +880,10 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                 <Trash2 size={16} />
                 Bulk Delete
               </button>
-            </div>
+      </div>
           </div>
           
-          {showFilters && (
+      {showFilters && (
             <div className="mt-6 pt-6 border-t border-slate-200">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -950,9 +942,9 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                   {filtered.length} of {allProjects.length} projects
                 </div>
               </div>
-            </div>
-          )}
         </div>
+      )}
+          </div>
 
         {/* Projects Table */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -961,8 +953,8 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
                   <th className="px-6 py-4 text-left">
-                    <input 
-                      type="checkbox" 
+                  <input 
+                    type="checkbox" 
                       checked={Object.keys(selected).length === paginated.length && paginated.length > 0}
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -974,8 +966,8 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                         }
                       }}
                       className="rounded border-slate-300"
-                    />
-                  </th>
+                  />
+                </th>
                   <th className="px-6 py-4 text-left">
                     <button 
                       onClick={() => { setSort("name"); setSortAsc(!sortAsc); }}
@@ -991,19 +983,19 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Members</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Dates</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">Actions</th>
-                </tr>
-              </thead>
+              </tr>
+            </thead>
               <tbody className="divide-y divide-slate-200">
-                {paginated.map(project => (
+              {paginated.map(project => (
                   <tr key={project.name} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
-                      <input 
-                        type="checkbox" 
-                        checked={!!selected[project.name]} 
-                        onChange={e => handleSelectProject(project.name, e.target.checked)} 
+                    <input 
+                      type="checkbox" 
+                      checked={!!selected[project.name]} 
+                      onChange={e => handleSelectProject(project.name, e.target.checked)} 
                         className="rounded border-slate-300"
-                      />
-                    </td>
+                    />
+                  </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <FolderKanban className="text-blue-500" size={20} />
@@ -1012,7 +1004,7 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                           <div className="text-sm text-slate-500">{project.description}</div>
                         </div>
                       </div>
-                    </td>
+                  </td>
                     <td className="px-6 py-4">
                       <button 
                         className="text-blue-600 hover:text-blue-800 font-medium underline"
@@ -1020,7 +1012,7 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                       >
                         {project.company}
                       </button>
-                    </td>
+                  </td>
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         project.status === "Active" ? "bg-green-100 text-green-700" : 
@@ -1030,7 +1022,7 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                       }`}>
                         {project.status}
                       </span>
-                    </td>
+                  </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-20 h-2 bg-slate-200 rounded-full overflow-hidden">
@@ -1040,12 +1032,12 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                             }`} 
                             style={{ width: `${project.progress}%` }}
                           ></div>
-                        </div>
+                    </div>
                         <span className="text-sm font-medium text-slate-700">{project.progress}%</span>
                       </div>
-                    </td>
+                  </td>
                     <td className="px-6 py-4">
-                      <div className="flex gap-1">
+                    <div className="flex gap-1">
                         {project.members.map((member, i) => (
                           <button 
                             key={i} 
@@ -1055,15 +1047,15 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                           >
                             {member.split(' ').map(n => n[0]).join('')}
                           </button>
-                        ))}
-                      </div>
-                    </td>
+                      ))}
+                    </div>
+                  </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-slate-600">
                         <div>Start: {project.startDate}</div>
                         <div>End: {project.endDate}</div>
-                      </div>
-                    </td>
+                    </div>
+                  </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button 
@@ -1097,40 +1089,40 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
                         <div className="relative">
                           <button 
                             className="p-2 rounded-lg hover:bg-slate-100 text-slate-600 transition-colors" 
-                            title="More"
-                            onClick={() => setShowMoreMenu(showMoreMenu === project.name ? null : project.name)}
-                          >
-                            <MoreHorizontal size={16} />
-                          </button>
-                          {showMoreMenu === project.name && (
+                          title="More" 
+                          onClick={() => setShowMoreMenu(showMoreMenu === project.name ? null : project.name)}
+                        >
+                          <MoreHorizontal size={16} />
+                        </button>
+                        {showMoreMenu === project.name && (
                             <div className="absolute right-0 top-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg min-w-[140px] z-10">
-                              <button 
+                            <button 
                                 className="block w-full text-left px-4 py-2 hover:bg-slate-50 text-sm" 
-                                onClick={() => {
-                                  duplicateProject(project);
-                                  setShowMoreMenu(null);
-                                }}
-                              >
-                                Duplicate
-                              </button>
-                              <button 
+                              onClick={() => {
+                                duplicateProject(project);
+                                setShowMoreMenu(null);
+                              }}
+                            >
+                              Duplicate
+                            </button>
+                            <button 
                                 className="block w-full text-left px-4 py-2 hover:bg-slate-50 text-sm" 
-                                onClick={() => {
-                                  exportProject(project);
-                                  setShowMoreMenu(null);
-                                }}
-                              >
-                                Export
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                              onClick={() => {
+                                exportProject(project);
+                                setShowMoreMenu(null);
+                              }}
+                            >
+                              Export
+                            </button>
+                          </div>
+                        )}
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
           </div>
         </div>
 
@@ -1169,4 +1161,4 @@ export default function ProjectsAnalyticsPage({ onViewProject, onOpenTab }: { on
       </div>
     </div>
   );
-}
+} 

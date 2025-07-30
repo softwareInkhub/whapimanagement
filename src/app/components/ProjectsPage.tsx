@@ -256,10 +256,11 @@ interface Project {
   }>;
 }
 
-export default function ProjectsPage({ open, onClose, onOpenTab }: { 
+export default function ProjectsPage({ open, onClose, onOpenTab, context }: { 
   open: boolean, 
   onClose: () => void,
-  onOpenTab?: (type: string, title?: string) => void 
+  onOpenTab?: (type: string, title?: string, context?: any) => void,
+  context?: { company: string }
 }) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [searchTerm, setSearchTerm] = useState("");
@@ -562,8 +563,8 @@ Last Activity: ${project.lastActivity}
             <FolderOpen className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Projects</h1>
-            <p className="text-slate-600">Manage and track all your projects</p>
+            <h1 className="text-2xl font-bold text-slate-900">{context?.company ? `${context.company} Projects` : 'Projects'}</h1>
+            <p className="text-slate-600">{context?.company ? `Manage and track projects for ${context.company}` : 'Manage and track all your projects'}</p>
           </div>
         </div>
         
