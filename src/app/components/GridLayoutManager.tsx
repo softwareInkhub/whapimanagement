@@ -18,7 +18,9 @@ import {
   X,
   Plus,
   Layout,
-  Monitor
+  Monitor,
+  GripVertical,
+  HelpCircle
 } from 'lucide-react';
 
 // Import actual sheet components
@@ -76,6 +78,7 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
   const [isGridMode, setIsGridMode] = useState(true);
   const [showSheetSelector, setShowSheetSelector] = useState(false);
   const [sheetZoomLevels, setSheetZoomLevels] = useState<Record<string, number>>({});
+  const [showHelp, setShowHelp] = useState(false);
 
   // Available sheet types
   const availableSheets = [
@@ -273,11 +276,25 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
           }
         }
       }
+      
+      // Grid mode shortcuts
+      if (e.key === 'Escape') {
+        setShowSheetSelector(false);
+      }
+      
+      // Delete key to remove selected sheet
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const activeElement = document.activeElement;
+        const sheetId = activeElement?.closest('[data-sheet-id]')?.getAttribute('data-sheet-id');
+        if (sheetId) {
+          removeSheet(sheetId);
+        }
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [zoomIn, zoomOut, resetZoom]);
+  }, [zoomIn, zoomOut, resetZoom, removeSheet]);
 
   // Save layout to localStorage
   const handleSaveLayout = useCallback(() => {
@@ -396,13 +413,20 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
         data-sheet-id={sheet.id}
         style={{ pointerEvents: 'auto' }}
       >
-        {/* Sheet Header */}
+        {/* Sheet Header - Drag Handle */}
         <div 
-          className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
+          className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200 cursor-move"
+          style={{ cursor: 'grab' }}
+          onMouseDown={(e) => {
+            // Allow dragging by not stopping propagation
+            // Only prevent default if clicking on buttons
+            if ((e.target as HTMLElement).closest('button')) {
+              e.stopPropagation();
+            }
+          }}
         >
           <div className="flex items-center gap-2">
+            <GripVertical size={14} className="text-gray-400" />
             <h3 className="text-sm font-medium text-gray-900">{sheet.title}</h3>
             <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
               {currentBreakpoint.toUpperCase()}
@@ -482,8 +506,18 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
         {/* Sheet Content */}
         <div 
           className="h-full overflow-auto relative sheet-content"
-          onMouseDown={(e) => e.stopPropagation()}
-          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => {
+            // Only stop propagation if clicking on interactive elements
+            if ((e.target as HTMLElement).closest('button, input, select, textarea, a')) {
+              e.stopPropagation();
+            }
+          }}
+          onClick={(e) => {
+            // Only stop propagation if clicking on interactive elements
+            if ((e.target as HTMLElement).closest('button, input, select, textarea, a')) {
+              e.stopPropagation();
+            }
+          }}
         >
           <div 
             className="h-full w-full"
@@ -492,8 +526,18 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
               transformOrigin: 'top left',
               transition: 'transform 0.2s ease-in-out'
             }}
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => {
+              // Only stop propagation if clicking on interactive elements
+              if ((e.target as HTMLElement).closest('button, input, select, textarea, a')) {
+                e.stopPropagation();
+              }
+            }}
+            onClick={(e) => {
+              // Only stop propagation if clicking on interactive elements
+              if ((e.target as HTMLElement).closest('button, input, select, textarea, a')) {
+                e.stopPropagation();
+              }
+            }}
           >
             <SheetComponent
               open={true}
@@ -536,6 +580,9 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
             <h2 className="text-lg font-semibold text-gray-900">Grid Layout Manager</h2>
             <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
               {sheets.length} Sheets
+            </span>
+            <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+              Drag sheets to rearrange
             </span>
           </div>
           
@@ -620,6 +667,15 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
             >
               <Monitor size={16} />
             </button>
+
+            {/* Help Button */}
+            <button
+              onClick={() => setShowHelp(!showHelp)}
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Grid Layout Help"
+            >
+              <HelpCircle size={16} />
+            </button>
           </div>
         </div>
       )}
@@ -650,6 +706,52 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
                 <span>{sheet.title}</span>
               </button>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Help Panel */}
+      {showHelp && (
+        <div className="absolute top-16 right-4 z-50 bg-white rounded-lg shadow-lg border border-gray-200 p-4 min-w-80">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-gray-900">Grid Layout Help</h3>
+            <button
+              onClick={() => setShowHelp(false)}
+              className="p-1 text-gray-400 hover:text-gray-600 rounded"
+            >
+              <X size={14} />
+            </button>
+          </div>
+          <div className="space-y-3 text-sm text-gray-600">
+            <div className="flex items-start gap-2">
+              <GripVertical size={14} className="text-blue-500 mt-0.5" />
+              <span>Drag sheet headers to rearrange them in the grid</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <Maximize2 size={14} className="text-green-500 mt-0.5" />
+              <span>Use zoom controls to adjust sheet content size</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <Plus size={14} className="text-purple-500 mt-0.5" />
+              <span>Drag tabs or sidebar items to add new sheets</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <X size={14} className="text-red-500 mt-0.5" />
+              <span>Click X or press Delete to remove sheets</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <Save size={14} className="text-blue-500 mt-0.5" />
+              <span>Save your layout to restore it later</span>
+            </div>
+            <div className="pt-2 border-t border-gray-200">
+              <div className="text-xs text-gray-500">
+                <strong>Keyboard shortcuts:</strong><br />
+                Ctrl/Cmd + +/-: Zoom in/out<br />
+                Ctrl/Cmd + 0: Reset zoom<br />
+                Delete: Remove selected sheet<br />
+                Escape: Close panels
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -691,9 +793,10 @@ export default function GridLayoutManager({ onOpenTab, draggedItem, onDropItem }
         {/* Drop Zone Indicator */}
         {draggedItem && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="bg-blue-100 border-2 border-blue-400 rounded-lg p-8 text-center">
-              <div className="text-blue-600 font-medium mb-2">Drop to add sheet</div>
-              <div className="text-blue-500 text-sm">{draggedItem.label}</div>
+            <div className="bg-blue-100 border-2 border-blue-400 rounded-lg p-8 text-center shadow-lg">
+              <div className="text-blue-600 font-medium mb-2 text-lg">Drop to add sheet</div>
+              <div className="text-blue-500 text-sm mb-2">{draggedItem.label || draggedItem.title}</div>
+              <div className="text-blue-400 text-xs">Drag from sidebar or tabs to add sheets to the grid</div>
             </div>
           </div>
         )}
