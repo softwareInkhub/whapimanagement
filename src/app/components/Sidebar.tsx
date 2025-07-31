@@ -13,6 +13,10 @@ import {
   ChevronLeft,
   Building,
   Grid3X3,
+  UserCheck,
+  Shield,
+  FileText,
+  MessageSquare,
 } from "lucide-react";
 
 const navItems = [
@@ -20,12 +24,13 @@ const navItems = [
   { label: "Projects", icon: FolderKanban, type: "projects" },
   { label: "Tasks", icon: ListChecks, type: "tasks" },
   { label: "Teams", icon: Users, type: "teams" },
-  { label: "Companies", icon: Building, type: "companies" },
-  { label: "Calendar", icon: Calendar, type: "calendar" },
-  { label: "Reports", icon: BarChart2, type: "reports" },
+  { label: "Users", icon: UserCheck, type: "users" },
+  { label: "Groups", icon: Shield, type: "groups" },
+  { label: "Whapi Management", icon: MessageSquare, type: "whapi-management" },
+  { label: "Notifications", icon: Bell, type: "notifications" },
+  { label: "Audit Logs", icon: FileText, type: "audit-logs" },
   { label: "Grid Layout", icon: Grid3X3, type: "grid-layout" },
   { label: "Settings", icon: Settings, type: "settings" },
-  { label: "Notifications", icon: Bell, type: "notifications" },
 ];
 
 interface SidebarProps {
@@ -59,6 +64,22 @@ export default function Sidebar({ activeTab, onNavClick, onToggleGridMode, isGri
       >
         {isExpanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
       </button>
+
+      {/* Whapi Management Logo/Brand */}
+      <div className="mb-6 flex items-center justify-center">
+        {isExpanded ? (
+          <div className="text-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center mb-2">
+              <span className="text-white font-bold text-sm">W</span>
+            </div>
+            <span className="text-xs font-semibold text-neutral-700">Whapi Management</span>
+          </div>
+        ) : (
+          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">W</span>
+          </div>
+        )}
+      </div>
 
       {/* Navigation Items */}
       <nav className="flex flex-col gap-2 flex-1 w-full items-center">
@@ -114,12 +135,12 @@ export default function Sidebar({ activeTab, onNavClick, onToggleGridMode, isGri
 
       {/* User Avatar */}
       <div className="mt-4 mb-2 flex flex-col items-center">
-        <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-sm font-bold text-white">
-          B
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center text-sm font-bold text-white">
+          A
         </div>
         {isExpanded && (
           <span className="text-xs text-neutral-500 mt-1 truncate">
-            User
+            Admin User
           </span>
         )}
       </div>
