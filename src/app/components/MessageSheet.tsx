@@ -12,16 +12,33 @@ interface MessageSheetProps {
     type: 'group' | 'community' | 'user';
     memberCount?: number;
   };
+  onSendMessage?: (message: string, recipient: any) => void;
+  chatMessages?: Array<{
+    id: string;
+    text: string;
+    sender: 'me' | 'them';
+    timestamp: string;
+    status: 'sent' | 'delivered' | 'read' | 'failed';
+    recipients: any;
+  }>;
 }
 
-export default function MessageSheet({ isOpen, onClose, recipient }: MessageSheetProps) {
+export default function MessageSheet({ isOpen, onClose, recipient, onSendMessage, chatMessages = [] }: MessageSheetProps) {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
+
+  // Debug logging
+  console.log('MessageSheet render:', { recipient, chatMessages });
 
   const handleSend = async () => {
     if (!message.trim()) return;
     
     setIsSending(true);
+    
+    // Call the parent's onSendMessage function if provided
+    if (onSendMessage) {
+      onSendMessage(message, recipient);
+    }
     
     // Simulate sending message
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -69,18 +86,57 @@ export default function MessageSheet({ isOpen, onClose, recipient }: MessageShee
         </div>
       </div>
 
-      {/* Message Input */}
-      <div className="flex-1 p-4 flex flex-col">
-        <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4">
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder={`Type your message to ${recipient.name}...`}
-            className="w-full h-full bg-transparent border-none outline-none resize-none text-gray-900 placeholder-gray-500"
-            rows={8}
-          />
-        </div>
+             {/* Chat Messages */}
+       <div className="flex-1 p-4 flex flex-col">
+         <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4 overflow-y-auto">
+                       {/* Chat History */}
+            <div className="space-y-3 mb-4">
+              {/* Test message to verify component is working */}
+              <div className="flex justify-start">
+                <div className="max-w-xs px-3 py-2 rounded-lg bg-white text-gray-900 border border-gray-200">
+                  <p className="text-sm">Test message from {recipient.name}</p>
+                  <p className="text-xs mt-1 text-gray-500">Just now</p>
+                </div>
+              </div>
+              
+              {/* Debug: Show all messages for now */}
+              {chatMessages.length > 0 ? (
+                chatMessages.map((msg) => (
+                 <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+                   <div className={`max-w-xs px-3 py-2 rounded-lg ${
+                     msg.sender === 'me' 
+                       ? 'bg-blue-600 text-white' 
+                       : 'bg-white text-gray-900 border border-gray-200'
+                   }`}>
+                     <p className="text-sm">{msg.text}</p>
+                     <p className={`text-xs mt-1 ${
+                       msg.sender === 'me' ? 'text-blue-100' : 'text-gray-500'
+                     }`}>
+                       {msg.timestamp}
+                     </p>
+                   </div>
+                                  </div>
+               ))
+              ) : (
+               <div className="text-center py-8">
+                 <p className="text-gray-500 text-sm">No messages yet</p>
+                 <p className="text-gray-400 text-xs mt-1">Start a conversation with {recipient.name}</p>
+               </div>
+             )}
+           </div>
+
+           {/* Message Input */}
+           <div className="border-t border-gray-200 pt-4">
+             <textarea
+               value={message}
+               onChange={(e) => setMessage(e.target.value)}
+               onKeyPress={handleKeyPress}
+               placeholder={`Type your message to ${recipient.name}...`}
+               className="w-full bg-transparent border-none outline-none resize-none text-gray-900 placeholder-gray-500"
+               rows={3}
+             />
+           </div>
+         </div>
 
         {/* Message Actions */}
         <div className="flex items-center justify-between">

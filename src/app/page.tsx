@@ -233,8 +233,29 @@ export default function WhapiManagementApp() {
     setSelectedEntities(selected);
   };
 
+  const [chatMessages, setChatMessages] = useState<Array<{
+    id: string;
+    text: string;
+    sender: 'me' | 'them';
+    timestamp: string;
+    status: 'sent' | 'delivered' | 'read' | 'failed';
+    recipients: SelectedEntities;
+  }>>([]);
+
   const handleSendMessage = (message: string, selected: SelectedEntities) => {
     const totalRecipients = selected.groups.length + selected.communities.length + selected.users.length;
+
+    // Add message to chat history
+    const newChatMessage = {
+      id: Date.now().toString(),
+      text: message,
+      sender: 'me' as const,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      status: 'sent' as const,
+      recipients: selected
+    };
+
+    setChatMessages(prev => [...prev, newChatMessage]);
 
     // Simulate sending message
     console.log("Sending message:", message);
@@ -245,6 +266,19 @@ export default function WhapiManagementApp() {
       duration: 3000,
       position: "top-right",
     });
+
+    // Update message status after delays
+    setTimeout(() => {
+      setChatMessages(prev => prev.map(msg => 
+        msg.id === newChatMessage.id ? { ...msg, status: 'delivered' } : msg
+      ));
+    }, 1000);
+
+    setTimeout(() => {
+      setChatMessages(prev => prev.map(msg => 
+        msg.id === newChatMessage.id ? { ...msg, status: 'read' } : msg
+      ));
+    }, 2000);
   };
 
   const handleOpenEntity = (entity: Entity, mode: 'sheet' | 'workspace' = 'sheet') => {
@@ -693,7 +727,7 @@ export default function WhapiManagementApp() {
               </div>
               <h1 className="text-xl font-bold text-gray-900">Whapi Management</h1>
             </div>
-            
+
             <div className="flex items-center gap-3">
               {gridView !== 'none' && (
                 <button
@@ -714,9 +748,9 @@ export default function WhapiManagementApp() {
                 <User className="w-5 h-5" />
               </button>
             </div>
-          </div>
-        </div>
-
+                    </div>
+                  </div>
+                  
         {/* Top Tab Bar */}
         <TopTabBar
           tabs={topTabs}
@@ -738,6 +772,7 @@ export default function WhapiManagementApp() {
                 <WhapiChatInterface 
                   selectedEntities={selectedEntities}
                   onSendMessage={handleSendMessage}
+                  chatMessages={chatMessages}
                 />
               )}
             </>
@@ -747,12 +782,12 @@ export default function WhapiManagementApp() {
           )}
           {activeTopTab === 'settings' && (
             <div className="flex items-center justify-center h-full">
-              <div className="text-center">
+                    <div className="text-center">
                 <Settings className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Settings</h3>
                 <p className="text-gray-500">Settings panel coming soon...</p>
               </div>
-            </div>
+                    </div>
           )}
 
           {/* Sheet Content */}
@@ -790,6 +825,43 @@ export default function WhapiManagementApp() {
                   </div>
                   <div className="flex-1 p-6 overflow-y-auto">
                     <div className="max-w-2xl mx-auto">
+                      {/* Chat Messages */}
+                      <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Chat History</h3>
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {chatMessages
+                            .filter(msg => {
+                              // Filter messages for this specific entity
+                              return msg.recipients.groups.some(g => g.id === entity.id) ||
+                                     msg.recipients.communities.some(c => c.id === entity.id) ||
+                                     msg.recipients.users.some(u => u.id === entity.id);
+                            })
+                            .map((msg) => (
+                              <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`max-w-xs px-3 py-2 rounded-lg ${
+                                  msg.sender === 'me' 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'bg-gray-100 text-gray-900'
+                                }`}>
+                                  <p className="text-sm">{msg.text}</p>
+                                  <p className={`text-xs mt-1 ${
+                                    msg.sender === 'me' ? 'text-blue-100' : 'text-gray-500'
+                                  }`}>
+                                    {msg.timestamp}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          {chatMessages.filter(msg => {
+                            return msg.recipients.groups.some(g => g.id === entity.id) ||
+                                   msg.recipients.communities.some(c => c.id === entity.id) ||
+                                   msg.recipients.users.some(u => u.id === entity.id);
+                          }).length === 0 && (
+                            <p className="text-gray-500 text-center py-4">No messages yet</p>
+                          )}
+                        </div>
+                      </div>
+
                       {/* Entity Details */}
                       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Details</h3>
@@ -1149,7 +1221,7 @@ export default function WhapiManagementApp() {
                       className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
                     >
                       <X className="w-4 h-4" />
-                    </button>
+            </button>
           </div>
                   <div className="flex-1 p-6 overflow-y-auto">
                     <div className="max-w-2xl mx-auto h-full">
@@ -1157,6 +1229,16 @@ export default function WhapiManagementApp() {
                         isOpen={true}
                         onClose={() => setActiveMessageTab(null)}
                         recipient={messageTab.recipient}
+                        chatMessages={chatMessages}
+                        onSendMessage={(message, recipient) => {
+                          // Create selected entities for this specific recipient
+                          const selectedForRecipient: SelectedEntities = {
+                            groups: recipient.type === 'group' ? [recipient] : [],
+                            communities: recipient.type === 'community' ? [recipient] : [],
+                            users: recipient.type === 'user' ? [recipient] : []
+                          };
+                          handleSendMessage(message, selectedForRecipient);
+                        }}
                       />
                     </div>
                   </div>
@@ -1197,8 +1279,45 @@ export default function WhapiManagementApp() {
                   </div>
                   <div className="flex-1 p-6 overflow-y-auto">
                     <div className="max-w-2xl mx-auto">
+                      {/* Chat Messages */}
+                      <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Chat History</h3>
+                        <div className="space-y-3 max-h-64 overflow-y-auto">
+                          {chatMessages
+                            .filter(msg => {
+                              // Filter messages for this specific entity
+                              return msg.recipients.groups.some(g => g.id === pinnedTab.entity.id) ||
+                                     msg.recipients.communities.some(c => c.id === pinnedTab.entity.id) ||
+                                     msg.recipients.users.some(u => u.id === pinnedTab.entity.id);
+                            })
+                            .map((msg) => (
+                              <div key={msg.id} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`max-w-xs px-3 py-2 rounded-lg ${
+                                  msg.sender === 'me' 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'bg-gray-100 text-gray-900'
+                                }`}>
+                                  <p className="text-sm">{msg.text}</p>
+                                  <p className={`text-xs mt-1 ${
+                                    msg.sender === 'me' ? 'text-blue-100' : 'text-gray-500'
+                                  }`}>
+                                    {msg.timestamp}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          {chatMessages.filter(msg => {
+                            return msg.recipients.groups.some(g => g.id === pinnedTab.entity.id) ||
+                                   msg.recipients.communities.some(c => c.id === pinnedTab.entity.id) ||
+                                   msg.recipients.users.some(u => u.id === pinnedTab.entity.id);
+                          }).length === 0 && (
+                            <p className="text-gray-500 text-center py-4">No messages yet</p>
+                          )}
+                        </div>
+                      </div>
+
                       <div className="bg-white rounded-lg border border-gray-200 p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Pinned Entity Details</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Entity Details</h3>
                         <div className="space-y-4">
                           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <span className="text-sm font-medium text-gray-700">Name</span>

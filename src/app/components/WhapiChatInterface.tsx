@@ -73,9 +73,17 @@ interface Message {
 interface WhapiChatInterfaceProps {
   selectedEntities: SelectedEntities;
   onSendMessage: (message: string, selected: SelectedEntities) => void;
+  chatMessages?: Array<{
+    id: string;
+    text: string;
+    sender: 'me' | 'them';
+    timestamp: string;
+    status: 'sent' | 'delivered' | 'read' | 'failed';
+    recipients: SelectedEntities;
+  }>;
 }
 
-export default function WhapiChatInterface({ selectedEntities, onSendMessage }: WhapiChatInterfaceProps) {
+export default function WhapiChatInterface({ selectedEntities, onSendMessage, chatMessages = [] }: WhapiChatInterfaceProps) {
   const [messageText, setMessageText] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [activeChat, setActiveChat] = useState<Entity | null>(null);
@@ -91,56 +99,72 @@ export default function WhapiChatInterface({ selectedEntities, onSendMessage }: 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // Mock messages for demonstration
+  // Sync chat messages from parent component
   useEffect(() => {
-    const mockMessages: Message[] = [
-      {
-        id: "1",
-        text: "Welcome to Whapi Management! How can I help you today?",
-        sender: 'them',
-        timestamp: "10:30 AM",
-        status: 'read',
-        isOpponent: true,
-        reactions: [{ emoji: "👍", count: 2 }]
-      },
-      {
-        id: "2",
-        text: "I need to send a message to the development team",
-        sender: 'me',
-        timestamp: "10:32 AM",
-        status: 'read',
-        isOpponent: false,
-        replyTo: { id: "1", text: "Welcome to Whapi Management!", sender: "them" }
-      },
-      {
-        id: "3",
-        text: "Perfect! I can help you send messages to selected groups, communities, or users.",
-        sender: 'them',
-        timestamp: "10:33 AM",
-        status: 'read',
-        isOpponent: true
-      },
-      {
-        id: "4",
-        text: "Here's the project update document",
-        sender: 'me',
-        timestamp: "10:35 AM",
-        status: 'delivered',
-        isOpponent: false,
-        attachments: [{ type: 'document', url: '#', name: 'project-update.pdf' }]
-      },
-      {
-        id: "5",
-        text: "Thanks! I'll review it and get back to you.",
-        sender: 'them',
-        timestamp: "10:36 AM",
-        status: 'read',
-        isOpponent: true,
-        reactions: [{ emoji: "❤️", count: 1 }, { emoji: "👍", count: 1 }]
-      }
-    ];
-    setMessages(mockMessages);
-  }, []);
+    const syncedMessages: Message[] = chatMessages.map(msg => ({
+      id: msg.id,
+      text: msg.text,
+      sender: msg.sender,
+      timestamp: msg.timestamp,
+      status: msg.status,
+      isOpponent: msg.sender === 'them'
+    }));
+    
+    setMessages(syncedMessages);
+  }, [chatMessages]);
+
+  // Mock messages for demonstration (only if no chat messages)
+  useEffect(() => {
+    if (chatMessages.length === 0) {
+      const mockMessages: Message[] = [
+        {
+          id: "1",
+          text: "Welcome to Whapi Management! How can I help you today?",
+          sender: 'them',
+          timestamp: "10:30 AM",
+          status: 'read',
+          isOpponent: true,
+          reactions: [{ emoji: "👍", count: 2 }]
+        },
+        {
+          id: "2",
+          text: "I need to send a message to the development team",
+          sender: 'me',
+          timestamp: "10:32 AM",
+          status: 'read',
+          isOpponent: false,
+          replyTo: { id: "1", text: "Welcome to Whapi Management!", sender: "them" }
+        },
+        {
+          id: "3",
+          text: "Perfect! I can help you send messages to selected groups, communities, or users.",
+          sender: 'them',
+          timestamp: "10:33 AM",
+          status: 'read',
+          isOpponent: true
+        },
+        {
+          id: "4",
+          text: "Here's the project update document",
+          sender: 'me',
+          timestamp: "10:35 AM",
+          status: 'delivered',
+          isOpponent: false,
+          attachments: [{ type: 'document', url: '#', name: 'project-update.pdf' }]
+        },
+        {
+          id: "5",
+          text: "Thanks! I'll review it and get back to you.",
+          sender: 'them',
+          timestamp: "10:36 AM",
+          status: 'read',
+          isOpponent: true,
+          reactions: [{ emoji: "❤️", count: 1 }, { emoji: "👍", count: 1 }]
+        }
+      ];
+      setMessages(mockMessages);
+    }
+  }, [chatMessages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -164,20 +188,35 @@ export default function WhapiChatInterface({ selectedEntities, onSendMessage }: 
       setMessages(prev => [...prev, newMessage]);
       setMessageText("");
 
-      // Simulate typing indicator
-      setIsTyping(true);
+      // Call the parent's onSendMessage function
+      onSendMessage(messageText, selectedEntities);
+
+      // Simulate typing indicator and delivery status updates
       setTimeout(() => {
-        setIsTyping(false);
+        setMessages(prev => prev.map(msg => 
+          msg.id === newMessage.id ? { ...msg, status: 'delivered' } : msg
+        ));
+      }, 1000);
+
+      setTimeout(() => {
+        setMessages(prev => prev.map(msg => 
+          msg.id === newMessage.id ? { ...msg, status: 'read' } : msg
+        ));
+      }, 2000);
+
+      // Simulate response from recipients
+      setTimeout(() => {
+        const totalRecipients = getTotalSelected();
         const responseMessage: Message = {
           id: (Date.now() + 1).toString(),
-          text: "Message sent successfully!",
+          text: `Message delivered to ${totalRecipients} recipient${totalRecipients > 1 ? 's' : ''}`,
           sender: 'them',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           status: 'read',
           isOpponent: true
         };
         setMessages(prev => [...prev, responseMessage]);
-      }, 2000);
+      }, 3000);
     }
   };
 
