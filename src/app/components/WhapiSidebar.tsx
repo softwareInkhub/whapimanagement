@@ -17,9 +17,8 @@ import {
   Star,
   Clock,
   AlertCircle,
-  Grid
+  Layout
 } from "lucide-react";
-import { toast } from "react-hot-toast";
 
 interface Entity {
   id: string;
@@ -44,17 +43,35 @@ interface WhapiSidebarProps {
   onSelectionChange: (selected: SelectedEntities) => void;
   onSendMessage: (message: string, selected: SelectedEntities) => void;
   onGridLayout?: (type: 'groups' | 'communities' | 'users' | 'workspace') => void;
+  onOpenEntity?: (entity: Entity, mode?: 'sheet' | 'workspace') => void;
   selectedEntities?: SelectedEntities;
+  allGroups?: Entity[];
+  allCommunities?: Entity[];
+  allUsers?: Entity[];
+  isLoading?: boolean;
+  searchTerm?: string;
+  onSearchChange?: (term: string) => void;
+  filterType?: 'all' | 'groups' | 'communities' | 'users';
+  onFilterChange?: (type: 'all' | 'groups' | 'communities' | 'users') => void;
 }
 
 export default function WhapiSidebar({ 
   onSelectionChange, 
   onSendMessage,
   onGridLayout,
-  selectedEntities: externalSelectedEntities
+  onOpenEntity,
+  selectedEntities: externalSelectedEntities,
+  allGroups = [],
+  allCommunities = [],
+  allUsers = [],
+  isLoading = false,
+  searchTerm = "",
+  onSearchChange,
+  filterType: externalFilterType = 'all',
+  onFilterChange
 }: WhapiSidebarProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState<'all' | 'groups' | 'communities' | 'users'>('all');
+  const [searchQuery, setSearchQuery] = useState(searchTerm);
+  const [filterType, setFilterType] = useState<'all' | 'groups' | 'communities' | 'users'>(externalFilterType);
   const [showFilters, setShowFilters] = useState(false);
   const [bulkSelectMode, setBulkSelectMode] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -85,21 +102,21 @@ export default function WhapiSidebar({
     }
   }, [externalSelectedEntities]);
 
-  // Mock data
-  const mockGroups: Entity[] = [
+  // Use passed data or fallback to mock data
+  const groups = allGroups.length > 0 ? allGroups : [
     { id: '1', name: 'Development Team', type: 'group', memberCount: 12, status: 'online', priority: 'high', tags: ['tech', 'active'], lastActive: '2 min ago' },
     { id: '2', name: 'Marketing Squad', type: 'group', memberCount: 8, status: 'online', priority: 'medium', tags: ['marketing'], lastActive: '5 min ago' },
     { id: '3', name: 'Support Team', type: 'group', memberCount: 15, status: 'away', priority: 'low', tags: ['support'], lastActive: '10 min ago' },
     { id: '4', name: 'Design Team', type: 'group', memberCount: 6, status: 'offline', priority: 'medium', tags: ['design'], lastActive: '1 hour ago' },
   ];
 
-  const mockCommunities: Entity[] = [
+  const communities = allCommunities.length > 0 ? allCommunities : [
     { id: '1', name: 'Tech Innovators', type: 'community', memberCount: 45, status: 'online', priority: 'high', tags: ['innovation', 'tech'], lastActive: '1 min ago' },
     { id: '2', name: 'Startup Founders', type: 'community', memberCount: 32, status: 'online', priority: 'high', tags: ['startup', 'founders'], lastActive: '3 min ago' },
     { id: '3', name: 'Digital Marketing', type: 'community', memberCount: 28, status: 'away', priority: 'medium', tags: ['marketing'], lastActive: '15 min ago' },
   ];
 
-  const mockUsers: Entity[] = [
+  const users = allUsers.length > 0 ? allUsers : [
     { id: '1', name: 'John Doe', type: 'user', status: 'online', priority: 'high', tags: ['admin', 'developer'], lastActive: 'now' },
     { id: '2', name: 'Jane Smith', type: 'user', status: 'online', priority: 'medium', tags: ['designer'], lastActive: '2 min ago' },
     { id: '3', name: 'Mike Johnson', type: 'user', status: 'away', priority: 'low', tags: ['support'], lastActive: '10 min ago' },
@@ -137,10 +154,22 @@ export default function WhapiSidebar({
     onSelectionChange(cleared);
   };
 
+  const handleEntityClick = (entity: Entity, event: React.MouseEvent) => {
+    console.log('Entity clicked:', entity.name, entity.type);
+    // If Ctrl/Cmd is pressed, toggle selection
+    if (event.ctrlKey || event.metaKey) {
+      toggleEntitySelection(entity);
+    } else {
+      // Open entity as sheet (not workspace)
+      console.log('Opening entity as sheet:', entity.name);
+      onOpenEntity?.(entity, 'sheet');
+    }
+  };
+
   const filteredEntities = (entities: Entity[]) => {
     return entities.filter(entity => {
       const matchesSearch = entity.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = filterType === 'all' || entity.type === filterType;
+      const matchesFilter = filterType === 'all' || entity.type === filterType.slice(0, -1); // Remove 's' from filterType
       return matchesSearch && matchesFilter;
     });
   };
@@ -170,7 +199,12 @@ export default function WhapiSidebar({
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Whapi Management</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-gray-900">Whapi Management</h2>
+            {isLoading && (
+              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            )}
+          </div>
           <button
             onClick={() => setBulkSelectMode(!bulkSelectMode)}
             className={`p-2 rounded-lg transition-colors ${
@@ -189,9 +223,12 @@ export default function WhapiSidebar({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Search entities..."
+              placeholder="Search groups, communities, users..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                onSearchChange?.(e.target.value);
+              }}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -220,19 +257,26 @@ export default function WhapiSidebar({
 
           {showFilters && (
             <div className="flex gap-2">
-              {['all', 'groups', 'communities', 'users'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setFilterType(type as any)}
-                  className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                    filterType === type
-                      ? 'bg-blue-100 text-blue-600'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
-                >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
-                </button>
-              ))}
+                          {['all', 'groups', 'communities', 'users'].map((type) => (
+              <button
+                key={type}
+                onClick={() => {
+                  const newFilter = type as 'all' | 'groups' | 'communities' | 'users';
+                  setFilterType(newFilter);
+                  onFilterChange?.(newFilter);
+                }}
+                className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                  filterType === type
+                    ? 'bg-blue-100 text-blue-600'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                {type === 'all' ? 'All' : 
+                 type === 'groups' ? `Groups (${groups.length})` :
+                 type === 'communities' ? `Communities (${communities.length})` :
+                 `Users (${users.length})`}
+              </button>
+            ))}
             </div>
           )}
         </div>
@@ -341,7 +385,7 @@ export default function WhapiSidebar({
             <div className="flex items-center gap-3">
               <MessageSquare className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-900">All Groups</span>
-              <span className="text-sm text-gray-500">({mockGroups.length})</span>
+                              <span className="text-sm text-gray-500">({groups.length})</span>
             </div>
             {expandedSections.groups ? (
               <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -352,7 +396,7 @@ export default function WhapiSidebar({
 
           {expandedSections.groups && (
             <div className="px-4 pb-4 space-y-2">
-              {filteredEntities(mockGroups).map((group) => {
+              {filteredEntities(groups).map((group) => {
                 const isSelected = selectedEntities.groups.some(g => g.id === group.id);
                 return (
                   <div
@@ -360,7 +404,7 @@ export default function WhapiSidebar({
                     className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                       isSelected ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => toggleEntitySelection(group)}
+                    onClick={(e) => handleEntityClick(group, e)}
                   >
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -408,7 +452,7 @@ export default function WhapiSidebar({
             <div className="flex items-center gap-3">
               <Building2 className="w-5 h-5 text-purple-600" />
               <span className="font-medium text-gray-900">All Communities</span>
-              <span className="text-sm text-gray-500">({mockCommunities.length})</span>
+                              <span className="text-sm text-gray-500">({communities.length})</span>
             </div>
             {expandedSections.communities ? (
               <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -419,7 +463,7 @@ export default function WhapiSidebar({
 
           {expandedSections.communities && (
             <div className="px-4 pb-4 space-y-2">
-              {filteredEntities(mockCommunities).map((community) => {
+              {filteredEntities(communities).map((community) => {
                 const isSelected = selectedEntities.communities.some(c => c.id === community.id);
                 return (
                   <div
@@ -427,7 +471,7 @@ export default function WhapiSidebar({
                     className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                       isSelected ? 'bg-purple-50 border border-purple-200' : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => toggleEntitySelection(community)}
+                    onClick={(e) => handleEntityClick(community, e)}
                   >
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -475,7 +519,7 @@ export default function WhapiSidebar({
             <div className="flex items-center gap-3">
               <User className="w-5 h-5 text-green-600" />
               <span className="font-medium text-gray-900">All Users</span>
-              <span className="text-sm text-gray-500">({mockUsers.length})</span>
+                              <span className="text-sm text-gray-500">({users.length})</span>
             </div>
             {expandedSections.users ? (
               <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -486,7 +530,7 @@ export default function WhapiSidebar({
 
           {expandedSections.users && (
             <div className="px-4 pb-4 space-y-2">
-              {filteredEntities(mockUsers).map((user) => {
+              {filteredEntities(users).map((user) => {
                 const isSelected = selectedEntities.users.some(u => u.id === user.id);
                 return (
                   <div
@@ -494,7 +538,7 @@ export default function WhapiSidebar({
                     className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                       isSelected ? 'bg-green-50 border border-green-200' : 'hover:bg-gray-50'
                     }`}
-                    onClick={() => toggleEntitySelection(user)}
+                    onClick={(e) => handleEntityClick(user, e)}
                   >
                     <div className="flex-shrink-0">
                       <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
@@ -533,28 +577,15 @@ export default function WhapiSidebar({
         </div>
       </div>
 
-      {/* Grid Layout Buttons */}
+      {/* Workspace Button */}
       <div className="p-4 border-t border-gray-200 bg-gray-50">
-        <div className="space-y-2">
-          <button
-            onClick={() => {
-              const totalSelected = selectedEntities.groups.length + selectedEntities.communities.length + selectedEntities.users.length;
-              if (totalSelected > 0) {
-                onGridLayout?.('workspace');
-                toast.success(`Opening ${totalSelected} selected items in workspace`);
-              } else {
-                toast.error('Please select at least one item to open in workspace');
-              }
-            }}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
-          >
-            <Grid className="w-4 h-4" />
-            Open in Workspace
-            <span className="ml-auto text-xs bg-white/20 px-2 py-1 rounded-full">
-              {selectedEntities.groups.length + selectedEntities.communities.length + selectedEntities.users.length}
-            </span>
-          </button>
-        </div>
+        <button
+          onClick={() => onGridLayout?.('workspace')}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
+        >
+          <Layout className="w-4 h-4" />
+          Open in Workspace
+        </button>
       </div>
     </div>
   );

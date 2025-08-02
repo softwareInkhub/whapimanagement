@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useCallback, useRef } from "react";
-import { X, Maximize2, Minimize2, GripVertical } from "lucide-react";
+import { X, Maximize2, Minimize2, GripVertical, Pin } from "lucide-react";
 
 interface GridItem {
   id: string;
   title: string;
   component: React.ReactNode;
-  x: number;
-  y: number;
+    x: number;
+    y: number;
   width: number;
   height: number;
   isMinimized: boolean;
@@ -23,6 +23,8 @@ interface GridLayoutManagerProps {
   onItemMaximize?: (id: string) => void;
   onItemMove?: (id: string, x: number, y: number) => void;
   onItemResize?: (id: string, width: number, height: number) => void;
+  onItemPin?: (entity: any) => void;
+  pinnedEntities?: any[];
 }
 
 export default function GridLayoutManager({
@@ -31,7 +33,9 @@ export default function GridLayoutManager({
   onItemMinimize,
   onItemMaximize,
   onItemMove,
-  onItemResize
+  onItemResize,
+  onItemPin,
+  pinnedEntities = []
 }: GridLayoutManagerProps) {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -87,7 +91,7 @@ export default function GridLayoutManager({
   }, []);
 
   React.useEffect(() => {
-    if (draggedItem) {
+    if (draggedItem || resizingItem) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
       return () => {
@@ -95,7 +99,7 @@ export default function GridLayoutManager({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [draggedItem, handleMouseMove, handleMouseUp]);
+  }, [draggedItem, resizingItem, handleMouseMove, handleMouseUp]);
 
   const handleClose = useCallback((id: string) => {
     onItemClose?.(id);
@@ -108,9 +112,9 @@ export default function GridLayoutManager({
   const handleMaximize = useCallback((id: string) => {
     onItemMaximize?.(id);
   }, [onItemMaximize]);
-
-  return (
-    <div 
+    
+    return (
+      <div 
       ref={containerRef}
       className="relative w-full h-full bg-gray-100 overflow-hidden"
       style={{ minHeight: '600px' }}
@@ -118,7 +122,9 @@ export default function GridLayoutManager({
       {items.map((item) => (
         <div
           key={item.id}
-          className="absolute bg-white rounded-lg shadow-lg border border-gray-200"
+          className={`absolute bg-white rounded-lg shadow-lg border ${
+            resizingItem === item.id ? 'border-blue-500 border-2' : 'border-gray-200'
+          }`}
           style={{
             left: item.x,
             top: item.y,
@@ -138,23 +144,36 @@ export default function GridLayoutManager({
             <div className="flex items-center gap-2">
               <GripVertical className="w-4 h-4 text-gray-400" />
               <span className="font-medium text-gray-900">{item.title}</span>
-            </div>
-            
+          </div>
+          
             <div className="flex items-center gap-1">
-              <button
+              {item.entity && (
+            <button
+                  onClick={() => onItemPin?.(item.entity)}
+                  className={`p-1 rounded transition-colors ${
+                    pinnedEntities.some(pinned => pinned.id === item.entity?.id)
+                      ? 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                  }`}
+                  title={pinnedEntities.some(pinned => pinned.id === item.entity?.id) ? "Unpin" : "Pin to tab bar"}
+                >
+                  <Pin className={`w-4 h-4 ${pinnedEntities.some(pinned => pinned.id === item.entity?.id) ? 'fill-current' : ''}`} />
+            </button>
+              )}
+            <button
                 onClick={() => handleMinimize(item.id)}
                 className="p-1 hover:bg-gray-200 rounded text-gray-500 hover:text-gray-700"
                 title="Minimize"
               >
                 <Minimize2 className="w-4 h-4" />
-              </button>
-              <button
+            </button>
+            <button
                 onClick={() => handleMaximize(item.id)}
                 className="p-1 hover:bg-gray-200 rounded text-gray-500 hover:text-gray-700"
                 title="Maximize"
               >
                 <Maximize2 className="w-4 h-4" />
-              </button>
+            </button>
               <button
                 onClick={() => handleClose(item.id)}
                 className="p-1 hover:bg-red-100 rounded text-gray-500 hover:text-red-600"
@@ -171,14 +190,18 @@ export default function GridLayoutManager({
             
             {/* Resize Handle */}
             <div
-              className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize opacity-50 hover:opacity-100"
+              className={`absolute bottom-0 right-0 w-8 h-8 cursor-se-resize flex items-center justify-center ${
+                resizingItem === item.id ? 'bg-blue-100 rounded-tl-lg' : ''
+              }`}
               onMouseDown={(e) => handleResizeStart(e, item.id)}
             >
-              <div className="w-0 h-0 border-l-[12px] border-l-transparent border-b-[12px] border-b-gray-400 absolute bottom-0 right-0"></div>
+              <div className={`w-0 h-0 border-l-[16px] border-l-transparent border-b-[16px] ${
+                resizingItem === item.id ? 'border-b-blue-500' : 'border-b-gray-400 hover:border-b-gray-600'
+              } transition-colors`}></div>
             </div>
           </div>
-        </div>
-      ))}
+            </div>
+          ))}
     </div>
   );
 } 
